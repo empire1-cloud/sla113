@@ -163,15 +163,85 @@ async def health_check():
             "claude-sonnet-4.5": "available",
             "gemini-3-flash": "available"
         },
-        "stages": [
+        "engines": [
+            "hybrid_intelligence_core",
             "routing_engine",
             "strategy_engine",
             "plan_builder_engine",
+            "analysis_engine",
             "canon_enforcer",
             "drift_monitor",
             "error_handler"
         ]
     }
+
+# ============================================
+# ANALYSIS ENGINE ENDPOINTS
+# ============================================
+
+@router.post("/analyze", response_model=AnalysisResponse)
+async def analyze_subject(payload: AnalysisRequest):
+    """Perform deep structured analysis on any subject."""
+    try:
+        raw_analysis = await AnalysisEngine.analyze_async(
+            subject=payload.subject,
+            context=payload.context,
+            focus_area=payload.focus_area,
+            model=payload.model
+        )
+        
+        # Apply canon enforcement
+        cleaned_analysis = CanonEnforcer.normalize(raw_analysis)
+        
+        # Monitor drift
+        DriftMonitor.check(cleaned_analysis, payload.model or "claude-sonnet-4.5")
+        
+        return AnalysisResponse(**cleaned_analysis)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
+@router.post("/analyze/competitive", response_model=AnalysisResponse)
+async def competitive_analysis(payload: CompetitiveAnalysisRequest):
+    """Perform competitive analysis."""
+    try:
+        raw_analysis = await AnalysisEngine.competitive_analysis_async(
+            product=payload.product,
+            competitors=payload.competitors,
+            market=payload.market
+        )
+        
+        cleaned_analysis = CanonEnforcer.normalize(raw_analysis)
+        DriftMonitor.check(cleaned_analysis, "claude-sonnet-4.5")
+        
+        return AnalysisResponse(**cleaned_analysis)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
+@router.post("/analyze/strategy", response_model=AnalysisResponse)
+async def analyze_strategy_output(strategy: StrategyResponse):
+    """Analyze a strategy output for feasibility and blind spots."""
+    try:
+        strategy_dict = strategy.model_dump()
+        raw_analysis = await AnalysisEngine.analyze_strategy_async(strategy_dict)
+        
+        cleaned_analysis = CanonEnforcer.normalize(raw_analysis)
+        DriftMonitor.check(cleaned_analysis, "claude-sonnet-4.5")
+        
+        return AnalysisResponse(**cleaned_analysis)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
 
 @router.post("/plan", response_model=PlanResponse)
 async def build_execution_plan(payload: PlanRequest):
