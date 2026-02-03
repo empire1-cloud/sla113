@@ -115,6 +115,12 @@ const HomePage = () => {
             <p>Chain multiple engines together</p>
           </Link>
 
+          <Link to="/history" className="action-card" data-testid="history-link">
+            <span className="action-icon">📜</span>
+            <h3>Execution History</h3>
+            <p>View all engine call logs</p>
+          </Link>
+
           <div className="action-card clickable" onClick={quickTest} data-testid="quick-test-card">
             <span className="action-icon">🚀</span>
             <h3>Quick Test</h3>
