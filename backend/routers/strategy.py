@@ -406,6 +406,7 @@ async def health_check():
             "pricing_engine",
             "blueprint_engine",
             "persona_engine",
+            "anime_character_engine",
             "canon_enforcer",
             "drift_monitor",
             "error_handler"
