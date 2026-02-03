@@ -175,6 +175,10 @@ AVAILABLE ENGINES:
 - blueprint_engine: System architecture (output: components, data_flows, constraints)
 - persona_engine: User personas (output: name, goals, pains, triggers, buying_criteria)
 - anime_character_engine: Anime characters (output: name, abilities, backstory, arc)
+- anime_lore_engine: World-building and mythology (output: world_name, factions, power_system, history)
+- anime_story_engine: Story arcs and plot (output: title, story_arcs, key_plot_points, climax)
+- art_direction_engine: Visual direction (output: visual_style, color_palette, character_style)
+- money_pipeline_engine: Complete monetization system (output: market_analysis, pricing_model, business_model, execution_plan, forecast, marketing_funnel, launch_strategy)
 
 RULES:
 1. Always return valid JSON only — no markdown, no commentary.
@@ -184,6 +188,8 @@ RULES:
 5. Specify how outputs merge into final result.
 6. Do not invent content — only orchestrate.
 7. Use output_key to reference previous engine outputs in later inputs.
+8. For monetization/business requests, prefer money_pipeline_engine as primary engine.
+9. For anime/creative projects, chain lore → story → character → art_direction.
 
 OUTPUT FORMAT (JSON ONLY):
 {
