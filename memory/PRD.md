@@ -80,7 +80,7 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | `/api/route` | POST | Get routing decision |
 | `/api/drift-report` | GET | Get drift metrics |
 
-## Pipeline Engines (14 Total)
+## Pipeline Engines (15 Total)
 | Engine | Purpose | Default Model |
 |--------|---------|---------------|
 | Hybrid Intelligence Core | Master orchestrator | - |
@@ -94,6 +94,7 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | Blueprint Engine | System architecture blueprints | GPT-5.2 |
 | Persona Engine | User/customer persona generation | Claude |
 | Anime Character Engine | Original anime character creation | Claude |
+| Pipeline Composer Engine | Multi-engine workflow orchestration | GPT-5.2 |
 | Canon Enforcer | Output normalization | - |
 | Drift Monitor | Behavioral tracking | - |
 | Error Handler | Structured errors | - |
