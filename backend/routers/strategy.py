@@ -365,6 +365,7 @@ async def health_check():
             "evaluator_engine",
             "pricing_engine",
             "blueprint_engine",
+            "persona_engine",
             "canon_enforcer",
             "drift_monitor",
             "error_handler"
