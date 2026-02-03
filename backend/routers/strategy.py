@@ -155,6 +155,42 @@ class EvaluationResponse(BaseModel):
     improvement_suggestions: List[str]
     go_no_go: str
 
+class PricingRequest(BaseModel):
+    product: str
+    description: Optional[str] = None
+    target_market: Optional[str] = None
+    competitors: Optional[List[str]] = None
+    pricing_model: Optional[str] = None
+    constraints: Optional[List[str]] = None
+    model: Optional[str] = None
+
+class SaaSPricingRequest(BaseModel):
+    product: str
+    features: List[str]
+    target_arr: Optional[str] = None
+
+class APIPricingRequest(BaseModel):
+    api_name: str
+    use_cases: List[str]
+    competitors: Optional[List[str]] = None
+
+class PricingTierModel(BaseModel):
+    name: str
+    price: str
+    ideal_for: str
+    limits: List[str]
+    features: List[str]
+    value_prop: str
+
+class PricingResponse(BaseModel):
+    offer_summary: str
+    target_segments: List[str]
+    pricing_model: str
+    tiers: List[PricingTierModel]
+    monetization_risks: List[str]
+    expansion_opportunities: List[str]
+    recommended_entry_tier: str
+
 @router.post("/strategy", response_model=StrategyResponse)
 async def generate_strategy(payload: StrategyRequest):
     """Generate an actionable strategy using the hybrid AI pipeline."""
