@@ -86,6 +86,38 @@ class CompetitiveAnalysisRequest(BaseModel):
     competitors: List[str]
     market: Optional[str] = None
 
+class OpportunityRequest(BaseModel):
+    situation: str
+    context: Optional[str] = None
+    constraints: Optional[List[str]] = None
+    goals: Optional[List[str]] = None
+    model: Optional[str] = None
+
+class MarketOpportunityRequest(BaseModel):
+    market: str
+    current_position: Optional[str] = None
+    competitors: Optional[List[str]] = None
+    budget: Optional[str] = None
+
+class QuickWinsRequest(BaseModel):
+    situation: str
+    timeframe: Optional[str] = "30 days"
+
+class OpportunityItem(BaseModel):
+    name: str
+    description: str
+    impact: str
+    effort: str
+    time_to_value: str
+    dependencies: List[str]
+    risks: List[str]
+
+class OpportunityResponse(BaseModel):
+    context_summary: str
+    opportunities: List[OpportunityItem]
+    top_3_opportunities: List[str]
+    recommended_next_move: str
+
 @router.post("/strategy", response_model=StrategyResponse)
 async def generate_strategy(payload: StrategyRequest):
     """Generate an actionable strategy using the hybrid AI pipeline."""
