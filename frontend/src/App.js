@@ -54,6 +54,157 @@ const ModelBadge = ({ name, status }) => (
   </div>
 );
 
+const MoneyPipelineTester = () => {
+  const [idea, setIdea] = useState("AI-powered fitness coaching app for busy professionals");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  const sampleIdeas = [
+    "AI-powered fitness coaching app for busy professionals",
+    "Subscription box for remote workers' productivity tools",
+    "B2B SaaS for automated invoice processing",
+    "Marketplace for freelance legal services",
+    "Smart home energy optimization platform"
+  ];
+
+  const testMoneyPipeline = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    
+    try {
+      const response = await axios.post(`${API}/money-pipeline`, {
+        idea: idea,
+        model: "gemini-3-flash"
+      }, { timeout: 120000 });
+      setResult(response.data);
+    } catch (e) {
+      console.error(e);
+      setError(e.response?.data?.detail || e.message || "Failed to generate pipeline");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const randomizeIdea = () => {
+    const randomIdea = sampleIdeas[Math.floor(Math.random() * sampleIdeas.length)];
+    setIdea(randomIdea);
+  };
+
+  return (
+    <div className="money-pipeline-tester" data-testid="money-pipeline-tester">
+      <h2 className="section-title">
+        <span>💵</span> Test Money Pipeline Engine
+      </h2>
+      
+      <div className="input-group">
+        <label htmlFor="idea-input">Enter your idea:</label>
+        <div className="input-row">
+          <input
+            id="idea-input"
+            type="text"
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+            placeholder="Describe your business idea..."
+            className="idea-input"
+            data-testid="idea-input"
+          />
+          <button 
+            onClick={randomizeIdea} 
+            className="randomize-btn"
+            title="Try a random idea"
+            data-testid="randomize-btn"
+          >
+            🎲
+          </button>
+        </div>
+      </div>
+
+      <button
+        onClick={testMoneyPipeline}
+        disabled={loading || !idea.trim()}
+        className={`test-button ${loading ? 'loading' : ''}`}
+        data-testid="test-money-pipeline-btn"
+      >
+        {loading ? (
+          <>
+            <span className="btn-spinner"></span>
+            Generating Pipeline...
+          </>
+        ) : (
+          <>
+            <span>🚀</span> Generate Money Pipeline
+          </>
+        )}
+      </button>
+
+      {error && (
+        <div className="error-message" data-testid="error-message">
+          <span>⚠️</span> {error}
+        </div>
+      )}
+
+      {result && (
+        <div className="result-container" data-testid="pipeline-result">
+          <div className="result-header">
+            <h3>Pipeline Generated Successfully</h3>
+          </div>
+          
+          <div className="result-grid">
+            <div className="result-card">
+              <h4>📊 Market Analysis</h4>
+              <p><strong>Segments:</strong> {result.market_analysis?.target_segments?.length || 0}</p>
+              <p><strong>Pain Points:</strong> {result.market_analysis?.pain_points?.length || 0}</p>
+              <p className="highlight">{result.market_analysis?.positioning_opportunity?.slice(0, 100)}...</p>
+            </div>
+
+            <div className="result-card">
+              <h4>💰 Pricing Model</h4>
+              <p><strong>Tiers:</strong> {result.pricing_model?.tiers?.length || 0}</p>
+              {result.pricing_model?.tiers?.map((tier, i) => (
+                <p key={i} className="tier-item">{tier.name}: {tier.price}</p>
+              ))}
+            </div>
+
+            <div className="result-card">
+              <h4>🏢 Business Model</h4>
+              <p><strong>Core Offer:</strong></p>
+              <p className="highlight">{result.business_model?.core_offer?.slice(0, 120)}...</p>
+            </div>
+
+            <div className="result-card">
+              <h4>📈 Forecast</h4>
+              <p><strong>Revenue Projection:</strong></p>
+              <p className="highlight">{result.forecast?.revenue_projection?.slice(0, 100)}...</p>
+              <p><strong>Risks:</strong> {result.forecast?.risks?.length || 0}</p>
+            </div>
+
+            <div className="result-card">
+              <h4>📋 Execution Plan</h4>
+              <p><strong>Phase 1:</strong> {result.execution_plan?.phase_1?.length || 0} actions</p>
+              <p><strong>Phase 2:</strong> {result.execution_plan?.phase_2?.length || 0} actions</p>
+              <p><strong>Critical Path:</strong> {result.execution_plan?.critical_path?.length || 0} items</p>
+            </div>
+
+            <div className="result-card">
+              <h4>📣 Marketing Funnel</h4>
+              <p><strong>TOFU:</strong> {result.marketing_funnel?.top_of_funnel?.length || 0} tactics</p>
+              <p><strong>MOFU:</strong> {result.marketing_funnel?.middle_of_funnel?.length || 0} tactics</p>
+              <p><strong>BOFU:</strong> {result.marketing_funnel?.bottom_of_funnel?.length || 0} tactics</p>
+            </div>
+          </div>
+
+          <details className="raw-details">
+            <summary>View Raw JSON Response</summary>
+            <pre className="raw-json">{JSON.stringify(result, null, 2)}</pre>
+          </details>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Home = () => {
   const [healthData, setHealthData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -140,11 +291,8 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="section raw-section">
-        <h2 className="section-title">Raw Response</h2>
-        <pre className="raw-json" data-testid="raw-json">
-          {JSON.stringify(healthData, null, 2)}
-        </pre>
+      <section className="section">
+        <MoneyPipelineTester />
       </section>
 
       <footer className="dashboard-footer">
