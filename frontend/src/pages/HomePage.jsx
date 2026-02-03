@@ -109,6 +109,12 @@ const HomePage = () => {
             <p>Transform ideas into monetizable systems</p>
           </Link>
 
+          <Link to="/pipeline-composer" className="action-card" data-testid="pipeline-composer-link">
+            <span className="action-icon">🔗</span>
+            <h3>Pipeline Composer</h3>
+            <p>Chain multiple engines together</p>
+          </Link>
+
           <div className="action-card clickable" onClick={quickTest} data-testid="quick-test-card">
             <span className="action-icon">🚀</span>
             <h3>Quick Test</h3>
