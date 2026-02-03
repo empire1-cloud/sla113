@@ -276,6 +276,96 @@ async def analyze_strategy_output(strategy: StrategyResponse):
             content=error_response.model_dump()
         )
 
+# ============================================
+# OPPORTUNITY MAPPER ENGINE ENDPOINTS
+# ============================================
+
+@router.post("/opportunities", response_model=OpportunityResponse)
+async def map_opportunities(payload: OpportunityRequest):
+    """Map highest-leverage opportunities for a situation."""
+    try:
+        raw_opportunities = await OpportunityMapperEngine.map_opportunities_async(
+            situation=payload.situation,
+            context=payload.context,
+            constraints=payload.constraints,
+            goals=payload.goals,
+            model=payload.model
+        )
+        
+        # Apply canon enforcement
+        cleaned_opportunities = CanonEnforcer.normalize(raw_opportunities)
+        
+        # Monitor drift
+        DriftMonitor.check(cleaned_opportunities, payload.model or "claude-sonnet-4.5")
+        
+        return OpportunityResponse(**cleaned_opportunities)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
+@router.post("/opportunities/market", response_model=OpportunityResponse)
+async def map_market_opportunities(payload: MarketOpportunityRequest):
+    """Map market-specific opportunities."""
+    try:
+        raw_opportunities = await OpportunityMapperEngine.map_market_opportunities_async(
+            market=payload.market,
+            current_position=payload.current_position,
+            competitors=payload.competitors,
+            budget=payload.budget
+        )
+        
+        cleaned_opportunities = CanonEnforcer.normalize(raw_opportunities)
+        DriftMonitor.check(cleaned_opportunities, "claude-sonnet-4.5")
+        
+        return OpportunityResponse(**cleaned_opportunities)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
+@router.post("/opportunities/quick-wins", response_model=OpportunityResponse)
+async def find_quick_wins(payload: QuickWinsRequest):
+    """Identify quick-win opportunities only."""
+    try:
+        raw_opportunities = await OpportunityMapperEngine.quick_wins_async(
+            situation=payload.situation,
+            timeframe=payload.timeframe
+        )
+        
+        cleaned_opportunities = CanonEnforcer.normalize(raw_opportunities)
+        DriftMonitor.check(cleaned_opportunities, "claude-sonnet-4.5")
+        
+        return OpportunityResponse(**cleaned_opportunities)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
+@router.post("/opportunities/from-strategy", response_model=OpportunityResponse)
+async def opportunities_from_strategy(strategy: StrategyResponse):
+    """Extract opportunities from a strategy output."""
+    try:
+        strategy_dict = strategy.model_dump()
+        raw_opportunities = await OpportunityMapperEngine.map_from_strategy_async(strategy_dict)
+        
+        cleaned_opportunities = CanonEnforcer.normalize(raw_opportunities)
+        DriftMonitor.check(cleaned_opportunities, "claude-sonnet-4.5")
+        
+        return OpportunityResponse(**cleaned_opportunities)
+    except Exception as e:
+        error_response = ErrorHandler.handle(e, PipelineStage.STRATEGY)
+        return JSONResponse(
+            status_code=500,
+            content=error_response.model_dump()
+        )
+
 @router.post("/plan", response_model=PlanResponse)
 async def build_execution_plan(payload: PlanRequest):
     """Convert a goal or strategy into an actionable execution plan."""
