@@ -121,6 +121,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add execution logging middleware
+from middleware.logging_middleware import ExecutionLoggingMiddleware
+app.add_middleware(ExecutionLoggingMiddleware)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
