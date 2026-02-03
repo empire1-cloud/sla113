@@ -16,6 +16,7 @@ from .anime_character import router as anime_character_router
 from .anime_lore import router as anime_lore_router
 from .anime_story import router as anime_story_router
 from .art_direction import router as art_direction_router
+from .money_pipeline import router as money_pipeline_router
 
 __all__ = [
     "core_router",
@@ -33,4 +34,5 @@ __all__ = [
     "anime_lore_router",
     "anime_story_router",
     "art_direction_router",
+    "money_pipeline_router",
 ]
