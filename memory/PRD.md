@@ -42,6 +42,15 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 | 2026-02-03 | Art Direction Engine + API endpoints | ✅ Done |
 | 2026-02-03 | **Universal Money Pipeline Engine** | ✅ Done |
 | 2026-02-03 | Pipeline Composer updated with all 13 engines + 7 templates | ✅ Done |
+| 2026-02-03 | **Frontend Dashboard** - 3 pages with real backend integration | ✅ Done |
+
+## Frontend Pages
+
+| Page | Route | Features |
+|------|-------|----------|
+| **Home** | `/` | Health status, engine count, model status, Quick Actions, Engine preview |
+| **Engines Dashboard** | `/engines` | Table of all 19 engines with endpoint paths, descriptions, Test buttons |
+| **Money Pipeline** | `/money-pipeline` | Full form (idea, target revenue, industry, context), sample ideas, tabbed results view |
 
 ## Engine Inventory (19 Total)
 
