@@ -48,10 +48,11 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 
 | Page | Route | Features |
 |------|-------|----------|
-| **Home** | `/` | Health status, engine count, model status, Quick Actions (4 cards), Engine preview |
+| **Home** | `/` | Health status, engine count, model status, Quick Actions (5 cards), Engine preview |
 | **Engines Dashboard** | `/engines` | Table of all 19 engines with Method, Endpoint, Description, Test buttons with modal |
 | **Money Pipeline** | `/money-pipeline` | Full form (idea, target revenue, industry, context), sample ideas, tabbed results view |
 | **Pipeline Composer** | `/pipeline-composer` | Chain engines, reorder steps, execute pipeline, timeline results, save/load presets |
+| **Execution History** | `/history` | Searchable/filterable log of all engine calls with input/output details |
 
 ## Engine Test Modal Features
 - Shows endpoint info (Method + Path)
