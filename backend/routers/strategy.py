@@ -11,6 +11,7 @@ from services.drift_monitor import DriftMonitor
 from services.error_handler import ErrorHandler, PipelineStage
 from services.plan_builder import PlanBuilderEngine
 from services.analysis_engine import AnalysisEngine
+from services.opportunity_mapper import OpportunityMapperEngine
 from services.hybrid_core import get_core, TaskType
 
 router = APIRouter(tags=["strategy"])
