@@ -49,6 +49,7 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | 2026-01-03 | Routing Engine service | ✅ Done |
 | 2026-01-03 | Strategy Engine service | ✅ Done |
 | 2026-01-03 | Plan Builder Engine service | ✅ Done |
+| 2026-01-03 | Analysis Engine service | ✅ Done |
 | 2026-01-03 | Canon Enforcer service | ✅ Done |
 | 2026-01-03 | Drift Monitor service | ✅ Done |
 | 2026-01-03 | Error Handler service | ✅ Done |
@@ -63,18 +64,22 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | `/api/core/status` | GET | Core system status |
 | `/api/core/log` | GET | Execution log |
 | `/api/health` | GET | Pipeline health check |
-| `/api/strategy` | POST | Direct strategy generation |
-| `/api/plan` | POST | Direct plan generation |
+| `/api/strategy` | POST | Strategy generation |
+| `/api/plan` | POST | Plan generation |
+| `/api/analyze` | POST | Deep structured analysis |
+| `/api/analyze/competitive` | POST | Competitive analysis |
+| `/api/analyze/strategy` | POST | Analyze a strategy |
 | `/api/route` | POST | Get routing decision |
 | `/api/drift-report` | GET | Get drift metrics |
 
-## Pipeline Engines
+## Pipeline Engines (8 Total)
 | Engine | Purpose | Default Model |
 |--------|---------|---------------|
 | Hybrid Intelligence Core | Master orchestrator | - |
 | Routing Engine | Task classification → model selection | - |
 | Strategy Engine | High-level strategy generation | Claude |
 | Plan Builder Engine | Tactical execution planning | GPT-5.2 |
+| Analysis Engine | Deep SWOT analysis | Claude |
 | Canon Enforcer | Output normalization | - |
 | Drift Monitor | Behavioral tracking | - |
 | Error Handler | Structured errors | - |
