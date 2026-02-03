@@ -65,6 +65,26 @@ class PlanResponse(BaseModel):
     critical_path: List[str]
     first_24_hours: List[str]
 
+class AnalysisRequest(BaseModel):
+    subject: str
+    context: Optional[str] = None
+    focus_area: Optional[str] = None
+    model: Optional[str] = None
+
+class AnalysisResponse(BaseModel):
+    overview: str
+    strengths: List[str]
+    weaknesses: List[str]
+    opportunities: List[str]
+    threats: List[str]
+    key_insights: List[str]
+    recommended_focus: str
+
+class CompetitiveAnalysisRequest(BaseModel):
+    product: str
+    competitors: List[str]
+    market: Optional[str] = None
+
 @router.post("/strategy", response_model=StrategyResponse)
 async def generate_strategy(payload: StrategyRequest):
     """Generate an actionable strategy using the hybrid AI pipeline."""
