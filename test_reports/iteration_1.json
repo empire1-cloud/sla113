@@ -1,0 +1,63 @@
+{
+  "test_run": "hybrid-ai-pipeline-v1",
+  "timestamp": "2026-01-03T14:30:00Z",
+  "status": "PASS",
+  "summary": "All hybrid AI pipeline endpoints tested and working correctly",
+  "tests": [
+    {
+      "name": "Health Check Endpoint",
+      "endpoint": "GET /api/health",
+      "status": "PASS",
+      "result": "Returns healthy status with all 3 models available"
+    },
+    {
+      "name": "Routing Engine - Code Task",
+      "endpoint": "POST /api/route",
+      "input": {"goal": "Write a Python function to sort a list"},
+      "expected_model": "gpt-5.2",
+      "actual_model": "gpt-5.2",
+      "status": "PASS"
+    },
+    {
+      "name": "Routing Engine - Strategy Task",
+      "endpoint": "POST /api/route",
+      "input": {"goal": "Create a business strategy to scale my startup"},
+      "expected_model": "claude-sonnet-4.5",
+      "actual_model": "claude-sonnet-4.5",
+      "status": "PASS"
+    },
+    {
+      "name": "Routing Engine - Quick Task",
+      "endpoint": "POST /api/route",
+      "input": {"goal": "What is the capital of France? Quick answer"},
+      "expected_model": "gemini-3-flash",
+      "actual_model": "gemini-3-flash",
+      "status": "PASS"
+    },
+    {
+      "name": "Full Pipeline - Strategy Generation",
+      "endpoint": "POST /api/strategy",
+      "input": {"goal": "I need a strategy to monetize my AI engine"},
+      "status": "PASS",
+      "result": "Generated complete strategy with summary, steps, risks, resources, next_action"
+    },
+    {
+      "name": "Drift Report Endpoint",
+      "endpoint": "GET /api/drift-report",
+      "status": "PASS",
+      "result": "Returns drift metrics (insufficient_data with 1 sample, needs 5+)"
+    }
+  ],
+  "pipeline_stages_verified": [
+    "routing_engine",
+    "strategy_engine", 
+    "canon_enforcer",
+    "drift_monitor",
+    "error_handler"
+  ],
+  "models_tested": [
+    "gpt-5.2 (OpenAI)",
+    "claude-sonnet-4.5 (Anthropic)",
+    "gemini-3-flash (Google)"
+  ]
+}
