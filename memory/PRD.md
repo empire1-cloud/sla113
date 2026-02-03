@@ -51,31 +51,36 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | 2026-01-03 | Plan Builder Engine service | ✅ Done |
 | 2026-01-03 | Analysis Engine service | ✅ Done |
 | 2026-01-03 | Opportunity Mapper Engine | ✅ Done |
+| 2026-01-03 | Evaluator Engine service | ✅ Done |
 | 2026-01-03 | Canon Enforcer service | ✅ Done |
 | 2026-01-03 | Drift Monitor service | ✅ Done |
 | 2026-01-03 | Error Handler service | ✅ Done |
 | 2026-01-03 | FastAPI endpoints | ✅ Done |
 | 2026-01-03 | Backend testing | ✅ Done |
 
-## API Endpoints
+## API Endpoints (20+)
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/core/execute` | POST | Unified execution via Hybrid Core |
-| `/api/core/strategy-to-plan` | POST | Strategy → Plan via Core |
 | `/api/core/status` | GET | Core system status |
-| `/api/core/log` | GET | Execution log |
 | `/api/health` | GET | Pipeline health check |
 | `/api/strategy` | POST | Strategy generation |
 | `/api/plan` | POST | Plan generation |
 | `/api/analyze` | POST | Deep structured analysis |
 | `/api/analyze/competitive` | POST | Competitive analysis |
 | `/api/opportunities` | POST | Map opportunities |
-| `/api/opportunities/market` | POST | Market opportunities |
 | `/api/opportunities/quick-wins` | POST | Quick win opportunities |
+| `/api/evaluate` | POST | General evaluation |
+| `/api/evaluate/idea` | POST | Idea evaluation |
+| `/api/evaluate/offer` | POST | Offer evaluation |
+| `/api/evaluate/strategy` | POST | Strategy evaluation |
+| `/api/evaluate/plan` | POST | Plan evaluation |
+| `/api/evaluate/compare` | POST | Compare options |
+| `/api/evaluate/presets` | GET | Get criteria presets |
 | `/api/route` | POST | Get routing decision |
 | `/api/drift-report` | GET | Get drift metrics |
 
-## Pipeline Engines (9 Total)
+## Pipeline Engines (10 Total)
 | Engine | Purpose | Default Model |
 |--------|---------|---------------|
 | Hybrid Intelligence Core | Master orchestrator | - |
@@ -84,6 +89,7 @@ A comprehensive playbook and working implementation for a multi-model AI system 
 | Plan Builder Engine | Tactical execution planning | GPT-5.2 |
 | Analysis Engine | Deep SWOT analysis | Claude |
 | Opportunity Mapper Engine | Identify high-leverage opportunities | Claude |
+| Evaluator Engine | Score and evaluate with criteria | Claude |
 | Canon Enforcer | Output normalization | - |
 | Drift Monitor | Behavioral tracking | - |
 | Error Handler | Structured errors | - |
