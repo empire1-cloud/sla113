@@ -239,6 +239,7 @@ async def health_check():
             "plan_builder_engine",
             "analysis_engine",
             "opportunity_mapper_engine",
+            "evaluator_engine",
             "canon_enforcer",
             "drift_monitor",
             "error_handler"
