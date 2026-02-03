@@ -1,0 +1,1318 @@
+/* ==================== AI ARCADE STYLES ==================== */
+
+/* Arcade Container */
+.arcade-container {
+  min-height: 100vh;
+  background: var(--canon-bg, #050508);
+  color: var(--canon-text, #e0e0e0);
+  position: relative;
+  overflow-x: hidden;
+  padding: 0 0 3rem 0;
+}
+
+/* Retro Grid Background */
+.arcade-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  perspective: 500px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.arcade-grid-bg::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, var(--canon-bg, #050508));
+}
+
+/* Canon Room Background */
+.canon-room-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at top, var(--canon-secondary, #1a1a2e) 0%, var(--canon-bg, #050508) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Neon Text Effect */
+.neon-text {
+  text-shadow: 
+    0 0 5px var(--canon-neon, #ff00ff),
+    0 0 10px var(--canon-neon, #ff00ff),
+    0 0 20px var(--canon-neon, #ff00ff),
+    0 0 40px var(--canon-neon, #ff00ff);
+  animation: neonPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+  from { text-shadow: 0 0 5px var(--canon-neon, #ff00ff), 0 0 10px var(--canon-neon, #ff00ff); }
+  to { text-shadow: 0 0 10px var(--canon-neon, #ff00ff), 0 0 20px var(--canon-neon, #ff00ff), 0 0 40px var(--canon-neon, #ff00ff); }
+}
+
+/* Arcade Header */
+.arcade-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(5, 5, 10, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.arcade-header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.arcade-back {
+  color: var(--canon-text, #888);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.arcade-back:hover {
+  color: var(--canon-primary, #ff00ff);
+}
+
+.arcade-title {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-family: 'Press Start 2P', monospace, sans-serif;
+}
+
+.canon-room-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.canon-icon-large {
+  font-size: 2rem;
+}
+
+.arcade-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.token-display, .jackpot-display, .multiplier-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.token-icon, .jackpot-icon, .mult-icon {
+  font-size: 1.25rem;
+}
+
+.token-amount, .jackpot-amount, .mult-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.token-label, .jackpot-label {
+  font-size: 0.65rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Section Styling */
+.arcade-container section {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Canon Selector */
+.canon-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.canon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 100px;
+}
+
+.canon-btn:hover {
+  border-color: var(--canon-color);
+  box-shadow: 0 0 20px rgba(var(--canon-color), 0.3);
+  transform: translateY(-2px);
+}
+
+.canon-btn.active {
+  border-color: var(--canon-color);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 0 10px var(--canon-neon),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.canon-icon {
+  font-size: 2rem;
+}
+
+.canon-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Canon Room Link */
+.canon-room-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 2px solid var(--canon-color, #ff00ff);
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+}
+
+.canon-room-link:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.canon-room-preview {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.canon-room-icon {
+  font-size: 3rem;
+}
+
+.canon-room-info h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.canon-room-info p {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.multiplier-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--canon-color, #ff00ff);
+  color: #000;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.enter-arrow {
+  font-size: 2rem;
+  color: var(--canon-color, #ff00ff);
+}
+
+/* Featured Machines */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.featured-machine {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.featured-machine:hover {
+  border-color: var(--canon-color);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.featured-machine .machine-icon {
+  font-size: 2rem;
+}
+
+.featured-machine .machine-info {
+  flex: 1;
+}
+
+.featured-machine .machine-info h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.featured-machine .machine-canon {
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.featured-machine .machine-cost {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+}
+
+/* Jackpots List */
+.jackpots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.jackpot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--canon-color, #ffd700);
+  border-radius: 0 8px 8px 0;
+}
+
+.jackpot-type {
+  font-weight: 600;
+}
+
+.jackpot-canon {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.jackpot-win {
+  color: #ffd700;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.no-jackpots {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* Quick Links */
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.quick-link:hover {
+  border-color: var(--canon-primary, #ff00ff);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.link-icon {
+  font-size: 1.5rem;
+}
+
+.link-count {
+  margin-left: auto;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Canons Grid */
+.canons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.canon-card {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--canon-bg, rgba(255,255,255,0.03)), rgba(0,0,0,0.3));
+  border: 2px solid var(--canon-color, #666);
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+}
+
+.canon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1), 0 0 60px var(--canon-color);
+}
+
+.canon-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.canon-card-icon {
+  font-size: 2.5rem;
+}
+
+.canon-card-multiplier {
+  padding: 0.25rem 0.75rem;
+  background: var(--canon-color);
+  color: #000;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.canon-card-name {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.canon-card-desc {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.canon-card-machines {
+  font-size: 0.75rem;
+  color: var(--canon-color);
+  font-weight: 600;
+}
+
+/* ==================== CANON ROOM PAGE ==================== */
+
+.canon-description {
+  text-align: center;
+  padding: 1.5rem 2rem !important;
+}
+
+.canon-description p {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+.canon-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.canon-stats .stat {
+  text-align: center;
+}
+
+.canon-stats .stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--canon-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.canon-stats .stat-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Machines Grid */
+.machines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.machine-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2));
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.machine-card:hover {
+  border-color: var(--canon-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 20px var(--canon-neon);
+}
+
+.machine-card-art {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+}
+
+.machine-icon-large {
+  font-size: 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.machine-glow {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, var(--canon-neon) 0%, transparent 70%);
+  opacity: 0.3;
+  filter: blur(20px);
+}
+
+.machine-card-content {
+  padding: 1.25rem;
+}
+
+.machine-name {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.machine-desc {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.machine-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.machine-difficulty {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.machine-cost {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.play-btn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--canon-primary), var(--canon-accent, var(--canon-primary)));
+  border: none;
+  color: #000;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.play-btn:hover {
+  filter: brightness(1.2);
+}
+
+/* Canon Switcher */
+.canon-switcher {
+  text-align: center;
+  padding-top: 2rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.canon-switcher h3 {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.canon-mini-selector {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.canon-mini-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.canon-mini-btn:hover, .canon-mini-btn.active {
+  border-color: var(--canon-color);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== MACHINE MODAL ==================== */
+
+.machine-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.machine-modal {
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  background: linear-gradient(135deg, #0a0a14, #050510);
+  border: 2px solid var(--canon-primary);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-machine-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-machine-icon {
+  font-size: 2.5rem;
+}
+
+.modal-machine-info h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.modal-canon-badge {
+  font-size: 0.8rem;
+  color: var(--canon-primary);
+}
+
+.modal-close {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.machine-description {
+  color: #aaa;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.machine-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.machine-stat {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.machine-stat .stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.machine-stat .stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.machine-stat .stat-value.insufficient {
+  color: #ff6b6b;
+}
+
+.input-section {
+  margin-bottom: 1.5rem;
+}
+
+.input-section label {
+  display: block;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.input-section textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.input-section textarea:focus {
+  outline: none;
+  border-color: var(--canon-primary);
+}
+
+.start-run-btn {
+  width: 100%;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--canon-primary), var(--canon-neon));
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s;
+}
+
+.start-run-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px var(--canon-neon);
+}
+
+.start-run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.start-run-btn.loading {
+  background: rgba(255, 255, 255, 0.1);
+  color: #888;
+}
+
+.run-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--canon-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.play-icon {
+  font-size: 1.25rem;
+}
+
+.machine-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  margin-top: 1rem;
+}
+
+.result-section {
+  margin-top: 1.5rem;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.result-header h3 {
+  color: var(--canon-primary);
+}
+
+.run-again-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.result-panel {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.result-panel pre {
+  padding: 1rem;
+  margin: 0;
+  font-size: 0.75rem;
+  color: #00ff88;
+  overflow-x: auto;
+  max-height: 300px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Jackpot Animation */
+.jackpot-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: jackpotFadeIn 0.5s ease;
+}
+
+@keyframes jackpotFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.jackpot-burst {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #ffd700 0%, transparent 70%);
+  animation: jackpotBurst 2s ease-out infinite;
+}
+
+@keyframes jackpotBurst {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.jackpot-content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.jackpot-star {
+  font-size: 4rem;
+  animation: starSpin 1s ease infinite;
+}
+
+@keyframes starSpin {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+}
+
+.jackpot-content h2 {
+  font-size: 3rem;
+  color: #ffd700;
+  text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+  margin: 1rem 0;
+}
+
+.jackpot-content .jackpot-type {
+  font-size: 1.25rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.jackpot-content .jackpot-amount {
+  font-size: 2rem;
+  color: #ffd700;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ==================== SUBPAGES ==================== */
+
+/* Sessions */
+.sessions-section {
+  max-width: 900px;
+}
+
+.empty-sessions, .empty-packs {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-sessions .empty-icon, .empty-packs .empty-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.back-to-arcade-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--canon-primary, #ff00ff);
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.session-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--canon-color, #666);
+  border-radius: 0 12px 12px 0;
+  padding: 1.25rem;
+}
+
+.session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.session-machine {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.session-canon-icon {
+  font-size: 1.25rem;
+}
+
+.session-time {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.session-input {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+
+.session-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.session-jackpot {
+  color: #ffd700 !important;
+  font-weight: 600;
+}
+
+.session-output {
+  margin-top: 1rem;
+}
+
+.session-output summary {
+  cursor: pointer;
+  color: var(--canon-color, #888);
+  font-size: 0.85rem;
+}
+
+.session-output pre {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  color: #00ff88;
+  overflow-x: auto;
+  max-height: 200px;
+}
+
+/* Wallet */
+.wallet-section {
+  max-width: 600px;
+  text-align: center;
+}
+
+.wallet-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-bottom: 2rem;
+}
+
+.wallet-icon {
+  font-size: 4rem;
+}
+
+.wallet-amount {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.wallet-label {
+  font-size: 0.85rem;
+  color: #666;
+  letter-spacing: 0.1em;
+}
+
+.wallet-actions h3, .jackpot-info h3, .recent-wins h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #888;
+}
+
+.token-packages {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.token-package {
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.token-package:hover {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.package-amount {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.package-bonus {
+  font-size: 0.75rem;
+  color: #4caf50;
+}
+
+.jackpot-pool-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.pool-icon {
+  font-size: 2rem;
+}
+
+.pool-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffd700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.wins-list {
+  text-align: left;
+}
+
+.win-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.win-item:last-child {
+  border-bottom: none;
+}
+
+.no-wins {
+  color: #666;
+  font-style: italic;
+}
+
+/* Teams */
+.teams-section {
+  max-width: 900px;
+}
+
+.teams-intro, .packs-intro {
+  text-align: center;
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.team-card {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+.team-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.team-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.team-member {
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.team-bonus {
+  font-size: 0.85rem;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.activate-team-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Packs */
+.packs-section {
+  max-width: 900px;
+}
+
+.packs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.pack-card {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--canon-color, #666);
+  border-radius: 16px;
+}
+
+.pack-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.pack-icon {
+  font-size: 2rem;
+}
+
+.pack-count {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.pack-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.export-pack-btn, .share-pack-btn {
+  flex: 1;
+  padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .arcade-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .arcade-header-left, .arcade-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .arcade-title {
+    font-size: 1.25rem;
+  }
+  
+  .canon-selector {
+    gap: 0.5rem;
+  }
+  
+  .canon-btn {
+    padding: 0.75rem 1rem;
+    min-width: 80px;
+  }
+  
+  .canon-icon {
+    font-size: 1.5rem;
+  }
+  
+  .machines-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .machine-stats-row {
+    grid-template-columns: 1fr;
+  }
+}
