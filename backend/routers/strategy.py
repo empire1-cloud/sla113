@@ -192,6 +192,50 @@ class PricingResponse(BaseModel):
     expansion_opportunities: List[str]
     recommended_entry_tier: str
 
+class BlueprintRequest(BaseModel):
+    system_description: str
+    requirements: Optional[List[str]] = None
+    constraints: Optional[List[str]] = None
+    tech_stack: Optional[List[str]] = None
+    scale: Optional[str] = None
+    model: Optional[str] = None
+
+class SaaSBlueprintRequest(BaseModel):
+    product_name: str
+    core_features: List[str]
+    user_types: Optional[List[str]] = None
+
+class APIBlueprintRequest(BaseModel):
+    api_name: str
+    endpoints: List[str]
+    expected_load: Optional[str] = None
+
+class MicroservicesBlueprintRequest(BaseModel):
+    system_name: str
+    domains: List[str]
+    shared_concerns: Optional[List[str]] = None
+
+class ComponentModel(BaseModel):
+    name: str
+    type: str
+    responsibilities: List[str]
+    inputs: List[str]
+    outputs: List[str]
+    dependencies: List[str]
+
+class DataFlowModel(BaseModel):
+    from_component: Optional[str] = None
+    to: str
+    data: str
+    frequency: str
+
+class BlueprintResponse(BaseModel):
+    objective: str
+    components: List[ComponentModel]
+    data_flows: List[DataFlowModel]
+    constraints: List[str]
+    risks: List[str]
+
 @router.post("/strategy", response_model=StrategyResponse)
 async def generate_strategy(payload: StrategyRequest):
     """Generate an actionable strategy using the hybrid AI pipeline."""
