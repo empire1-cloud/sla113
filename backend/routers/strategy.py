@@ -318,6 +318,26 @@ class AnimeCharacterResponse(BaseModel):
     relationships: CharacterRelationshipsModel
     arc: str
 
+class PipelineComposeRequest(BaseModel):
+    request: str
+    context: Optional[str] = None
+    preferred_engines: Optional[List[str]] = None
+    model: Optional[str] = None
+
+class PipelineStepModel(BaseModel):
+    engine: str
+    input: str
+    output_key: str
+
+class CustomPipelineRequest(BaseModel):
+    objective: str
+    steps: List[PipelineStepModel]
+
+class PipelineComposeResponse(BaseModel):
+    objective: str
+    pipeline: List[Dict[str, Any]]
+    final_output_structure: Dict[str, Any]
+
 @router.post("/strategy", response_model=StrategyResponse)
 async def generate_strategy(payload: StrategyRequest):
     """Generate an actionable strategy using the hybrid AI pipeline."""
