@@ -5,6 +5,7 @@ import EnginesPage from "./pages/EnginesPage";
 import MoneyPipelinePage from "./pages/MoneyPipelinePage";
 import PipelineComposerPage from "./pages/PipelineComposerPage";
 import ExecutionHistoryPage from "./pages/ExecutionHistoryPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/money-pipeline" element={<MoneyPipelinePage />} />
           <Route path="/pipeline-composer" element={<PipelineComposerPage />} />
           <Route path="/history" element={<ExecutionHistoryPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
         </Routes>
       </BrowserRouter>
     </div>
