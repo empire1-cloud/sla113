@@ -65,6 +65,11 @@ function App() {
                 <ProfilePage />
               </ProtectedRoute>
             } />
+            <Route path="/team/settings" element={
+              <ProtectedRoute>
+                <TeamSettingsPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
