@@ -233,3 +233,223 @@ async def revoke_session(
         raise HTTPException(status_code=404, detail="Session not found")
     
     return {"message": "Session revoked"}
+
+
+@router.post("/sessions/revoke-all")
+async def revoke_all_sessions(
+    request: Request,
+    keep_current: bool = Query(default=True, description="Keep current session active"),
+    user: dict = Depends(get_current_user),
+):
+    """
+    Revoke all sessions for current user.
+    Optionally keeps the current session active.
+    """
+    from database import sessions_collection
+    from datetime import datetime, timezone
+    
+    now = datetime.now(timezone.utc)
+    user_id = user["_id"]
+    
+    # Build query
+    query = {"user_id": user_id, "is_active": True}
+    
+    # Find current session to potentially exclude it
+    current_session_id = user.get("session_id")
+    if keep_current and current_session_id:
+        from bson import ObjectId
+        if ObjectId.is_valid(current_session_id):
+            query["_id"] = {"$ne": ObjectId(current_session_id)}
+    
+    result = await sessions_collection().update_many(
+        query,
+        {"$set": {"is_active": False, "revoked_at": now}}
+    )
+    
+    # Audit log
+    client_info = await get_client_info(request)
+    await create_audit_log(
+        user_id=user_id,
+        action="auth.revoke_all_sessions",
+        details={"count": result.modified_count, "keep_current": keep_current},
+        ip_address=client_info.get("ip_address"),
+        user_agent=client_info.get("user_agent"),
+    )
+    
+    return {
+        "message": f"Revoked {result.modified_count} session(s)",
+        "count": result.modified_count,
+    }
+
+
+# ==================== Password Reset ====================
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str = Field(..., min_length=10)
+    new_password: str = Field(..., min_length=8)
+    
+    @field_validator('new_password')
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('Password must contain at least one number')
+        return v
+
+
+@router.post("/password-reset/request")
+async def request_reset(
+    data: PasswordResetRequest,
+    request: Request,
+):
+    """
+    Request a password reset email.
+    Always returns success to prevent email enumeration.
+    """
+    try:
+        client_info = await get_client_info(request)
+        result = await request_password_reset(
+            email=data.email,
+            ip_address=client_info.get("ip_address"),
+            user_agent=client_info.get("user_agent"),
+        )
+        return result
+    except PasswordResetError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+@router.get("/password-reset/validate/{token}")
+async def validate_reset(token: str):
+    """
+    Validate a password reset token.
+    Used to check if token is valid before showing reset form.
+    """
+    token_doc = await validate_reset_token(token)
+    
+    if not token_doc:
+        return {"valid": False, "error": "Invalid or expired reset token"}
+    
+    return {"valid": True}
+
+
+@router.post("/password-reset/confirm")
+async def confirm_reset(
+    data: PasswordResetConfirm,
+    request: Request,
+):
+    """
+    Confirm password reset with token and new password.
+    """
+    try:
+        client_info = await get_client_info(request)
+        result = await confirm_password_reset(
+            token=data.token,
+            new_password=data.new_password,
+            ip_address=client_info.get("ip_address"),
+            user_agent=client_info.get("user_agent"),
+        )
+        return result
+    except PasswordResetError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
+
+
+# ==================== OAuth ====================
+
+@router.get("/oauth/providers")
+async def get_oauth_providers():
+    """
+    Get available OAuth providers and their configuration status.
+    """
+    return {
+        "providers": [
+            {
+                "name": "google",
+                "display_name": "Google",
+                "enabled": is_oauth_configured("google"),
+            },
+            {
+                "name": "github",
+                "display_name": "GitHub",
+                "enabled": is_oauth_configured("github"),
+            },
+        ]
+    }
+
+
+@router.get("/oauth/{provider}/redirect")
+async def oauth_redirect(provider: str, request: Request):
+    """
+    Redirect to OAuth provider for authentication.
+    """
+    if provider not in ["google", "github"]:
+        raise HTTPException(status_code=400, detail="Unknown OAuth provider")
+    
+    if not is_oauth_configured(provider):
+        raise HTTPException(status_code=400, detail=f"{provider} OAuth is not configured")
+    
+    # Generate state for CSRF protection
+    state = generate_oauth_state()
+    
+    # Store state in session/cookie (for production, use secure cookies)
+    # For now, we'll include it in the redirect URL and verify on callback
+    
+    auth_url = get_authorization_url(provider, state)
+    
+    return RedirectResponse(url=auth_url)
+
+
+@router.get("/oauth/{provider}/callback")
+async def oauth_callback(
+    provider: str,
+    code: str = Query(None),
+    state: str = Query(None),
+    error: str = Query(None),
+    request: Request = None,
+):
+    """
+    Handle OAuth callback from provider.
+    On success, redirects to frontend with tokens.
+    """
+    from services.email_service import APP_URL
+    
+    if error:
+        return RedirectResponse(
+            url=f"{APP_URL}/oauth/callback?error={error}&provider={provider}"
+        )
+    
+    if not code:
+        return RedirectResponse(
+            url=f"{APP_URL}/oauth/callback?error=missing_code&provider={provider}"
+        )
+    
+    try:
+        client_info = await get_client_info(request)
+        result = await handle_oauth_callback(
+            provider=provider,
+            code=code,
+            ip_address=client_info.get("ip_address"),
+            user_agent=client_info.get("user_agent"),
+        )
+        
+        # Redirect to frontend with tokens
+        access_token = result["access_token"]
+        refresh_token = result["refresh_token"]
+        
+        return RedirectResponse(
+            url=f"{APP_URL}/oauth/callback?access_token={access_token}&refresh_token={refresh_token}&provider={provider}"
+        )
+        
+    except OAuthError as e:
+        return RedirectResponse(
+            url=f"{APP_URL}/oauth/callback?error={e.message}&provider={provider}"
+        )
+
