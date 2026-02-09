@@ -1,63 +1,75 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a Hybrid Intelligence Core, a backend system composed of specialized AI engines. After implementing numerous engines and a sophisticated frontend (including a dashboard, pipeline composer, and execution history), the user issued a major pivot.
+The user's primary goal is to refactor the existing Hybrid Intelligence Core application into a production-grade, multi-tenant SaaS platform. This is a major architectural overhaul.
 
-The new and current task is to build a **standalone FireKirin-style base game engine using Phaser 3**. This is a complete departure from the previous React/FastAPI application. The user has provided a detailed, multi-part prompt for this new engine, specifying its structure, core mechanics (weapons, fish system, rewards, jackpot), and UI. The explicit instruction is to build a clean, un-themed base engine ready for future skinning, and to do so in a separate  directory without touching the existing backend or React code.
+The key, non-negotiable requirements include:
+-   **Full Authentication & RBAC:** User accounts (signup/login), password hashing (bcrypt), JWT sessions (access + refresh tokens), and both system-level (admin) and team-level (owner, member) roles.
+-   **Multi-Tenant Workspace Model:** Each user belongs to one or more teams, with all data (pipelines, logs, dashboards) strictly isolated at the team level. New users should have a Personal team created automatically on signup.
+-   **Database Migration:** All application data must be migrated from the previous JSONL files to MongoDB.
+-   **Future-Proofing:** The user model must be designed to accommodate future OAuth integration (e.g., Google).
+
+The work is to be executed in five distinct phases, with the backend foundation being built first, followed by the frontend integration.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project now consists of two distinct parts:
-1.  **Hybrid Intelligence App (Completed):** A functional full-stack application with a FastAPI backend (19+ AI engines, modular routers, execution logging) and a multi-page React frontend (dashboard, engine testing UI, pipeline composer, history viewer).
-2.  **FireKirin Game Engine (In Progress):** A new, separate project in the  directory. So far, only the directory structure for a Phaser 3 application has been created (, , ). No code has been written yet.
+The project is a full-stack React/FastAPI application that has undergone a significant backend refactor.
+-   **Backend (Phases 1-4 Complete):** A robust, multi-tenant foundation has been built on top of MongoDB. This includes:
+    -   **Database Models:** Pydantic models for , , , , , , and .
+    -   **Authentication System:** A complete auth service using  and JWT (access/refresh tokens). API endpoints for signup, login, and fetching user data () are implemented and working.
+    -   **Multi-Tenancy System:** Services and API endpoints () for creating and managing teams are in place.
+    -   **Protected Routes:** New, team-scoped, and auth-protected API endpoints have been created for  and . The old, public-facing engine and analytics routes still exist alongside them.
+-   **Frontend (Needs Refactoring):** A multi-page React app with a highly polished Analytics Dashboard exists. However, it is **not yet connected** to the new backend auth system. It still functions as a public, single-user application. New files like  and  have been created but are not fully implemented.
 
 **Last working item**:
--   **Last item agent was working:** The agent began work on the user's new request to build a FireKirin game engine. It successfully created the required directory structure inside .
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** manual testing by curl
+-   **Last item agent was working:** **Phase 4: Backend Feature Migration**. The agent successfully migrated the execution history and pipeline features to be team-scoped and require authentication. This involved creating new database services (, ) and new protected API routers (, ).
+-   **Status:** IN PROGRESS (The overall SaaS refactor is in progress. Phase 4 is complete, Phase 5 is the next immediate task).
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** frontend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   There are no pending bugs. The current focus is on new development.
+- There are no outstanding bugs. The current focus is entirely on the planned SaaS architecture refactor.
 
 **In progress Task List**:
--   **Task 1:** Build the FireKirin base engine using Phaser 3 (P0)
+-   **Task 1:** Complete Production SaaS Architecture Refactor (P0)
 
 **Task Detail:**
--   **Task 1:** Build the FireKirin base engine using Phaser 3
-    -   **Where to resume:** The directory structure in  exists. The next step is to create and implement the core JavaScript files as specified in the user's prompt (Message 263):
-        1. Create  to host the game.
-        2. Create  for the Phaser game configuration.
-        3. Create  as the main entry point.
-        4. Implement .
-        5. Implement  to load placeholder assets.
-        6. Implement  with all core game mechanics (weapons, fish, collisions, rewards).
-        7. Create  as an empty configuration file for future skinning.
-    -   **What will be achieved with this?** A complete, standalone, and functional base game engine built with Phaser 3, containing all the core mechanics of a FireKirin-style game.
+-   **Task 1:** Complete Production SaaS Architecture Refactor
+    -   **Where to resume:** **Phase 5: Frontend Integration**. The backend foundation is complete and tested. The next step is to connect the frontend to this new architecture. Key steps include:
+        1.  Fully implement the  to manage user state, tokens, and team switching.
+        2.  Build out the  and create a new .
+        3.  Create a protected route component to guard access to authenticated pages.
+        4.  Refactor all existing pages (, , , etc.) to use the  and call the new authenticated, team-scoped APIs.
+        5.  Implement a UI element for switching between teams.
+        6.  Handle JWT refresh token logic to maintain user sessions seamlessly.
+    -   **What will be achieved with this?** A fully functional, secure, multi-tenant SaaS application from end-to-end, where users can sign up, log in, create teams, and interact with their own isolated data.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Should Test frontend/backend/both after fix?** both
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **Task 1: Complete FireKirin GameScene (P0):** Implement all core game logic within , including player weapons (Normal, Laser, Cannon), fish spawning and movement, hit detection, and the reward system.
-  - **Task 2: Implement FireKirin UI & Jackpot (P1):** Add the UI layer (weapon bar, buttons, counters) and the basic random jackpot system as specified.
+    - **Task 1: Phase 5 - Frontend Auth UI (P0):** Implement login/signup pages, protected routes, a team switcher, and update all pages to use the new authenticated APIs.
 - **Future Tasks:**
-  - Skin the FireKirin base engine using the previously discussed Canons (e.g., Horror, Anime, Cyberpunk).
-  - Integrate the skinned game into the main React application.
+    - Implement a user invitation system for teams.
+    - Implement password reset functionality.
+    - Fully migrate the remaining public-facing API routes (especially ) to be authenticated and team-scoped.
+    - Implement frontend UI controls based on user roles (e.g., hiding an Admin button from a Member).
+    - Add frontend UI for future OAuth providers (Google, GitHub).
 
 **Completed work in this session**
-- **Backend Refactoring:** Split the monolithic router file into over 15 engine-specific router files in .
-- **Universal Money Pipeline Engine:** Implemented and integrated a new, complex engine for generating business plans.
-- **Frontend UI Development (Multi-Page App):**
-    - : Main dashboard with system health.
-    - : A table of all engines with interactive testing modals for each one.
-    - : A drag-and-drop UI to build, run, save, and load multi-engine workflows.
-    - : A searchable and filterable dashboard to view logs of all engine calls, supported by a new backend logging middleware.
-- **Process Rules Established:** User enforced strict rules for development: one task at a time, stop after completion, and ask for confirmation before starting multi-step tasks.
+- **SaaS Backend Foundation (Phases 1-4):**
+  - **Database & Models:** Migrated persistence from JSONL to MongoDB and created all necessary Pydantic models (, , , , etc.).
+  - **Authentication System:** Built a complete backend auth system with  password hashing and JWT (access + refresh token) strategy. Endpoints for , , and  are functional.
+  - **Multi-Tenancy System:** Implemented backend services and routes for creating and managing teams.
+  - **Feature Migration:** Created new, secure, team-scoped endpoints for  and  that use the new database layer.
+- **Analytics Dashboard (Polish):**
+  - Integrated  to show real system metrics.
+  - Implemented WebSockets for real-time updates, threshold-based alerts, skeleton loaders, historical data export, and a light/dark theme toggle.
+- **Code Cleanup:** Removed all obsolete files related to the abandoned FireKirin game engine task.
 
 **Earlier issues found/mentioned but not fixed**
--   None. All previously identified issues were resolved in this session.
+-   None.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -66,68 +78,82 @@ The project now consists of two distinct parts:
 
 
 **Key Technical Concepts**
--   **Backend:** FastAPI, Pydantic, Modular Routers.
--   **Frontend:** React, React Router, Axios for the main application.
--   **Game Development:** Phaser 3 for the new, separate FireKirin engine.
--   **AI Integration:**  library for LLM orchestration.
+-   **Backend:** FastAPI, MongoDB (with ), Pydantic, JWT Authentication (, ), Multi-tenancy, WebSockets.
+-   **Frontend:** React, React Context, , Recharts, .
 
 **key DB schema**
--   None. The application uses a local JSON file () for temporary logging.
+-   **users**: 
+-   **teams**: 
+-   **memberships**: 
+-   **sessions**: 
+-   **pipelines**: 
+-   **execution_logs**: 
 
 **changes in tech stack**
--   **Phaser 3:** A JavaScript game framework has been introduced for a completely new task, separate from the existing full-stack application.
+-   **Database:** Complete migration from file-based storage () to **MongoDB**.
+-   **Authentication:** A full authentication stack (, ) has been newly introduced.
 
 **All files of reference**
--   : The root directory for the new Phaser 3 game engine.
--   The user prompt in **Message 263** is the primary source of truth for the current task.
--   : Contains the completed React pages for the main application.
--   : Contains the refactored, modular API routers.
+-   **/app/backend/models/**: The source of truth for the new database structure.
+-   **/app/backend/core/** and **/app/backend/services/**: Contain all the new backend business logic.
+-   **/app/frontend/src/context/AuthContext.jsx**: The starting point for the frontend refactor.
+-   User message with final architecture choices (e.g., ) is the guiding document for the implementation.
 
 **Areas that need refactoring**:
--   **Orphaned React Files:** Files created for the AI Arcade task (e.g., , ) were abandoned due to a user pivot and should be deleted to prevent confusion.
--   **Obsolete Router:** The old, now-empty monolithic router file  should be deleted.
+-   The **entire frontend application** needs to be refactored to integrate with the new authentication system and team-scoped APIs.
+-   The old, public API endpoints (e.g., analytics, various engines) must be migrated to the new protected, team-scoped pattern and the old ones deprecated.
 
 **key api endpoints**
--   N/A for the current task. The FireKirin engine is a client-side, standalone application.
+-   **Auth**: , , 
+-   **Teams**: , 
+-   **Protected Data**: , 
 
 **Critical Info for New Agent**
--   **MAJOR PIVOT:** The user has completely changed direction. You must **ignore** the previous ULTRA-MASTER PROMPT for the React-based AI Arcade. Your sole focus is now building the **Phaser 3 FireKirin engine** as defined in prompt **#263**.
--   **STANDALONE TASK:** The FireKirin engine is a separate project. Do **not** modify or integrate it with the existing React/FastAPI application. All work should be contained within the  directory.
--   **Follow User Rules:** The user has mandated a strict workflow: complete one task, then stop and await further instructions. If a task requires multiple steps, you must ask for confirmation to proceed. Adhere to this process.
+-   **PRIORITY 1: Frontend Refactor (Phase 5).** The backend foundation (Phases 1-4) is complete and tested. Your immediate and sole focus should be on implementing Phase 5: connecting the React frontend to the new auth system. This includes building login/signup pages, protected routes, and updating all API calls.
+-   **Stick to the Plan:** The user has approved a very specific, multi-phase architectural plan. Do not deviate from it. The choices regarding bcrypt, JWT tokens, team structure, and MongoDB are final.
+-   **Dual API State:** Be aware that the backend currently exposes both old (public) and new (protected) endpoints. All new frontend work must use the new protected endpoints (e.g., , not ). The eventual goal is to deprecate the old endpoints.
 
 **documents and test reports created in this job**
--    (Updated with all completed frontend/backend features)
+-   
+-   
+-   
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Msg 243):** Confirmed rule: If multi-step required → ask for confirmation before continuing.
-2.  **User (Msg 244):** Added rule: Never rebuild frontend/backend unless I explicitly say ‘rebuild now’.
-3.  **User (Msg 246):** Issued a large prompt to build a React-based AI Arcade System.
-4.  **User (Msg 248):** Instructed the agent to execute the full prompt in one pass, overriding the agent's suggestion to break it down.
-5.  **User (Msg 250):** Confirmed the decision to proceed with the full build at once.
-6.  **User (Msg 263):** **HARD PIVOT.** Interrupted the agent and issued a completely new prompt to build a **FireKirin base engine in Phaser 3**, making all previous work on the AI Arcade obsolete.
-7.  **User (Msg 266):** Uploaded 5 image artifacts, which the agent correctly identified as assets for future skinning, not for the current base engine build.
-8.  There are no other pending user messages. The user is waiting for the agent to continue building the FireKirin engine.
+1.  **User:** Asks for a discussion on team collaboration features.
+2.  **Agent:** Asks clarifying questions to understand the scope.
+3.  **User:** Lays out non-negotiable requirements for a full production SaaS architecture (auth, multi-tenancy, DB migration).
+4.  **Agent:** Proposes a detailed architectural plan with a 5-phase breakdown and asks for user confirmation.
+5.  **Agent:** Re-sends the questions as a simplified checklist for easy confirmation.
+6.  **User:** Provides final, definitive choices for the entire architecture () and approves the 5-phase plan.
+7.  **Agent:** Begins work on Phase 1 (Database Models).
+8.  **Agent:** Summarizes completion of backend Phases 1-3 and asks for confirmation to proceed.
+9.  **User:** Approves the progress and instructs the agent to continue with Phase 4 (backend migration) followed by Phase 5 (frontend UI).
+10. **Agent:** Begins work on Phase 4.
 
 **Project Health Check:**
--   **Functional:** The primary React/FastAPI application is complete and functional.
--   **In Progress:** The new, separate FireKirin game engine is in the initial stage of development.
--   **Abandoned:** The React-based AI Arcade feature was started but abandoned mid-task and should be cleaned up.
+-   **Broken:** The frontend is effectively disconnected from the new backend logic, making the user-facing application non-functional in its current state.
+-   **Mocked:** None.
 
 **3rd Party Integrations**
--   OpenAI GPT-5.2 (via ) — uses Emergent LLM Key
--   Claude Sonnet 4.5 (via ) — uses Emergent LLM Key
--   Gemini 3 Flash (via ) — uses Emergent LLM Key
--   **Phaser 3:** JavaScript game framework.
+-   OpenAI, Claude, Gemini (via ) — uses Emergent LLM Key
+-    (System Metrics)
+-    (Password Hashing)
+-    (Authentication Tokens)
+-    (Async MongoDB Driver)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (used successfully after the backend refactor).
+-   **Testing agent used after significant changes:** YES. The testing agent was used successfully to validate the polished analytics dashboard and the Phase 4 backend migration.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
-N/A
+-   A new user can be created via a  request to the  endpoint with an  and . The agent used  during testing.
 
 **What agent forgot to execute**
--   The agent did not clean up the abandoned React components (, , etc.) after the user's hard pivot.
--   The agent did not delete the old, now-empty router file  after the refactor.</analysis>
+-   The agent created  but has not yet created the corresponding  component, which is necessary for Phase 5.
+-   The old  router still exists and is included in , creating a redundant endpoint alongside the new, protected  route. This should be cleaned up.</analysis>
