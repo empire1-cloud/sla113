@@ -38,6 +38,19 @@ class EngineContext:
         """Check if user has admin permissions."""
         return self.user_role in ["owner", "admin"]
     
+    @property
+    def can_read(self) -> bool:
+        """Check if user has read permissions (any team member)."""
+        return self.user_role in ["owner", "admin", "member", "viewer"]
+    
+    def require_read(self):
+        """Raise exception if user doesn't have read permission."""
+        if not self.can_read:
+            raise HTTPException(
+                status_code=403,
+                detail="You don't have access to view this resource"
+            )
+    
     def require_write(self):
         """Raise exception if user doesn't have write permission."""
         if not self.can_write:
