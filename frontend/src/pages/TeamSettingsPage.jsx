@@ -1,6 +1,6 @@
 /**
  * Team Settings Page
- * Manage team members and invitations
+ * Manage team members, invitations, and view activity
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -14,7 +14,9 @@ const TeamSettingsPage = () => {
   const { currentTeam, authAxios } = useAuth();
   
   const [members, setMembers] = useState([]);
+  const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activityLoading, setActivityLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteRefresh, setInviteRefresh] = useState(0);
 
@@ -33,14 +35,31 @@ const TeamSettingsPage = () => {
     }
   }, [authAxios, currentTeam]);
 
+  const fetchActivity = useCallback(async () => {
+    if (!currentTeam) return;
+    
+    setActivityLoading(true);
+    try {
+      const res = await authAxios().get(`/teams/${currentTeam.id}/activity`);
+      setActivity(res.data.activity || []);
+    } catch (e) {
+      console.error('Failed to fetch activity:', e);
+      setActivity([]);
+    } finally {
+      setActivityLoading(false);
+    }
+  }, [authAxios, currentTeam]);
+
   useEffect(() => {
     fetchMembers();
-  }, [fetchMembers]);
+    fetchActivity();
+  }, [fetchMembers, fetchActivity]);
 
   const handleInviteClose = (shouldRefresh) => {
     setShowInviteModal(false);
     if (shouldRefresh) {
       setInviteRefresh(prev => prev + 1);
+      fetchActivity(); // Refresh activity after invite
     }
   };
 
@@ -53,6 +72,7 @@ const TeamSettingsPage = () => {
       await authAxios().delete(`/teams/${currentTeam.id}/members/${userId}`);
       toast.success(`${email} removed from team`);
       fetchMembers();
+      fetchActivity();
     } catch (e) {
       toast.error(e.response?.data?.detail || 'Failed to remove member');
     }
@@ -65,6 +85,7 @@ const TeamSettingsPage = () => {
       });
       toast.success('Role updated');
       fetchMembers();
+      fetchActivity();
     } catch (e) {
       toast.error(e.response?.data?.detail || 'Failed to update role');
     }
@@ -87,6 +108,38 @@ const TeamSettingsPage = () => {
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  const formatTimestamp = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getActionLabel = (action) => {
+    const labels = {
+      'auth.login': 'Logged in',
+      'auth.signup': 'Signed up',
+      'auth.logout': 'Logged out',
+      'auth.password_reset_request': 'Requested password reset',
+      'auth.password_reset_complete': 'Reset password',
+      'membership.invite_sent': 'Sent invite',
+      'membership.invite_accepted': 'Accepted invite',
+      'membership.invite_revoked': 'Revoked invite',
+      'membership.role_changed': 'Changed role',
+      'membership.removed': 'Removed member',
+      'team.created': 'Created team',
+      'api_key.created': 'Created API key',
+      'api_key.revoked': 'Revoked API key',
+      'billing.checkout_created': 'Started checkout',
+      'billing.portal_opened': 'Opened billing portal',
+    };
+    return labels[action] || action.replace(/\./g, ' ').replace(/_/g, ' ');
   };
 
   if (!currentTeam) {
@@ -199,6 +252,36 @@ const TeamSettingsPage = () => {
             />
           </section>
         </AdminOnly>
+
+        {/* Recent Activity Section */}
+        <section className="settings-card activity-card" data-testid="activity-section">
+          <div className="card-header">
+            <h2>Recent Activity</h2>
+          </div>
+          
+          {activityLoading ? (
+            <div className="activity-loading">
+              <div className="spinner"></div>
+            </div>
+          ) : activity.length === 0 ? (
+            <div className="no-activity">
+              <p>No recent activity</p>
+            </div>
+          ) : (
+            <div className="activity-list">
+              {activity.map((item, index) => (
+                <div key={index} className="activity-item" data-testid={`activity-${index}`}>
+                  <div className="activity-icon">📋</div>
+                  <div className="activity-content">
+                    <span className="activity-action">{getActionLabel(item.action)}</span>
+                    <span className="activity-actor">by {item.actor}</span>
+                  </div>
+                  <span className="activity-time">{formatTimestamp(item.timestamp)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
 
       {showInviteModal && (
