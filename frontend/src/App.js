@@ -9,6 +9,8 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
+import TeamSettingsPage from "./pages/TeamSettingsPage";
+import AcceptInvitePage from "./pages/AcceptInvitePage";
 import EnginesPage from "./pages/EnginesPage";
 import MoneyPipelinePage from "./pages/MoneyPipelinePage";
 import PipelineComposerPage from "./pages/PipelineComposerPage";
