@@ -28,6 +28,13 @@ from .dependencies import (
     get_client_info,
 )
 
+from .engine_context import (
+    EngineContext,
+    get_engine_context,
+    log_engine_call,
+    EngineExecutor,
+)
+
 __all__ = [
     # Security
     "hash_password",
@@ -54,4 +61,10 @@ __all__ = [
     "require_team_role",
     "require_system_admin",
     "get_client_info",
+    
+    # Engine Context
+    "EngineContext",
+    "get_engine_context",
+    "log_engine_call",
+    "EngineExecutor",
 ]
