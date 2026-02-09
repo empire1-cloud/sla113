@@ -3,8 +3,15 @@
 ## Original Problem Statement
 Build a "Hybrid Intelligence Core," a sophisticated multi-model AI pipeline composed of specialized, single-purpose engines. The system uses GPT-5.2, Claude Sonnet 4.5, and Gemini 3 Flash via the `emergentintegrations` library with a universal key for seamless LLM access.
 
+**Production SaaS Requirements (Feb 2025):**
+- Full authentication with JWT (access + refresh tokens)
+- Multi-tenant team/workspace model
+- Role-based access control (system + team levels)
+- Audit trail for all actions
+- MongoDB for all persistence
+
 ## Project Overview
-A comprehensive backend system featuring 19 specialized AI engines orchestrated by a Hybrid Intelligence Core. Each engine is a distinct service responsible for a specific AI task, exposed via modular API endpoints.
+A comprehensive backend system featuring 19 specialized AI engines orchestrated by a Hybrid Intelligence Core. Each engine is a distinct service responsible for a specific AI task, exposed via modular API endpoints. The platform is built as a production-ready multi-tenant SaaS.
 
 ## Architecture Summary
 ```
@@ -24,6 +31,27 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
                     ┌─────────────┴───────────────┐
                     │    19 SPECIALIZED ENGINES   │
                     └─────────────────────────────┘
+
+## Multi-Tenant Architecture
+```
+┌─────────────────────────────────────────────────────────┐
+│                    AUTHENTICATION                        │
+│  JWT Access Token (15min) + Refresh Token (7 days)      │
+│  bcrypt password hashing | OAuth-ready user model       │
+└─────────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────────┐
+│                      TEAMS/TENANTS                       │
+│  Users → Multiple Teams → Team-scoped resources         │
+│  Roles: owner | admin | member | viewer                 │
+│  Auto-creates "Personal" team on signup                 │
+└─────────────────────────────────────────────────────────┘
+                           │
+┌─────────────────────────────────────────────────────────┐
+│                    TEAM-SCOPED DATA                      │
+│  Pipelines | Execution Logs | Engine Configs            │
+│  All resources isolated by team_id                      │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## What's Been Implemented
@@ -45,6 +73,50 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 | 2026-02-03 | **Frontend Dashboard** - 3 pages with real backend integration | ✅ Done |
 | 2026-02-07 | **Codebase Cleanup** - Removed abandoned FireKirin project and AI Arcade files | ✅ Done |
 | 2026-02-09 | **Monitoring & Analytics Dashboard** - Real-time analytics with charts | ✅ Done |
+| 2026-02-09 | **Analytics Polish** - All 3 tiers (Alerts, WebSocket, Export, Themes) | ✅ Done |
+| 2026-02-09 | **Phase 1: Database Models** - User, Team, Membership, Session, AuditLog | ✅ Done |
+| 2026-02-09 | **Phase 2: Auth System** - Signup, Login, JWT, Protected routes | ✅ Done |
+| 2026-02-09 | **Phase 3: Team System** - Create, Invite, Switch, Roles, Permissions | ✅ Done |
+
+## Backend SaaS Architecture
+
+### Database Collections (MongoDB)
+| Collection | Purpose |
+|------------|---------|
+| `users` | User accounts with bcrypt passwords, OAuth support |
+| `teams` | Teams/workspaces (personal + organization) |
+| `team_memberships` | User-team relationships with roles |
+| `sessions` | JWT refresh token storage |
+| `team_invites` | Pending team invitations |
+| `audit_logs` | Full audit trail of all actions |
+| `pipelines` | Team-scoped pipeline configurations |
+| `execution_logs` | Team-scoped engine execution history |
+
+### Authentication Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/signup` | POST | Register new user (creates personal team) |
+| `/api/auth/login` | POST | Login with email/password |
+| `/api/auth/refresh` | POST | Refresh access token |
+| `/api/auth/logout` | POST | Revoke session(s) |
+| `/api/auth/me` | GET | Get current user with teams |
+| `/api/auth/password` | PUT | Change password |
+| `/api/auth/sessions` | GET | List active sessions |
+
+### Team Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/teams` | POST | Create new team |
+| `/api/teams` | GET | List user's teams |
+| `/api/teams/{id}` | GET | Get team details |
+| `/api/teams/{id}` | PUT | Update team (owner/admin) |
+| `/api/teams/{id}/members` | GET | List team members |
+| `/api/teams/{id}/members/{uid}/role` | PUT | Change member role |
+| `/api/teams/{id}/members/{uid}` | DELETE | Remove member |
+| `/api/teams/{id}/leave` | POST | Leave team |
+| `/api/teams/{id}/invites` | POST | Create invite |
+| `/api/teams/{id}/invites` | GET | List pending invites |
+| `/api/teams/invites/accept` | POST | Accept invite |
 
 ## Frontend Pages
 
