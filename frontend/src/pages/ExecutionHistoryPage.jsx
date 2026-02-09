@@ -240,7 +240,7 @@ const ExecutionHistoryPage = () => {
                       {formatEngineName(log.engine)}
                     </td>
                     <td className="endpoint-cell">
-                      <code>{log.endpoint}</code>
+                      <code>{log.pipeline_id ? `Pipeline: ${log.pipeline_id}` : 'Direct API'}</code>
                     </td>
                     <td className="status-cell">
                       <span className={`status-badge ${log.status}`}>
