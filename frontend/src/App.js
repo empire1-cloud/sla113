@@ -8,6 +8,7 @@ import AppHeader from "./components/AppHeader";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import ProfilePage from "./pages/ProfilePage";
 import EnginesPage from "./pages/EnginesPage";
 import MoneyPipelinePage from "./pages/MoneyPipelinePage";
 import PipelineComposerPage from "./pages/PipelineComposerPage";
