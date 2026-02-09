@@ -386,6 +386,7 @@ const ProfilePage = () => {
               ))}
             </div>
           )}
+          </div>
         </section>
       </div>
     </div>
