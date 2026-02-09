@@ -3962,3 +3962,448 @@ body {
 [data-system-role="admin"] .system-admin-badge {
   display: inline-flex;
 }
+
+
+
+/* ==================== INVITE SYSTEM ==================== */
+
+/* Invite Banner on Auth Pages */
+.invite-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--accent-green);
+}
+
+.invite-banner-icon {
+  font-size: 1.25rem;
+}
+
+/* Accept Invite Page */
+.invite-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg-primary);
+}
+
+.invite-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.invite-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.invite-error-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.invite-error-card h2 {
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+}
+
+.error-message {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.invite-header {
+  margin-bottom: 1.5rem;
+}
+
+.invite-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.invite-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.invite-details {
+  margin-bottom: 2rem;
+}
+
+.invite-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.invite-team .team-icon {
+  font-size: 1.25rem;
+}
+
+.invite-team .team-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.invite-text {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.invite-text .role-badge {
+  margin-left: 0.25rem;
+}
+
+.invite-email-note {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.invite-mismatch-text {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.invite-auth-options {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.auth-prompt {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.invite-actions .btn-primary,
+.invite-actions .btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.invite-actions .btn-primary {
+  background: linear-gradient(135deg, var(--accent-green), #00a885);
+  color: #000;
+  border: none;
+}
+
+.invite-actions .btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.invite-expiry-note {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.invite-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+/* ==================== TEAM SETTINGS PAGE ==================== */
+.team-settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.settings-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.settings-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-card .card-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.member-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+}
+
+/* Members List */
+.members-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.member-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.member-email {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.member-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.role-select {
+  padding: 0.4rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-remove {
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--accent-red);
+  border-radius: 6px;
+  color: var(--accent-red);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-remove:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Pending Invites */
+.invites-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.no-invites {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.invites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.invite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.invite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.invite-email {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.email-icon {
+  font-size: 1rem;
+}
+
+.email-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.invite-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.invite-expiry {
+  font-size: 0.8rem;
+}
+
+.invite-expiry.expiry-urgent {
+  color: var(--accent-red);
+}
+
+.invite-expiry.expiry-warning {
+  color: #ffc107;
+}
+
+.invite-expiry.expiry-normal {
+  color: var(--text-secondary);
+}
+
+/* Team Settings Link */
+.team-settings-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: calc(100% - 1rem);
+  margin: 0.5rem;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.team-settings-link:hover {
+  background: var(--bg-secondary);
+}
+
+/* Invite Form */
+.invite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Responsive Team Settings */
+@media (max-width: 768px) {
+  .member-item {
+    flex-wrap: wrap;
+  }
+  
+  .member-meta {
+    width: 100%;
+    padding-top: 0.5rem;
+  }
+  
+  .member-actions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+  }
+}
