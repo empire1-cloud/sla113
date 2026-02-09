@@ -317,31 +317,82 @@ async def get_drift_status():
 
 @router.get("/system-health", response_model=SystemHealthResponse)
 async def get_system_health():
-    """Get system health metrics (mock data for now)."""
+    """Get system health metrics using psutil (with fallback to mock data)."""
     cached = get_cached("system_health")
     if cached:
         return cached
     
-    # Mock system metrics - will be replaced with psutil later
-    cpu = 35 + random.uniform(-10, 15)
-    memory = 45 + random.uniform(-5, 10)
-    disk = 28 + random.uniform(-2, 5)
+    if PSUTIL_AVAILABLE:
+        # Real system metrics via psutil
+        cpu = psutil.cpu_percent(interval=0.1)
+        
+        memory = psutil.virtual_memory()
+        memory_percent = memory.percent
+        memory_total_gb = round(memory.total / (1024 ** 3), 2)
+        memory_used_gb = round(memory.used / (1024 ** 3), 2)
+        
+        disk = psutil.disk_usage('/')
+        disk_percent = disk.percent
+        disk_total_gb = round(disk.total / (1024 ** 3), 2)
+        disk_used_gb = round(disk.used / (1024 ** 3), 2)
+        
+        # Load average (Unix only)
+        try:
+            load_avg = list(os.getloadavg())
+            load_average = [round(l, 2) for l in load_avg]
+        except (OSError, AttributeError):
+            load_average = None
+        
+        # Active network connections
+        try:
+            connections = len(psutil.net_connections(kind='inet'))
+        except (psutil.AccessDenied, OSError):
+            connections = 0
+        
+        # System uptime
+        try:
+            boot_time = psutil.boot_time()
+            uptime_seconds = time.time() - boot_time
+            uptime_hours = round(uptime_seconds / 3600, 1)
+        except Exception:
+            uptime_hours = 0
+        
+        psutil_available = True
+    else:
+        # Mock data fallback
+        cpu = 35 + random.uniform(-10, 15)
+        memory_percent = 45 + random.uniform(-5, 10)
+        memory_total_gb = 16.0
+        memory_used_gb = round(memory_total_gb * memory_percent / 100, 2)
+        disk_percent = 28 + random.uniform(-2, 5)
+        disk_total_gb = 100.0
+        disk_used_gb = round(disk_total_gb * disk_percent / 100, 2)
+        load_average = [1.5, 1.2, 0.9]
+        connections = random.randint(5, 25)
+        uptime_hours = round(random.uniform(24, 720), 1)
+        psutil_available = False
     
     # Determine overall status
-    if cpu > 90 or memory > 90 or disk > 95:
+    if cpu > 90 or memory_percent > 90 or disk_percent > 95:
         status = "critical"
-    elif cpu > 70 or memory > 75 or disk > 80:
+    elif cpu > 70 or memory_percent > 75 or disk_percent > 80:
         status = "degraded"
     else:
         status = "healthy"
     
     result = SystemHealthResponse(
         cpu_usage=round(cpu, 1),
-        memory_usage=round(memory, 1),
-        disk_usage=round(disk, 1),
-        active_connections=random.randint(5, 25),
-        uptime_hours=round(random.uniform(24, 720), 1),
-        status=status
+        memory_usage=round(memory_percent, 1),
+        memory_total_gb=memory_total_gb,
+        memory_used_gb=memory_used_gb,
+        disk_usage=round(disk_percent, 1),
+        disk_total_gb=disk_total_gb,
+        disk_used_gb=disk_used_gb,
+        load_average=load_average,
+        active_connections=connections,
+        uptime_hours=uptime_hours,
+        status=status,
+        psutil_available=psutil_available
     )
     
     set_cached("system_health", result)
