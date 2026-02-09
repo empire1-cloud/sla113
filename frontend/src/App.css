@@ -57,6 +57,12 @@ body {
   font-size: 1rem;
 }
 
+.page-header .welcome-text {
+  color: var(--accent-green);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
 .back-link {
   display: inline-block;
   color: var(--text-secondary);
