@@ -6,6 +6,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { PageLoading, LoadingState } from '../components/ui/LoadingState';
+import { EmptyState } from '../components/ui/EmptyState';
+import { getErrorMessage, FormError } from '../components/ui/ErrorMessage';
 
 const ProfilePage = () => {
   const { user, authAxios, teams, logout } = useAuth();
