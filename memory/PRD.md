@@ -156,6 +156,8 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 | **Signup** | `/signup` | Full registration with password requirements, auto-login |
 | **Home** | `/` | Health status, team workspace name, welcome message, Quick Actions |
 | **Profile** | `/profile` | Profile info, roles/memberships, password change, active sessions |
+| **Team Settings** | `/team/settings` | Team members, pending invitations, invite modal |
+| **Accept Invite** | `/invite/accept` | Validate and accept team invitations |
 | **Engines Dashboard** | `/engines` | Table of all 19 engines with Method, Endpoint, Description, Test buttons with modal |
 | **Money Pipeline** | `/money-pipeline` | Full form (idea, target revenue, industry, context), sample ideas, tabbed results view |
 | **Pipeline Composer** | `/pipeline-composer` | Chain engines, reorder steps, execute pipeline, timeline results, save/load presets |
