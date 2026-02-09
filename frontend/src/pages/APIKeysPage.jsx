@@ -7,6 +7,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AdminOnly } from '../components/RoleGate';
 import { toast } from 'sonner';
+import { PageLoading } from '../components/ui/LoadingState';
+import { NoAPIKeysFound } from '../components/ui/EmptyState';
+import { getErrorMessage } from '../components/ui/ErrorMessage';
 
 const APIKeysPage = () => {
   const { authAxios, currentTeam } = useAuth();
@@ -28,7 +31,7 @@ const APIKeysPage = () => {
       setKeys(res.data);
     } catch (e) {
       console.error('Failed to fetch API keys:', e);
-      toast.error('Failed to load API keys');
+      toast.error(getErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -52,9 +55,10 @@ const APIKeysPage = () => {
       
       setCreatedKey(res.data);
       setNewKeyName('');
+      toast.success('API key created successfully');
       fetchKeys();
     } catch (e) {
-      toast.error(e.response?.data?.detail || 'Failed to create API key');
+      toast.error(getErrorMessage(e));
     } finally {
       setCreating(false);
     }
@@ -70,7 +74,7 @@ const APIKeysPage = () => {
       toast.success('API key revoked');
       fetchKeys();
     } catch (e) {
-      toast.error(e.response?.data?.detail || 'Failed to revoke API key');
+      toast.error(getErrorMessage(e));
     }
   };
 
@@ -104,14 +108,7 @@ const APIKeysPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="page-container" data-testid="api-keys-loading">
-        <div className="page-loading">
-          <div className="spinner"></div>
-          <p>Loading API keys...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading message="Loading API keys..." />;
   }
 
   return (
@@ -122,7 +119,7 @@ const APIKeysPage = () => {
       </header>
 
       <div className="api-keys-content">
-        <section className="api-keys-card" data-testid="api-keys-section">
+        <section className="api-keys-card settings-card" data-testid="api-keys-section">
           <div className="card-header">
             <div>
               <h2>Your API Keys</h2>
@@ -139,56 +136,59 @@ const APIKeysPage = () => {
             </AdminOnly>
           </div>
 
-          <div className="api-keys-info">
-            <p>
-              Use API keys to authenticate requests to the Hybrid Intelligence API.
-              Keys have full access to your team's resources.
-            </p>
-          </div>
-
-          {keys.length === 0 ? (
-            <div className="no-keys" data-testid="no-keys">
-              <p>No API keys yet.</p>
-              <p>Create your first API key to get started.</p>
+          <div className="card-body" style={{ padding: '1.25rem' }}>
+            <div className="api-keys-info">
+              <p>
+                Use API keys to authenticate requests to the Hybrid Intelligence API.
+                Keys have full access to your team's resources.
+              </p>
             </div>
-          ) : (
-            <div className="keys-list">
-              {keys.map((key) => (
-                <div key={key.id} className="key-item" data-testid={`key-${key.id}`}>
-                  <div className="key-info">
-                    <div className="key-name">{key.name}</div>
-                    <div className="key-prefix">
-                      <code>{key.key_prefix}••••••••••••</code>
+
+            {keys.length === 0 ? (
+              <AdminOnly fallback={
+                <NoAPIKeysFound />
+              }>
+                <NoAPIKeysFound onCreateKey={() => setShowCreateModal(true)} />
+              </AdminOnly>
+            ) : (
+              <div className="keys-list">
+                {keys.map((key) => (
+                  <div key={key.id} className="key-item" data-testid={`key-${key.id}`}>
+                    <div className="key-info">
+                      <div className="key-name">{key.name}</div>
+                      <div className="key-prefix">
+                        <code>{key.key_prefix}••••••••••••</code>
+                      </div>
                     </div>
+                    <div className="key-meta">
+                      <span className="key-created">
+                        Created: {formatDate(key.created_at)}
+                      </span>
+                      <span className="key-used">
+                        Last used: {formatDate(key.last_used_at)}
+                      </span>
+                    </div>
+                    <AdminOnly>
+                      <button
+                        className="btn-revoke"
+                        onClick={() => handleRevoke(key.id, key.name)}
+                        data-testid={`revoke-${key.id}`}
+                      >
+                        Revoke
+                      </button>
+                    </AdminOnly>
                   </div>
-                  <div className="key-meta">
-                    <span className="key-created">
-                      Created: {formatDate(key.created_at)}
-                    </span>
-                    <span className="key-used">
-                      Last used: {formatDate(key.last_used_at)}
-                    </span>
-                  </div>
-                  <AdminOnly>
-                    <button
-                      className="btn-revoke"
-                      onClick={() => handleRevoke(key.id, key.name)}
-                      data-testid={`revoke-${key.id}`}
-                    >
-                      Revoke
-                    </button>
-                  </AdminOnly>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          <div className="api-keys-docs">
-            <h3>Usage</h3>
-            <p>Include your API key in requests using the Authorization header:</p>
-            <code className="code-block">
-              Authorization: Bearer hic_your_api_key_here
-            </code>
+            <div className="api-keys-docs">
+              <h3>Usage</h3>
+              <p>Include your API key in requests using the Authorization header:</p>
+              <code className="code-block">
+                Authorization: Bearer hic_your_api_key_here
+              </code>
+            </div>
           </div>
         </section>
       </div>
@@ -211,6 +211,7 @@ const APIKeysPage = () => {
                   onChange={(e) => setNewKeyName(e.target.value)}
                   placeholder="e.g., Production Server"
                   autoFocus
+                  disabled={creating}
                   data-testid="key-name-input"
                 />
                 <span className="field-hint">
