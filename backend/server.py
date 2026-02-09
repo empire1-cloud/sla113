@@ -72,6 +72,7 @@ from routers.pipelines import router as pipelines_router
 api_router.include_router(auth_router)
 api_router.include_router(teams_router)
 api_router.include_router(profile_router)
+api_router.include_router(invites_router)  # Public invite endpoints
 
 # Include protected routers (require auth)
 api_router.include_router(history_protected_router)  # /api/history (protected)
