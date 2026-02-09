@@ -51,12 +51,13 @@ async def list_plans():
 
 
 @router.get("/team")
-async def get_team_billing_info(user: dict = Depends(get_current_user)):
+async def get_team_billing_info(
+    request: Request,
+    user: dict = Depends(get_current_user)
+):
     """Get billing information for current team."""
-    team_id = user.get("team_id")
-    
-    if not team_id:
-        raise HTTPException(status_code=400, detail="No team selected")
+    team = await get_current_team(request, user)
+    team_id = team.get("_id")
     
     try:
         billing = await get_team_billing(team_id)
