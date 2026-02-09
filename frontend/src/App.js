@@ -1,6 +1,13 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppHeader from "./components/AppHeader";
+
+// Pages
 import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import EnginesPage from "./pages/EnginesPage";
 import MoneyPipelinePage from "./pages/MoneyPipelinePage";
 import PipelineComposerPage from "./pages/PipelineComposerPage";
@@ -11,14 +18,46 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/engines" element={<EnginesPage />} />
-          <Route path="/money-pipeline" element={<MoneyPipelinePage />} />
-          <Route path="/pipeline-composer" element={<PipelineComposerPage />} />
-          <Route path="/history" element={<ExecutionHistoryPage />} />
-          <Route path="/analytics" element={<AnalyticsPage />} />
-        </Routes>
+        <AuthProvider>
+          <AppHeader />
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            
+            {/* Protected routes */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/engines" element={
+              <ProtectedRoute>
+                <EnginesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/money-pipeline" element={
+              <ProtectedRoute>
+                <MoneyPipelinePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/pipeline-composer" element={
+              <ProtectedRoute>
+                <PipelineComposerPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <ExecutionHistoryPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );
