@@ -618,3 +618,183 @@ async def get_realtime_stats():
             "psutil_available": PSUTIL_AVAILABLE
         }
     }
+
+
+# WebSocket connection manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                disconnected.append(connection)
+        for conn in disconnected:
+            self.disconnect(conn)
+
+
+ws_manager = ConnectionManager()
+
+
+def get_system_health_data() -> dict:
+    """Get current system health data."""
+    if PSUTIL_AVAILABLE:
+        cpu = psutil.cpu_percent(interval=0.1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        try:
+            load_avg = [round(l, 2) for l in os.getloadavg()]
+        except (OSError, AttributeError):
+            load_avg = None
+        
+        try:
+            connections = len(psutil.net_connections(kind='inet'))
+        except (psutil.AccessDenied, OSError):
+            connections = 0
+        
+        try:
+            boot_time = psutil.boot_time()
+            uptime_hours = round((time.time() - boot_time) / 3600, 1)
+        except Exception:
+            uptime_hours = 0
+        
+        memory_percent = memory.percent
+        disk_percent = disk.percent
+        
+        if cpu > 90 or memory_percent > 90 or disk_percent > 95:
+            status = "critical"
+        elif cpu > 70 or memory_percent > 75 or disk_percent > 80:
+            status = "degraded"
+        else:
+            status = "healthy"
+        
+        return {
+            "cpu_usage": round(cpu, 1),
+            "memory_usage": round(memory_percent, 1),
+            "memory_total_gb": round(memory.total / (1024 ** 3), 2),
+            "memory_used_gb": round(memory.used / (1024 ** 3), 2),
+            "disk_usage": round(disk_percent, 1),
+            "disk_total_gb": round(disk.total / (1024 ** 3), 2),
+            "disk_used_gb": round(disk.used / (1024 ** 3), 2),
+            "load_average": load_avg,
+            "active_connections": connections,
+            "uptime_hours": uptime_hours,
+            "status": status,
+            "psutil_available": True
+        }
+    else:
+        return {
+            "cpu_usage": round(35 + random.uniform(-10, 15), 1),
+            "memory_usage": round(45 + random.uniform(-5, 10), 1),
+            "memory_total_gb": 16.0,
+            "memory_used_gb": 7.33,
+            "disk_usage": round(28 + random.uniform(-2, 5), 1),
+            "disk_total_gb": 100.0,
+            "disk_used_gb": 28.0,
+            "load_average": [1.5, 1.2, 0.9],
+            "active_connections": random.randint(5, 25),
+            "uptime_hours": round(random.uniform(24, 720), 1),
+            "status": "healthy",
+            "psutil_available": False
+        }
+
+
+def get_realtime_stats_data() -> dict:
+    """Get current realtime stats data."""
+    logger = get_logger()
+    stats = logger.get_stats()
+    now = datetime.now(timezone.utc)
+    logs = logger.logs
+    
+    recent = [
+        l for l in logs 
+        if (now - datetime.fromisoformat(l.timestamp.replace('Z', '+00:00'))).total_seconds() < 300
+    ]
+    
+    if PSUTIL_AVAILABLE:
+        cpu = psutil.cpu_percent(interval=0.1)
+        memory = psutil.virtual_memory().percent
+        system_status = "critical" if cpu > 90 or memory > 90 else "degraded" if cpu > 70 or memory > 75 else "healthy"
+    else:
+        cpu = round(35 + random.uniform(-10, 15), 1)
+        memory = round(45 + random.uniform(-5, 10), 1)
+        system_status = "healthy"
+    
+    return {
+        "timestamp": now.isoformat(),
+        "total_executions": stats.get("total_executions", 0),
+        "success_rate": stats.get("success_rate", 0),
+        "avg_duration_ms": stats.get("avg_duration_ms", 0),
+        "error_count": stats.get("error_count", 0),
+        "recent_5min": {
+            "count": len(recent),
+            "errors": sum(1 for l in recent if l.status == "error"),
+            "avg_latency": round(sum(l.duration_ms for l in recent) / len(recent), 0) if recent else 0
+        },
+        "active_engines": len(stats.get("engines", {})),
+        "system": {
+            "cpu": round(cpu, 1),
+            "memory": round(memory, 1),
+            "status": system_status,
+            "psutil_available": PSUTIL_AVAILABLE
+        }
+    }
+
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time analytics updates."""
+    await ws_manager.connect(websocket)
+    try:
+        # Send initial data
+        initial_data = {
+            "type": "realtime",
+            "stats": get_realtime_stats_data(),
+            "health": get_system_health_data()
+        }
+        await websocket.send_json(initial_data)
+        
+        # Keep connection alive and send updates
+        while True:
+            try:
+                # Wait for ping or timeout after 1 second
+                await asyncio.wait_for(websocket.receive_text(), timeout=1.0)
+            except asyncio.TimeoutError:
+                pass
+            
+            # Send updated data
+            update_data = {
+                "type": "realtime",
+                "stats": get_realtime_stats_data(),
+                "health": get_system_health_data()
+            }
+            await websocket.send_json(update_data)
+            
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        ws_manager.disconnect(websocket)
+
+
+# Helper function to broadcast drift alerts (can be called from other parts of the app)
+async def broadcast_drift_alert(engine: str, status: str, message: str):
+    """Broadcast a drift alert to all connected WebSocket clients."""
+    await ws_manager.broadcast({
+        "type": "drift_alert",
+        "engine": engine,
+        "status": status,
+        "message": message
+    })
