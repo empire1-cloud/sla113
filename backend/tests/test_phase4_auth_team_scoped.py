@@ -371,8 +371,6 @@ class TestPipelinesProtected:
         assert data["name"] == payload["name"]
         assert "team_id" in data
         assert "created_by" in data
-        
-        return data["id"]
     
     def test_get_pipeline_by_id(self, auth_headers):
         """GET /api/pipelines/{id} returns pipeline details"""
