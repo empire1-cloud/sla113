@@ -93,6 +93,16 @@ const AppHeader = () => {
               
               <div className="dropdown-divider"></div>
               
+              <Link
+                to="/profile"
+                className="dropdown-item"
+                onClick={() => setShowUserMenu(false)}
+                data-testid="profile-link"
+              >
+                <span>⚙️</span>
+                <span>Profile Settings</span>
+              </Link>
+              
               <button
                 className="dropdown-item logout"
                 onClick={handleLogout}
