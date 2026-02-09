@@ -196,9 +196,11 @@ const ExecutionHistoryPage = () => {
             <option value="pipeline">Pipeline</option>
           </select>
           
-          <button className="filter-clear-btn" onClick={clearHistory} data-testid="clear-btn">
-            🗑️ Clear All
-          </button>
+          <AdminOnly>
+            <button className="filter-clear-btn" onClick={clearHistory} data-testid="clear-btn">
+              🗑️ Clear All
+            </button>
+          </AdminOnly>
         </div>
         
         <div className="filter-info">
