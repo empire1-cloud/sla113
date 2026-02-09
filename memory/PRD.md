@@ -118,9 +118,11 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 | `/api/teams/{id}/members/{uid}/role` | PUT | Change member role |
 | `/api/teams/{id}/members/{uid}` | DELETE | Remove member |
 | `/api/teams/{id}/leave` | POST | Leave team |
-| `/api/teams/{id}/invites` | POST | Create invite |
+| `/api/teams/{id}/invites` | POST | Create invite (sends email) |
 | `/api/teams/{id}/invites` | GET | List pending invites |
-| `/api/teams/invites/accept` | POST | Accept invite |
+| `/api/teams/{id}/invites/{invite_id}` | DELETE | Revoke invite |
+| `/api/teams/invites/accept` | POST | Accept invite (requires auth) |
+| `/api/invites/validate/{token}` | GET | Validate invite token (public) |
 
 ## Frontend Architecture (Phase 5)
 
