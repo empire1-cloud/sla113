@@ -43,6 +43,7 @@ api_router = APIRouter(prefix="/api")
 from routers.auth import router as auth_router
 from routers.teams import router as teams_router
 from routers.profile import router as profile_router
+from routers.invites import router as invites_router
 
 # Import and include all engine routers
 from routers.engines import (
