@@ -121,6 +121,12 @@ const HomePage = () => {
             <p>View all engine call logs</p>
           </Link>
 
+          <Link to="/analytics" className="action-card" data-testid="analytics-link">
+            <span className="action-icon">📊</span>
+            <h3>Analytics Dashboard</h3>
+            <p>Monitor performance & AI quality</p>
+          </Link>
+
           <div className="action-card clickable" onClick={quickTest} data-testid="quick-test-card">
             <span className="action-icon">🚀</span>
             <h3>Quick Test</h3>
