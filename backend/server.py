@@ -47,6 +47,7 @@ from routers.invites import router as invites_router
 from routers.billing import router as billing_router
 from routers.api_keys import router as api_keys_router
 from routers.admin import router as admin_router
+from routers.system import router as system_router
 
 # Import and include all engine routers
 from routers.engines import (
@@ -79,6 +80,7 @@ api_router.include_router(invites_router)  # Public invite endpoints
 api_router.include_router(billing_router)  # Billing endpoints
 api_router.include_router(api_keys_router)  # API key management
 api_router.include_router(admin_router)  # Admin endpoints (system admin only)
+api_router.include_router(system_router)  # System status endpoints
 
 # Include protected routers (require auth)
 api_router.include_router(history_protected_router)  # /api/history (protected)
