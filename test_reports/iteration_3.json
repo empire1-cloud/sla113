@@ -1,0 +1,53 @@
+{
+  "summary": "psutil integration for real system metrics fully tested - all backend endpoints return real metrics with psutil_available: true, frontend displays all new fields correctly",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_analytics.py",
+    "/app/test_reports/pytest/psutil_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_analytics.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (all psutil features verified)"
+  },
+  "test_credentials": "None required",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "psutil is now integrated and returning real system metrics. All new fields (memory_total_gb, memory_used_gb, disk_total_gb, disk_used_gb, load_average, psutil_available) are working correctly in both backend and frontend.",
+  "features_tested": {
+    "backend_psutil_features": [
+      {"feature": "/api/analytics/system-health returns psutil_available: true", "status": "PASS"},
+      {"feature": "/api/analytics/system-health returns real cpu_usage", "status": "PASS", "value": "7.3%"},
+      {"feature": "/api/analytics/system-health returns memory_total_gb", "status": "PASS", "value": "15.6 GB"},
+      {"feature": "/api/analytics/system-health returns memory_used_gb", "status": "PASS", "value": "8.4 GB"},
+      {"feature": "/api/analytics/system-health returns disk_total_gb", "status": "PASS", "value": "94.19 GB"},
+      {"feature": "/api/analytics/system-health returns disk_used_gb", "status": "PASS", "value": "17.05 GB"},
+      {"feature": "/api/analytics/system-health returns load_average array with 3 values", "status": "PASS", "value": "[0.81, 1.39, 1.46]"},
+      {"feature": "/api/analytics/realtime-stats includes psutil_available in system object", "status": "PASS"}
+    ],
+    "frontend_psutil_features": [
+      {"feature": "System Health tab shows 'Real Metrics (psutil)' green indicator", "status": "PASS"},
+      {"feature": "Memory Details card displays Total/Used/Usage", "status": "PASS"},
+      {"feature": "Disk Details card displays Total/Used/Usage", "status": "PASS"},
+      {"feature": "Load Average card displays 1/5/15 min values", "status": "PASS"},
+      {"feature": "Polling every 5 seconds still works", "status": "PASS"}
+    ]
+  },
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  }
+}
