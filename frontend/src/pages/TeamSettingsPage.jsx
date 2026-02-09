@@ -146,11 +146,7 @@ const TeamSettingsPage = () => {
   };
 
   if (!currentTeam) {
-    return (
-      <div className="page-container" data-testid="team-settings-loading">
-        <div className="spinner"></div>
-      </div>
-    );
+    return <PageLoading message="Loading team..." />;
   }
 
   return (
@@ -178,69 +174,68 @@ const TeamSettingsPage = () => {
               </button>
             </AdminOnly>
           </div>
-
-          {loading ? (
-            <div className="members-loading">
-              <div className="spinner"></div>
-            </div>
-          ) : (
-            <div className="members-list">
-              {members.map((member) => (
-                <div key={member.id} className="member-item" data-testid={`member-${member.user_id}`}>
-                  <div className="member-info">
-                    <div className="member-avatar">
-                      {member.first_name?.[0]}{member.last_name?.[0]}
+          <div className="card-body" style={{ padding: '1rem' }}>
+            {loading ? (
+              <LoadingState message="Loading members..." size="small" />
+            ) : (
+              <div className="members-list">
+                {members.map((member) => (
+                  <div key={member.id} className="member-item" data-testid={`member-${member.user_id}`}>
+                    <div className="member-info">
+                      <div className="member-avatar">
+                        {member.first_name?.[0]}{member.last_name?.[0]}
+                      </div>
+                      <div className="member-details">
+                        <span className="member-name">
+                          {member.first_name} {member.last_name}
+                        </span>
+                        <span className="member-email">{member.email}</span>
+                      </div>
                     </div>
-                    <div className="member-details">
-                      <span className="member-name">
-                        {member.first_name} {member.last_name}
+                    
+                    <div className="member-meta">
+                      <span className="member-joined">
+                        Joined {formatDate(member.joined_at)}
                       </span>
-                      <span className="member-email">{member.email}</span>
+                    </div>
+                    
+                    <div className="member-actions">
+                      {member.role === 'owner' ? (
+                        <span className={`role-badge ${getRoleBadge(member.role)}`}>
+                          Owner
+                        </span>
+                      ) : (
+                        <AdminOnly
+                          fallback={
+                            <span className={`role-badge ${getRoleBadge(member.role)}`}>
+                              {member.role}
+                            </span>
+                          }
+                        >
+                          <select
+                            value={member.role}
+                            onChange={(e) => handleRoleChange(member.user_id, e.target.value)}
+                            className="role-select"
+                            data-testid={`role-select-${member.user_id}`}
+                          >
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                          <button
+                            className="btn-remove"
+                            onClick={() => handleRemoveMember(member.user_id, member.email)}
+                            data-testid={`remove-${member.user_id}`}
+                          >
+                            Remove
+                          </button>
+                        </AdminOnly>
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="member-meta">
-                    <span className="member-joined">
-                      Joined {formatDate(member.joined_at)}
-                    </span>
-                  </div>
-                  
-                  <div className="member-actions">
-                    {member.role === 'owner' ? (
-                      <span className={`role-badge ${getRoleBadge(member.role)}`}>
-                        👑 Owner
-                      </span>
-                    ) : (
-                      <AdminOnly
-                        fallback={
-                          <span className={`role-badge ${getRoleBadge(member.role)}`}>
-                            {member.role}
-                          </span>
-                        }
-                      >
-                        <select
-                          value={member.role}
-                          onChange={(e) => handleRoleChange(member.user_id, e.target.value)}
-                          className="role-select"
-                          data-testid={`role-select-${member.user_id}`}
-                        >
-                          <option value="member">Member</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                        <button
-                          className="btn-remove"
-                          onClick={() => handleRemoveMember(member.user_id, member.email)}
-                          data-testid={`remove-${member.user_id}`}
-                        >
-                          Remove
-                        </button>
-                      </AdminOnly>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Pending Invites Section */}
@@ -249,10 +244,12 @@ const TeamSettingsPage = () => {
             <div className="card-header">
               <h2>Pending Invitations</h2>
             </div>
-            <PendingInvitesList 
-              teamId={currentTeam.id} 
-              refreshTrigger={inviteRefresh}
-            />
+            <div className="card-body" style={{ padding: '1rem' }}>
+              <PendingInvitesList 
+                teamId={currentTeam.id} 
+                refreshTrigger={inviteRefresh}
+              />
+            </div>
           </section>
         </AdminOnly>
 
@@ -261,29 +258,26 @@ const TeamSettingsPage = () => {
           <div className="card-header">
             <h2>Recent Activity</h2>
           </div>
-          
-          {activityLoading ? (
-            <div className="activity-loading">
-              <div className="spinner"></div>
-            </div>
-          ) : activity.length === 0 ? (
-            <div className="no-activity">
-              <p>No recent activity</p>
-            </div>
-          ) : (
-            <div className="activity-list">
-              {activity.map((item, index) => (
-                <div key={index} className="activity-item" data-testid={`activity-${index}`}>
-                  <div className="activity-icon">📋</div>
-                  <div className="activity-content">
-                    <span className="activity-action">{getActionLabel(item.action)}</span>
-                    <span className="activity-actor">by {item.actor}</span>
+          <div className="card-body" style={{ padding: '1rem' }}>
+            {activityLoading ? (
+              <LoadingState message="Loading activity..." size="small" />
+            ) : activity.length === 0 ? (
+              <NoActivityFound />
+            ) : (
+              <div className="activity-list">
+                {activity.map((item, index) => (
+                  <div key={index} className="activity-item" data-testid={`activity-${index}`}>
+                    <div className="activity-icon">📋</div>
+                    <div className="activity-content">
+                      <span className="activity-action">{getActionLabel(item.action)}</span>
+                      <span className="activity-actor">by {item.actor}</span>
+                    </div>
+                    <span className="activity-time">{formatTimestamp(item.timestamp)}</span>
                   </div>
-                  <span className="activity-time">{formatTimestamp(item.timestamp)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </div>
 
