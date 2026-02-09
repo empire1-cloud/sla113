@@ -16,6 +16,7 @@ import TeamSettingsPage from "./pages/TeamSettingsPage";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import BillingPage from "./pages/BillingPage";
 import APIKeysPage from "./pages/APIKeysPage";
+import AdminOverviewPage from "./pages/AdminOverviewPage";
 import EnginesPage from "./pages/EnginesPage";
 import MoneyPipelinePage from "./pages/MoneyPipelinePage";
 import PipelineComposerPage from "./pages/PipelineComposerPage";
