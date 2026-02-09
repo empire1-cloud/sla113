@@ -81,6 +81,8 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 || 2026-02-09 | **Phase 5: Frontend Integration** - Login/Signup UI, Protected Routes, Team Switcher, Header Nav | ✅ Done |
 || 2026-02-09 | **Phase 6: Cleanup & Profile** - Remove legacy routes, Profile page, Role-based UI visibility | ✅ Done |
 || 2026-02-09 | **Phase 7: Team Invitations** - Full invite system with email, accept flow, signup integration | ✅ Done |
+|| 2026-02-09 | **Macro Phase A: Identity & Access** - Password Reset, OAuth (Google/GitHub), Session Management | ✅ Done |
+|| 2026-02-09 | **Macro Phase B: Billing & Usage** - Stripe billing, Usage limits, API Keys | ✅ Done |
 
 ## Backend SaaS Architecture
 
