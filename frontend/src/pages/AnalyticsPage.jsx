@@ -53,6 +53,7 @@ const DEFAULT_WIDGETS = {
 };
 
 const AnalyticsPage = () => {
+  const { currentTeam } = useAuth();
   // Data states
   const [engineUsage, setEngineUsage] = useState([]);
   const [engineLatency, setEngineLatency] = useState([]);
