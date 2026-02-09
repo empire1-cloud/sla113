@@ -356,8 +356,8 @@ class TestPipelinesProtected:
             "steps": [
                 {
                     "engine": "strategy_engine",
-                    "input_mapping": {"goal": "$.input.goal"},
-                    "output_key": "strategy"
+                    "config": {"goal": "$.input.goal"},
+                    "order": 1
                 }
             ],
             "is_template": False
