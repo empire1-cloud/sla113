@@ -346,9 +346,13 @@ New `/analytics` page with 3 tabs and premium polish:
 **psutil Integration**: ✅ Real system metrics with safe fallbacks
 
 ## Next Tasks
+- Configure production credentials:
+  - `RESEND_API_KEY` for email delivery
+  - `STRIPE_SECRET_KEY` + `STRIPE_PRO_PRICE_ID` for billing
+  - `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` for Google OAuth
+  - `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` for GitHub OAuth
 - Migrate remaining public engine APIs to authenticated pattern
-- Password reset functionality (forgot password flow)
-- Configure RESEND_API_KEY for production email delivery
+- Add navigation links to Billing and API Keys pages
 
 ## Backlog
 - User invitation system for teams (email invites)
