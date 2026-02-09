@@ -6,6 +6,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PageLoading } from '../components/ui/LoadingState';
+import { EmptyState } from '../components/ui/EmptyState';
+import { getErrorMessage } from '../components/ui/ErrorMessage';
 
 const AdminOverviewPage = () => {
   const { authAxios, user } = useAuth();
@@ -26,7 +29,7 @@ const AdminOverviewPage = () => {
       if (e.response?.status === 403) {
         setError('You do not have permission to access this page.');
       } else {
-        setError('Failed to load admin data');
+        setError(getErrorMessage(e));
       }
     } finally {
       setLoading(false);
@@ -54,14 +57,7 @@ const AdminOverviewPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="page-container" data-testid="admin-loading">
-        <div className="page-loading">
-          <div className="spinner"></div>
-          <p>Loading admin dashboard...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading message="Loading admin dashboard..." />;
   }
 
   if (error) {
@@ -81,7 +77,7 @@ const AdminOverviewPage = () => {
   return (
     <div className="page-container" data-testid="admin-page">
       <header className="page-header">
-        <h1>🛡️ Admin Overview</h1>
+        <h1>Admin Overview</h1>
         <p className="subtitle">System Administration</p>
       </header>
 
@@ -114,28 +110,31 @@ const AdminOverviewPage = () => {
         </div>
 
         {/* Recent Signups */}
-        <section className="admin-card" data-testid="recent-signups">
+        <section className="admin-card settings-card" data-testid="recent-signups">
           <div className="card-header">
             <h2>Recent Signups</h2>
           </div>
-          
-          {stats?.recent_signups?.length === 0 ? (
-            <div className="no-data">
-              <p>No recent signups</p>
-            </div>
-          ) : (
-            <div className="signups-list">
-              {stats?.recent_signups?.map((signup, index) => (
-                <div key={index} className="signup-item" data-testid={`signup-${index}`}>
-                  <div className="signup-info">
-                    <span className="signup-name">{signup.name}</span>
-                    <span className="signup-email">{signup.email}</span>
+          <div className="card-body" style={{ padding: '1rem' }}>
+            {!stats?.recent_signups?.length ? (
+              <EmptyState
+                icon="👋"
+                title="No recent signups"
+                description="New user registrations will appear here."
+              />
+            ) : (
+              <div className="signups-list">
+                {stats.recent_signups.map((signup, index) => (
+                  <div key={index} className="signup-item" data-testid={`signup-${index}`}>
+                    <div className="signup-info">
+                      <span className="signup-name">{signup.name}</span>
+                      <span className="signup-email">{signup.email}</span>
+                    </div>
+                    <span className="signup-time">{formatDate(signup.created_at)}</span>
                   </div>
-                  <span className="signup-time">{formatDate(signup.created_at)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </div>
     </div>
