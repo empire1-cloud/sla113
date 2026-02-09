@@ -268,19 +268,17 @@ const ProfilePage = () => {
               ))
             )}
           </div>
+          </div>
         </section>
 
         {/* Change Password Card */}
-        <section className="profile-card" data-testid="password-card">
+        <section className="profile-card settings-card" data-testid="password-card">
           <div className="card-header">
             <h2>Change Password</h2>
           </div>
-          <form onSubmit={handleChangePassword} className="profile-form">
-            {passwordError && (
-              <div className="auth-error" data-testid="password-error">
-                {passwordError}
-              </div>
-            )}
+          <div className="card-body" style={{ padding: '1.25rem' }}>
+            <form onSubmit={handleChangePassword} className="profile-form">
+              <FormError error={passwordError} />
             
             <div className="form-group">
               <label htmlFor="currentPassword">Current Password</label>
