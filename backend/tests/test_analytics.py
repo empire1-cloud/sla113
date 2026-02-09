@@ -37,6 +37,10 @@ class TestAnalyticsEndpoints:
         assert "cpu" in data["system"]
         assert "memory" in data["system"]
         assert "status" in data["system"]
+        assert "psutil_available" in data["system"]
+        
+        # Verify psutil is available in realtime-stats
+        assert data["system"]["psutil_available"] == True, "psutil should be available"
         
     def test_engine_usage_returns_array(self):
         """Test /api/analytics/engine-usage returns array of engine usage"""
