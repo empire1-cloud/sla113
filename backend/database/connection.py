@@ -177,3 +177,6 @@ def pipelines_collection():
 
 def execution_logs_collection():
     return get_database().execution_logs
+
+def password_reset_tokens_collection():
+    return get_database().password_reset_tokens
