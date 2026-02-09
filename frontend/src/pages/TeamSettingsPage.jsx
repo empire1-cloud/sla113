@@ -77,7 +77,7 @@ const TeamSettingsPage = () => {
       fetchMembers();
       fetchActivity();
     } catch (e) {
-      toast.error(e.response?.data?.detail || 'Failed to remove member');
+      toast.error(getErrorMessage(e));
     }
   };
 
@@ -90,7 +90,7 @@ const TeamSettingsPage = () => {
       fetchMembers();
       fetchActivity();
     } catch (e) {
-      toast.error(e.response?.data?.detail || 'Failed to update role');
+      toast.error(getErrorMessage(e));
     }
   };
 
