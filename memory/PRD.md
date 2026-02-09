@@ -309,9 +309,14 @@ New `/analytics` page with 3 tabs and premium polish:
 **psutil Integration**: ✅ Real system metrics with safe fallbacks
 
 ## Next Tasks
-- TBD (awaiting user direction)
+- Migrate remaining public APIs (analytics) to authenticated pattern
+- Remove legacy unprotected history router (`/api/engines/history`)
+- Role-based UI controls (hide admin features from members)
 
 ## Backlog
+- User invitation system for teams (email invites)
+- Password reset functionality
+- OAuth provider UI (Google, GitHub)
 - Additional dashboard themes/skins
 - Alert notification history/log
 - Engine performance comparison charts
