@@ -15,6 +15,7 @@ from services.api_key_service import (
     revoke_api_key,
     APIKeyError,
 )
+from services.usage_service import UsageLimitError
 
 
 router = APIRouter(tags=["API Keys"])
