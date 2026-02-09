@@ -65,11 +65,15 @@ async def validate_invite_token(token: str):
     
     # Check if expired
     expires_at = invite.get("expires_at")
-    if expires_at and expires_at < now:
-        return InviteValidationResponse(
-            valid=False,
-            error="This invite has expired"
-        )
+    if expires_at:
+        # Handle both naive and aware datetimes
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < now:
+            return InviteValidationResponse(
+                valid=False,
+                error="This invite has expired"
+            )
     
     # Get team details
     team = await teams_collection().find_one({
