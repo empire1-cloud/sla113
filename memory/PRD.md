@@ -131,8 +131,10 @@ A comprehensive backend system featuring 19 specialized AI engines orchestrated 
 | `AppHeader.jsx` | `/components/` | Global nav header with logo, links, team switcher, user menu |
 | `TeamSwitcher.jsx` | `/components/` | Dropdown to switch teams and create new ones |
 | `CreateTeamModal.jsx` | `/components/` | Modal dialog for creating organization teams |
+| `RoleGate.jsx` | `/components/` | Role-based visibility controls (TeamRoleGate, AdminOnly, OwnerOnly) |
 | `LoginPage.jsx` | `/pages/` | Email/password login form |
 | `SignupPage.jsx` | `/pages/` | Registration form with password validation |
+| `ProfilePage.jsx` | `/pages/` | Profile settings, password change, session management |
 
 ### Auth Flow
 1. User visits any protected route → Redirected to `/login`
