@@ -1,7 +1,7 @@
 /**
  * Login Page
  * Email/password authentication with error handling
- * Supports invite token flow for team invitations
+ * Supports invite token flow and OAuth
  */
 
 import { useState, useEffect } from 'react';
@@ -21,33 +21,39 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [inviteInfo, setInviteInfo] = useState(null);
+  const [oauthProviders, setOauthProviders] = useState([]);
   
-  const { login, authAxios, refreshTeams } = useAuth();
+  const { login, authAxios, refreshTeams, getOAuthProviders, initiateOAuthLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   const from = location.state?.from?.pathname || '/';
   
-  // Fetch invite info if token present
+  // Fetch OAuth providers and invite info
   useEffect(() => {
-    const fetchInviteInfo = async () => {
-      if (!inviteToken) return;
+    const fetchData = async () => {
+      // Get OAuth providers
+      const providers = await getOAuthProviders();
+      setOauthProviders(providers.filter(p => p.enabled));
       
-      try {
-        const res = await axios.get(`${API}/invites/validate/${inviteToken}`);
-        if (res.data.valid) {
-          setInviteInfo(res.data);
-          if (res.data.email) {
-            setEmail(res.data.email);
+      // Validate invite if present
+      if (inviteToken) {
+        try {
+          const res = await axios.get(`${API}/invites/validate/${inviteToken}`);
+          if (res.data.valid) {
+            setInviteInfo(res.data);
+            if (res.data.email) {
+              setEmail(res.data.email);
+            }
           }
+        } catch (e) {
+          console.error('Failed to validate invite:', e);
         }
-      } catch (e) {
-        console.error('Failed to validate invite:', e);
       }
     };
     
-    fetchInviteInfo();
-  }, [inviteToken]);
+    fetchData();
+  }, [inviteToken, getOAuthProviders]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
