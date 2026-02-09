@@ -58,7 +58,12 @@ const HomePage = () => {
     <div className="page-container" data-testid="home-page">
       <header className="page-header">
         <h1>🧠 Hybrid Intelligence Core</h1>
-        <p className="subtitle">Multi-Model AI Pipeline System</p>
+        <p className="subtitle">
+          {currentTeam ? `${currentTeam.name} Workspace` : 'Multi-Model AI Pipeline System'}
+        </p>
+        {user && (
+          <p className="welcome-text">Welcome back, {user.first_name}!</p>
+        )}
       </header>
 
       <div className="stats-row">
