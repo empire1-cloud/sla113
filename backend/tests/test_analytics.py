@@ -107,11 +107,12 @@ class TestAnalyticsEndpoints:
             assert item["confidence_trend"] in ["stable", "rising", "falling"]
             
     def test_system_health_returns_metrics(self):
-        """Test /api/analytics/system-health returns health metrics (MOCKED)"""
+        """Test /api/analytics/system-health returns real psutil metrics"""
         response = requests.get(f"{BASE_URL}/api/analytics/system-health")
         assert response.status_code == 200
         
         data = response.json()
+        # Basic fields
         assert "cpu_usage" in data
         assert "memory_usage" in data
         assert "disk_usage" in data
@@ -119,11 +120,43 @@ class TestAnalyticsEndpoints:
         assert "uptime_hours" in data
         assert "status" in data
         
-        # Verify ranges (mock data should be reasonable)
+        # NEW psutil fields
+        assert "psutil_available" in data
+        assert "memory_total_gb" in data
+        assert "memory_used_gb" in data
+        assert "disk_total_gb" in data
+        assert "disk_used_gb" in data
+        assert "load_average" in data
+        
+        # Verify psutil is available (real metrics)
+        assert data["psutil_available"] == True, "psutil should be available for real metrics"
+        
+        # Verify ranges
         assert 0 <= data["cpu_usage"] <= 100
         assert 0 <= data["memory_usage"] <= 100
         assert 0 <= data["disk_usage"] <= 100
         assert data["status"] in ["healthy", "degraded", "critical"]
+        
+        # Verify memory details
+        assert isinstance(data["memory_total_gb"], (int, float))
+        assert isinstance(data["memory_used_gb"], (int, float))
+        assert data["memory_total_gb"] > 0
+        assert data["memory_used_gb"] >= 0
+        assert data["memory_used_gb"] <= data["memory_total_gb"]
+        
+        # Verify disk details
+        assert isinstance(data["disk_total_gb"], (int, float))
+        assert isinstance(data["disk_used_gb"], (int, float))
+        assert data["disk_total_gb"] > 0
+        assert data["disk_used_gb"] >= 0
+        assert data["disk_used_gb"] <= data["disk_total_gb"]
+        
+        # Verify load average (array with 3 values: 1, 5, 15 min)
+        assert isinstance(data["load_average"], list)
+        assert len(data["load_average"]) == 3
+        for load_val in data["load_average"]:
+            assert isinstance(load_val, (int, float))
+            assert load_val >= 0
         
     def test_pipeline_graph_returns_nodes_and_edges(self):
         """Test /api/analytics/pipeline-graph returns graph structure"""
