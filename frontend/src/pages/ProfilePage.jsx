@@ -67,7 +67,7 @@ const ProfilePage = () => {
       });
       toast.success('Profile updated successfully');
     } catch (e) {
-      toast.error(e.response?.data?.detail || 'Failed to update profile');
+      toast.error(getErrorMessage(e));
     } finally {
       setProfileLoading(false);
     }
