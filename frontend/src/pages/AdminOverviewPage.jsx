@@ -7,7 +7,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PageLoading } from '../components/ui/LoadingState';
-import { EmptyState } from '../components/ui/EmptyState';
 import { getErrorMessage } from '../components/ui/ErrorMessage';
 
 const AdminOverviewPage = () => {
@@ -74,6 +73,8 @@ const AdminOverviewPage = () => {
     );
   }
 
+  const recentSignups = stats?.recent_signups || [];
+
   return (
     <div className="page-container" data-testid="admin-page">
       <header className="page-header">
@@ -115,15 +116,15 @@ const AdminOverviewPage = () => {
             <h2>Recent Signups</h2>
           </div>
           <div className="card-body" style={{ padding: '1rem' }}>
-            {!stats?.recent_signups?.length ? (
-              <EmptyState
-                icon="👋"
-                title="No recent signups"
-                description="New user registrations will appear here."
-              />
+            {recentSignups.length === 0 ? (
+              <div className="empty-state-inline" data-testid="no-signups">
+                <span className="empty-icon">👋</span>
+                <p className="empty-title">No recent signups</p>
+                <p className="empty-desc">New user registrations will appear here.</p>
+              </div>
             ) : (
               <div className="signups-list">
-                {stats.recent_signups.map((signup, index) => (
+                {recentSignups.map((signup, index) => (
                   <div key={index} className="signup-item" data-testid={`signup-${index}`}>
                     <div className="signup-info">
                       <span className="signup-name">{signup.name}</span>
@@ -137,6 +138,28 @@ const AdminOverviewPage = () => {
           </div>
         </section>
       </div>
+
+      <style>{`
+        .empty-state-inline {
+          text-align: center;
+          padding: 2rem;
+        }
+        .empty-state-inline .empty-icon {
+          font-size: 2.5rem;
+          display: block;
+          margin-bottom: 0.75rem;
+          opacity: 0.5;
+        }
+        .empty-state-inline .empty-title {
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 0.25rem;
+        }
+        .empty-state-inline .empty-desc {
+          color: var(--text-secondary);
+          font-size: 0.85rem;
+        }
+      `}</style>
     </div>
   );
 };
