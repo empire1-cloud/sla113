@@ -2,7 +2,7 @@
 Strategy Engine
 Generates actionable strategies using the hybrid AI stack.
 
-Supports: OpenAI, Anthropic, Google models
+Supports: OpenAI, Anthropic, Google models via local emergentintegrations package.
 """
 
 import os
@@ -10,8 +10,8 @@ import json
 import asyncio
 from typing import Optional, Dict, Any
 
-# Use local integrations (replaces emergentintegrations)
-from integrations.llm import ChatLLM, LLMConfig, ModelProvider
+# Use local emergentintegrations package (self-contained, no external dependencies)
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 
 class StrategyEngine:
@@ -20,6 +20,7 @@ class StrategyEngine:
     MODEL_CONFIG = {
         "gpt-5.2": ("openai", "gpt-4o"),
         "gpt-4o": ("openai", "gpt-4o"),
+        "gpt-4o-mini": ("openai", "gpt-4o-mini"),
         "claude-sonnet-4.5": ("anthropic", "claude-sonnet-4-5-20250929"),
         "claude-3-5-sonnet": ("anthropic", "claude-3-5-sonnet-20241022"),
         "gemini-3-flash": ("google", "gemini-2.0-flash"),
@@ -50,16 +51,28 @@ OUTPUT FORMAT (JSON ONLY):
 }
 
 Return ONLY the JSON object. No other text."""
+
+    @classmethod
+    def _get_api_key(cls) -> str:
+        """Get API key from environment."""
+        return os.environ.get("EMERGENT_LLM_KEY") or \
+               os.environ.get("OPENAI_API_KEY") or \
+               os.environ.get("ANTHROPIC_API_KEY") or \
+               os.environ.get("GOOGLE_API_KEY")
     
     @classmethod
-    def _get_api_key(cls, provider: str) -> str:
-        """Get API key for provider from environment."""
-        provider_map = {
-            "openai": ModelProvider.OPENAI,
-            "anthropic": ModelProvider.ANTHROPIC,
-            "google": ModelProvider.GOOGLE,
-        }
-        return LLMConfig.get_api_key(provider_map.get(provider, ModelProvider.OPENAI))
+    def _create_chat(cls, model: str) -> LlmChat:
+        """Create configured chat instance."""
+        api_key = cls._get_api_key()
+        provider, model_name = cls.MODEL_CONFIG.get(model, ("openai", "gpt-4o"))
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"strategy-{model}",
+            system_message=cls.SYSTEM_PROMPT
+        ).with_model(provider, model_name)
+        
+        return chat
     
     @classmethod
     async def _generate_async(
@@ -70,40 +83,22 @@ Return ONLY the JSON object. No other text."""
         tone: str = "direct"
     ) -> Dict[str, Any]:
         """Generate strategy asynchronously."""
+        chat = cls._create_chat(model)
         
-        # Get provider and model ID
-        provider, model_id = cls.MODEL_CONFIG.get(model, ("openai", "gpt-4o"))
-        
-        # Get API key
-        api_key = cls._get_api_key(provider)
-        if not api_key:
-            raise ValueError(f"No API key configured for {provider}")
-        
-        # Build prompt
         prompt = f"Goal: {goal}"
         if context:
             prompt += f"\nContext: {context}"
         if tone:
             prompt += f"\nTone: {tone}"
         
-        # Call LLM
-        messages = [{"role": "user", "content": prompt}]
-        
-        response = await ChatLLM.chat(
-            api_key=api_key,
-            model=model_id,
-            provider=provider,
-            messages=messages,
-            system_prompt=cls.SYSTEM_PROMPT,
-            temperature=0.7,
-            max_tokens=4096,
-        )
-        
-        response_text = response.content
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
         
         # Parse JSON from response
         try:
-            # Try to extract JSON if wrapped in markdown
+            response_text = response
+            
+            # Extract JSON if wrapped in markdown
             if "```json" in response_text:
                 start = response_text.find("```json") + 7
                 end = response_text.find("```", start)
@@ -117,7 +112,7 @@ Return ONLY the JSON object. No other text."""
         except json.JSONDecodeError:
             # Return structured error if JSON parsing fails
             return {
-                "summary": response_text[:500],
+                "summary": response[:500] if isinstance(response, str) else str(response)[:500],
                 "steps": ["Review the generated content and extract actionable steps"],
                 "risks": ["Response was not in expected JSON format"],
                 "resources": [],
