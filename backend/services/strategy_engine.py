@@ -1,18 +1,29 @@
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+"""
+Strategy Engine
+Generates actionable strategies using the hybrid AI stack.
+
+Supports: OpenAI, Anthropic, Google models
+"""
+
 import os
 import json
 import asyncio
-from dotenv import load_dotenv
+from typing import Optional, Dict, Any
 
-load_dotenv()
+# Use local integrations (replaces emergentintegrations)
+from integrations.llm import ChatLLM, LLMConfig, ModelProvider
+
 
 class StrategyEngine:
     """Generates actionable strategies using the hybrid AI stack."""
     
     MODEL_CONFIG = {
-        "gpt-5.2": ("openai", "gpt-5.2"),
+        "gpt-5.2": ("openai", "gpt-4o"),
+        "gpt-4o": ("openai", "gpt-4o"),
         "claude-sonnet-4.5": ("anthropic", "claude-sonnet-4-5-20250929"),
-        "gemini-3-flash": ("gemini", "gemini-3-flash-preview")
+        "claude-3-5-sonnet": ("anthropic", "claude-3-5-sonnet-20241022"),
+        "gemini-3-flash": ("google", "gemini-2.0-flash"),
+        "gemini-2.0-flash": ("google", "gemini-2.0-flash"),
     }
     
     SYSTEM_PROMPT = """You are the Strategy Engine.
@@ -41,52 +52,72 @@ OUTPUT FORMAT (JSON ONLY):
 Return ONLY the JSON object. No other text."""
     
     @classmethod
-    def _get_api_key(cls) -> str:
-        return os.environ.get("EMERGENT_LLM_KEY")
+    def _get_api_key(cls, provider: str) -> str:
+        """Get API key for provider from environment."""
+        provider_map = {
+            "openai": ModelProvider.OPENAI,
+            "anthropic": ModelProvider.ANTHROPIC,
+            "google": ModelProvider.GOOGLE,
+        }
+        return LLMConfig.get_api_key(provider_map.get(provider, ModelProvider.OPENAI))
     
     @classmethod
-    def _create_chat(cls, model: str) -> LlmChat:
-        api_key = cls._get_api_key()
-        provider, model_name = cls.MODEL_CONFIG.get(model, ("openai", "gpt-5.2"))
+    async def _generate_async(
+        cls, 
+        model: str, 
+        goal: str, 
+        context: str = None, 
+        tone: str = "direct"
+    ) -> Dict[str, Any]:
+        """Generate strategy asynchronously."""
         
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"strategy-{model}",
-            system_message=cls.SYSTEM_PROMPT
-        ).with_model(provider, model_name)
+        # Get provider and model ID
+        provider, model_id = cls.MODEL_CONFIG.get(model, ("openai", "gpt-4o"))
         
-        return chat
-    
-    @classmethod
-    async def _generate_async(cls, model: str, goal: str, context: str = None, tone: str = "direct") -> dict:
-        chat = cls._create_chat(model)
+        # Get API key
+        api_key = cls._get_api_key(provider)
+        if not api_key:
+            raise ValueError(f"No API key configured for {provider}")
         
+        # Build prompt
         prompt = f"Goal: {goal}"
         if context:
             prompt += f"\nContext: {context}"
         if tone:
             prompt += f"\nTone: {tone}"
         
-        message = UserMessage(text=prompt)
-        response = await chat.send_message(message)
+        # Call LLM
+        messages = [{"role": "user", "content": prompt}]
+        
+        response = await ChatLLM.chat(
+            api_key=api_key,
+            model=model_id,
+            provider=provider,
+            messages=messages,
+            system_prompt=cls.SYSTEM_PROMPT,
+            temperature=0.7,
+            max_tokens=4096,
+        )
+        
+        response_text = response.content
         
         # Parse JSON from response
         try:
             # Try to extract JSON if wrapped in markdown
-            if "```json" in response:
-                start = response.find("```json") + 7
-                end = response.find("```", start)
-                response = response[start:end].strip()
-            elif "```" in response:
-                start = response.find("```") + 3
-                end = response.find("```", start)
-                response = response[start:end].strip()
+            if "```json" in response_text:
+                start = response_text.find("```json") + 7
+                end = response_text.find("```", start)
+                response_text = response_text[start:end].strip()
+            elif "```" in response_text:
+                start = response_text.find("```") + 3
+                end = response_text.find("```", start)
+                response_text = response_text[start:end].strip()
             
-            return json.loads(response)
+            return json.loads(response_text)
         except json.JSONDecodeError:
             # Return structured error if JSON parsing fails
             return {
-                "summary": response[:500],
+                "summary": response_text[:500],
                 "steps": ["Review the generated content and extract actionable steps"],
                 "risks": ["Response was not in expected JSON format"],
                 "resources": [],
@@ -94,11 +125,23 @@ Return ONLY the JSON object. No other text."""
             }
     
     @classmethod
-    def generate(cls, model: str, goal: str, context: str = None, tone: str = "direct") -> dict:
+    def generate(
+        cls, 
+        model: str, 
+        goal: str, 
+        context: str = None, 
+        tone: str = "direct"
+    ) -> Dict[str, Any]:
         """Synchronous wrapper for async generation."""
         return asyncio.run(cls._generate_async(model, goal, context, tone))
     
     @classmethod
-    async def generate_async(cls, model: str, goal: str, context: str = None, tone: str = "direct") -> dict:
+    async def generate_async(
+        cls, 
+        model: str, 
+        goal: str, 
+        context: str = None, 
+        tone: str = "direct"
+    ) -> Dict[str, Any]:
         """Async generation method."""
         return await cls._generate_async(model, goal, context, tone)
