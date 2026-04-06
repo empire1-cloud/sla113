@@ -27,7 +27,7 @@ except ImportError:
 
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 APP_NAME = "Hybrid Intelligence"
-APP_URL = os.environ.get("FRONTEND_URL", "https://saas-oversight-1.preview.emergentagent.com")
+APP_URL = os.environ.get("FRONTEND_URL", "https://genesis-engine-4.preview.emergentagent.com")
 
 
 async def send_email(
