@@ -1633,6 +1633,10 @@ const babelMetadataPlugin = ({ types: t }) => {
     visitor: {
       // Add metadata attributes to React components (capitalized JSX)
       JSXElement(jsxPath, state) {
+        // Skip SLA113 component files to avoid babel recursion with @phosphor-icons
+        const fname = state.filename || state.file?.opts?.filename || "";
+        if (fname.includes("/sla113/") || fname.includes("SLA113")) return;
+
         const openingElement = jsxPath.node.openingElement;
         if (!openingElement?.name) return;
         const elementName = getName(openingElement);
@@ -1888,6 +1892,10 @@ const babelMetadataPlugin = ({ types: t }) => {
 
       // Add metadata to native HTML elements (lowercase JSX)
       JSXOpeningElement(jsxPath, state) {
+        // Skip SLA113 component files
+        const fname = state.filename || state.file?.opts?.filename || "";
+        if (fname.includes("/sla113/") || fname.includes("SLA113")) return;
+
         if (!jsxPath.node.name || !jsxPath.node.name.name) {
           return;
         }

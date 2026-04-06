@@ -70,6 +70,7 @@ const AppHeader = () => {
       <nav className="header-nav-main">
         <Link to="/engines" className="nav-link" data-testid="engines-nav">Engines</Link>
         <Link to="/pipeline-composer" className="nav-link" data-testid="composer-nav">Composer</Link>
+        <Link to="/sla113" className="nav-link sla113-nav" data-testid="sla113-nav">SLA113</Link>
         <Link to="/analytics" className="nav-link" data-testid="analytics-nav">Analytics</Link>
         <Link to="/history" className="nav-link" data-testid="history-nav">History</Link>
       </nav>

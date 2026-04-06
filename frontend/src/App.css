@@ -3580,6 +3580,22 @@ body {
   background: #00b894;
 }
 
+.nav-link.sla113-nav {
+  color: #facc15;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  padding: 0.35rem 0.75rem;
+}
+
+.nav-link.sla113-nav:hover {
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.5);
+}
+
 .header-right {
   display: flex;
   align-items: center;
