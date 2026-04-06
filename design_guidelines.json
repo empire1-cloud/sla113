@@ -1,0 +1,90 @@
+{
+  "theme": "dark",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "vibe": "Command-center, data-rich, high-end developer tool, futuristic but utilitarian.",
+  "typography": {
+    "primary_font": "JetBrains Mono",
+    "secondary_font": "IBM Plex Sans",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl tracking-tighter font-bold",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-semibold",
+      "h3": "text-xl sm:text-2xl tracking-tight font-medium",
+      "h4": "text-lg sm:text-xl tracking-tight font-medium",
+      "body": "text-sm sm:text-base leading-relaxed",
+      "labels": "text-xs tracking-[0.2em] uppercase font-bold"
+    },
+    "guidelines": "Do not use generic fonts for headings. Use JetBrains Mono for all headings and UI labels to give a technical/developer feel. IBM Plex Sans for body text to maintain legibility."
+  },
+  "colors": {
+    "background": "#09090B",
+    "surface": "#18181B",
+    "surface_hover": "#27272A",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "primary": "#FACC15",
+    "primary_hover": "#EAB308",
+    "primary_foreground": "#09090B",
+    "accent_red": "#EF4444",
+    "accent_blue": "#002FA7",
+    "guidelines": "Swiss High-Contrast in Dark Mode: Mostly monochrome (black/grey/white) with high-contrast Yellow (#FACC15) for CTAs and Blue/Red for specific status indicators. Never use muddy greys; tint with cool or warm tones. Text must have at least 4.5:1 contrast."
+  },
+  "spacing_and_layout": {
+    "strategy": "The 'Control Room' Grid (Mode B). Dense, compact spacing for dashboard utility.",
+    "scale": "Tailwind spacing scale. Padding inside cards should be p-6. Gaps should be gap-4 or gap-6.",
+    "border_radius": "rounded-md (max 6px). Keep edges relatively sharp to match the technical tool vibe.",
+    "alignment": "Left-align dense content. Top-left optical alignment.",
+    "grid_classes": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+    "guidelines": "Use 'Grid Borders' style: border-collapse layouts or 1px subtle borders (border-white/10) around sections. The Logic Engine panel should lean into the 'Retro-Futurism' terminal look (dark indigo/black with monospace typography)."
+  },
+  "components": {
+    "buttons": "Sharp corners or slight radius (rounded-md). High contrast background (Yellow) with dark text for primary. Subtle border with hover lift for secondary.",
+    "cards": "Flat background (bg-zinc-900), 1px subtle border (border-zinc-800), no drop shadow. On hover, border color lightens (border-zinc-600) but background stays flat.",
+    "navigation": "Left sidebar (w-64) with stark contrast to the main content area. Links should have a subtle background shift and text brighten on hover. Keep a sticky top header in the main view for breadcrumbs and project selection.",
+    "inputs": "Shadcn UI inputs customized with bg-zinc-950, border-zinc-800, focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400.",
+    "charts": "If visualizing stats, use strict geometric lines, monochrome grey data points with one yellow/blue highlight."
+  },
+  "motion": {
+    "guidelines": "Minimalist micro-interactions. Very fast transitions (150ms) to feel snappy like a pro tool. Hover states should brighten borders and text. Page transitions should be simple fade-ins.",
+    "hover_effects": "transition-colors duration-150 ease-in-out"
+  },
+  "assets": {
+    "icons": "Phosphor Icons (@phosphor-icons/react) - strict geometric and technical look, perfect for a developer tool dashboard.",
+    "images": [
+      {
+        "category": "hero_background",
+        "url": "https://images.pexels.com/photos/3612932/pexels-photo-3612932.jpeg",
+        "description": "Futuristic abstract geometric hexagonal pattern. Use as a very subtle background for the main dashboard welcome state, with heavy opacity overlay (bg-black/80)."
+      },
+      {
+        "category": "project_thumbnail_platformer",
+        "url": "https://images.pexels.com/photos/10109585/pexels-photo-10109585.jpeg",
+        "description": "Vibrant surreal landscape to represent an RPG or Platformer game project thumbnail."
+      },
+      {
+        "category": "project_thumbnail_shooter",
+        "url": "https://images.unsplash.com/photo-1635046252882-910febb5c729?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwYXJ0JTIwbGFuZHNjYXBlfGVufDB8fHx8MTc3NTUwOTQ4MHww&ixlib=rb-4.1.0&q=85",
+        "description": "Digital square object desert to represent a Sci-fi Shooter or Strategy game project thumbnail."
+      },
+      {
+        "category": "project_thumbnail_puzzle",
+        "url": "https://images.unsplash.com/photo-1688141585058-50787735e064?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGRhcmslMjBnZW9tZXRyaWMlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3NTUwOTQ4MHww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract dark red geometric background for a Puzzle or Casino game thumbnail."
+      }
+    ],
+    "guidelines": "Never use placeholder images. If rendering thumbnails for game projects, use the provided digital art and geometric landscape images."
+  },
+  "structure": {
+    "pages": [
+      "Dashboard: List of recent game projects, quick stats, 'Create New Game' CTA.",
+      "Vision Engine: UI for generating sprites/backgrounds. Prompts input + grid of output images.",
+      "Logic Engine: Node/Code view for setting mechanics, RTP, rules.",
+      "Composer: Layout view combining generated assets and logic into a 'bundle'.",
+      "Stats Overview: High-level metrics on generated games, API usage, or player simulated stats."
+    ]
+  },
+  "accessibility": {
+    "testing_attributes": "All interactive elements MUST include data-testid attribute in kebab-case."
+  },
+  "instructions_to_main_agent": "Implement a full dashboard layout. Sidebar navigation to switch between the 5 panels. The initial state should be the Dashboard view showing game projects. Use Shadcn components heavily (Buttons, Cards, Inputs, Tabs for sub-navigation, Dialogs for creation). Apply the JetBrains Mono font globally to headers. Override Shadcn default borders and backgrounds to match the #09090B / #18181B dark theme. Do NOT use standard Shadcn blue; use Yellow (#FACC15) for CTAs. Remember to install @phosphor-icons/react."
+}
