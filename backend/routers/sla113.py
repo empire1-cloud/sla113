@@ -7,6 +7,7 @@ import uuid
 import logging
 import os
 import json
+import asyncio
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 from database import get_database
@@ -417,6 +418,22 @@ async def update_tenant_rtp(tenant_id: str, rtp: int):
 
 
 # ─── Night Queue (Persistent Jobs) ───
+JOB_STAGES = {
+    "ARCADE_40": ["Asset Indexing", "Sprite Generation", "Physics Binding", "AI Balancing", "Package Export"],
+    "ARCADE_60": ["Asset Indexing", "Sprite Generation", "Physics Binding", "AI Balancing", "Network Layer", "Package Export"],
+    "SLOTS_20": ["Reel Mapping", "Paytable Calculation", "RTP Verification", "Visual Rendering", "Package Export"],
+    "OPEN_WORLD": ["World Generation", "NPC Scripting", "Physics Binding", "AI Pathing", "Texture Streaming", "LOD Pipeline", "Package Export"],
+    "CASINO_SUITE": ["Game Selection Matrix", "RTP Calibration", "Lobby UI", "Payment Gateway", "Package Export"],
+    "CUSTOM_OS_BUILD": ["Init Scaffold", "Core Logic", "Asset Pipeline", "Integration Pass", "Package Export"],
+    "AAA_FISH_SLOT": ["Asset Indexing", "Sprite Generation", "Boss Patterns", "RTP Verification", "Package Export"],
+    "GTA5_TYPE": ["World Generation", "NPC Scripting", "Vehicle Physics", "Mission Logic", "Package Export"],
+    "COD_WARFARE": ["Map Generation", "Weapon Balancing", "Netcode Layer", "AI Opponents", "Package Export"],
+    "FANTASY_RPG": ["Lore Generation", "Skill Trees", "Monster AI", "Dungeon Layout", "Package Export"],
+}
+
+DEFAULT_STAGES = ["Initialization", "Core Processing", "Asset Compilation", "Quality Check", "Package Export"]
+
+
 class CreateJobRequest(BaseModel):
     preset: str
     config: Optional[dict] = None
@@ -425,8 +442,11 @@ class CreateJobRequest(BaseModel):
 
 @router.post("/jobs")
 async def create_job(req: CreateJobRequest):
-    """Queue a new build job."""
+    """Queue a new build job with processing stages."""
     now = datetime.now(timezone.utc).isoformat()
+    stage_names = JOB_STAGES.get(req.preset, DEFAULT_STAGES)
+    stages = [{"name": s, "status": "pending", "progress": 0} for s in stage_names]
+
     job = {
         "id": f"JOB-{uuid.uuid4().hex[:6].upper()}",
         "preset": req.preset,
@@ -434,7 +454,8 @@ async def create_job(req: CreateJobRequest):
         "progress": 0,
         "priority": req.priority,
         "config": req.config or {},
-        "logs": [f"[{now}] Job created. Preset: {req.preset}"],
+        "stages": stages,
+        "logs": [f"[{now}] Job queued. Preset: {req.preset}. Priority: {req.priority}. Stages: {len(stages)}"],
         "created_at": now,
         "updated_at": now,
     }
@@ -476,24 +497,138 @@ async def delete_job(job_id: str):
 
 @router.post("/jobs/{job_id}/process")
 async def process_job(job_id: str):
-    """Simulate processing a job (advances progress)."""
+    """Manually advance a job one step."""
     job = await jobs_collection().find_one({"id": job_id}, {"_id": 0})
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     if job["status"] == "completed":
         return job
 
-    new_progress = min(job["progress"] + 25, 100)
-    new_status = "completed" if new_progress >= 100 else "processing"
+    return await _advance_job(job)
+
+
+async def _advance_job(job):
+    """Internal: advance a job through its stages."""
+    import random
     now = datetime.now(timezone.utc).isoformat()
-    log_msg = f"[{now}] Progress: {new_progress}% — {'Build complete.' if new_status == 'completed' else 'Compiling...'}"
+    stages = job.get("stages", [])
+
+    if not stages:
+        # Legacy job without stages — simple progress bump
+        new_progress = min(job["progress"] + 25, 100)
+        new_status = "completed" if new_progress >= 100 else "processing"
+        log_msg = f"[{now}] Progress: {new_progress}% — {'Complete.' if new_status == 'completed' else 'Processing...'}"
+        await jobs_collection().update_one(
+            {"id": job["id"]},
+            {"$set": {"progress": new_progress, "status": new_status, "updated_at": now}, "$push": {"logs": log_msg}}
+        )
+        return await jobs_collection().find_one({"id": job["id"]}, {"_id": 0})
+
+    # Find current active stage
+    current_idx = next((i for i, s in enumerate(stages) if s["status"] != "completed"), len(stages))
+
+    if current_idx < len(stages):
+        stage = stages[current_idx]
+        increment = random.randint(20, 45)
+        new_stage_progress = min(stage["progress"] + increment, 100)
+        stage["progress"] = new_stage_progress
+
+        if new_stage_progress >= 100:
+            stage["status"] = "completed"
+            log_msg = f"[{now}] Stage '{stage['name']}' DONE."
+        else:
+            stage["status"] = "processing"
+            log_msg = f"[{now}] {stage['name']}: {new_stage_progress}%"
+
+    # Calculate overall progress
+    total_progress = sum(s["progress"] for s in stages) // len(stages) if stages else 100
+    all_done = all(s["status"] == "completed" for s in stages)
+    new_status = "completed" if all_done else "processing"
+
+    if all_done:
+        log_msg = f"[{now}] ALL STAGES COMPLETE. Job finished."
 
     await jobs_collection().update_one(
-        {"id": job_id},
-        {"$set": {"progress": new_progress, "status": new_status, "updated_at": now}, "$push": {"logs": log_msg}}
+        {"id": job["id"]},
+        {"$set": {"stages": stages, "progress": total_progress, "status": new_status, "updated_at": now},
+         "$push": {"logs": log_msg}}
     )
-    job = await jobs_collection().find_one({"id": job_id}, {"_id": 0})
-    return job
+    return await jobs_collection().find_one({"id": job["id"]}, {"_id": 0})
+
+
+# ─── Background Worker ───
+_worker_running = False
+_worker_task = None
+
+
+async def night_queue_worker():
+    """Background worker that auto-processes pending/processing jobs."""
+    global _worker_running
+    _worker_running = True
+    logger.info("Night Queue Worker started")
+
+    while _worker_running:
+        try:
+            # Find jobs that need processing
+            active_jobs = await jobs_collection().find(
+                {"status": {"$in": ["pending", "processing"]}}, {"_id": 0}
+            ).sort("priority", -1).to_list(10)
+
+            for job in active_jobs:
+                if not _worker_running:
+                    break
+                await _advance_job(job)
+
+            if active_jobs:
+                logger.debug(f"Worker processed {len(active_jobs)} jobs")
+
+        except Exception as e:
+            logger.error(f"Worker error: {e}")
+
+        await asyncio.sleep(3)  # Process every 3 seconds
+
+    logger.info("Night Queue Worker stopped")
+
+
+def start_worker():
+    """Start the background worker."""
+    global _worker_task, _worker_running
+    if _worker_task and not _worker_task.done():
+        return  # Already running
+    _worker_running = True
+    _worker_task = asyncio.create_task(night_queue_worker())
+
+
+def stop_worker():
+    """Stop the background worker."""
+    global _worker_running
+    _worker_running = False
+
+
+@router.get("/worker/status")
+async def worker_status():
+    """Get Night Queue worker status."""
+    active = await jobs_collection().count_documents({"status": {"$in": ["pending", "processing"]}})
+    completed = await jobs_collection().count_documents({"status": "completed"})
+    total = await jobs_collection().count_documents({})
+    return {
+        "running": _worker_running and _worker_task is not None and not _worker_task.done(),
+        "active_jobs": active,
+        "completed_jobs": completed,
+        "total_jobs": total,
+    }
+
+
+@router.post("/worker/toggle")
+async def toggle_worker():
+    """Start or stop the Night Queue worker."""
+    global _worker_running
+    if _worker_running and _worker_task and not _worker_task.done():
+        stop_worker()
+        return {"status": "stopped"}
+    else:
+        start_worker()
+        return {"status": "started"}
 
 
 # ─── Revenue Pipelines ───
