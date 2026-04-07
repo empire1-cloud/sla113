@@ -77,6 +77,7 @@ SLA113 is a sovereign AI-powered game creation platform that generates complete 
 - [x] **Build Pipeline** — Compile Engine with WebGL/APK/Both targets, 5-stage build process, optimization modes
 - [x] **Compliance Engine** — Certification scans for GLI, MGA, UKGC, CURACAO jurisdictions with pass/fail results
 - [x] **Deploy Engine** — CDN deployment (Cloudflare/AWS/GCP/Custom) with region selection, SSL, live URLs
+- [x] **Night Queue Background Worker** — Auto-processes jobs through named stages every 3s, worker start/stop toggle, 10 game presets with unique stage sequences, frontend auto-polls
 - [x] Critical Drift overlay
 - [x] Daemon Uplink heartbeat
 - [x] 16 game types (casino + AAA)
@@ -87,7 +88,6 @@ SLA113 is a sovereign AI-powered game creation platform that generates complete 
 
 ## Backlog
 - [ ] Audio Forge — wire to real audio generation API (Vertex API later)
-- [ ] Night Queue — persistent background job workers (currently CRUD-only)
 - [ ] Real-time Frontline via WebSocket
 
 ## Key Files
