@@ -383,3 +383,305 @@ class TestSLA113ExistingProject:
             print(f"Found existing project: {neon_fish['name']} (ID: {neon_fish['id']})")
         else:
             print("Note: 'Neon Fish Hunt' project not found - may have been deleted")
+
+
+# ─── NEW TESTS FOR TENANTS, JOBS, PIPELINES, TERMINAL ───
+
+class TestSLA113Tenants:
+    """Test white-label tenants CRUD - /api/sla113/tenants"""
+    
+    def test_list_tenants(self, api_client):
+        """GET /api/sla113/tenants should return list of tenants"""
+        response = api_client.get(f"{API_URL}/tenants")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "tenants" in data
+        assert "total" in data
+        assert isinstance(data["tenants"], list)
+    
+    def test_create_tenant(self, api_client):
+        """POST /api/sla113/tenants should create a new tenant"""
+        tenant_data = {
+            "name": "TEST_ARCADE_TENANT",
+            "subdomain": f"test-arcade-{int(time.time())}.empire1.cloud"
+        }
+        response = api_client.post(f"{API_URL}/tenants", json=tenant_data)
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["name"] == "TEST_ARCADE_TENANT"
+        assert "test-arcade" in data["subdomain"]
+        assert data["status"] == "active"
+        assert data["credits"] == 0
+        assert data["rtp_mode"] == 92
+        assert "id" in data
+        
+        # Store for cleanup
+        TestSLA113Tenants.created_tenant_id = data["id"]
+    
+    def test_create_duplicate_subdomain_fails(self, api_client):
+        """POST /api/sla113/tenants with duplicate subdomain should return 409"""
+        tenant_id = getattr(TestSLA113Tenants, 'created_tenant_id', None)
+        if not tenant_id:
+            pytest.skip("No tenant created to test duplicate")
+        
+        # Get the subdomain of the created tenant
+        response = api_client.get(f"{API_URL}/tenants")
+        tenants = response.json()["tenants"]
+        existing = next((t for t in tenants if t["id"] == tenant_id), None)
+        if not existing:
+            pytest.skip("Created tenant not found")
+        
+        # Try to create with same subdomain
+        response = api_client.post(f"{API_URL}/tenants", json={
+            "name": "DUPLICATE_TEST",
+            "subdomain": existing["subdomain"]
+        })
+        assert response.status_code == 409
+    
+    def test_update_tenant_credits(self, api_client):
+        """PUT /api/sla113/tenants/{id}/credits should add credits"""
+        tenant_id = getattr(TestSLA113Tenants, 'created_tenant_id', None)
+        if not tenant_id:
+            pytest.skip("No tenant created to update")
+        
+        response = api_client.put(f"{API_URL}/tenants/{tenant_id}/credits?amount=1000")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["credits"] == 1000
+    
+    def test_update_tenant_rtp(self, api_client):
+        """PUT /api/sla113/tenants/{id}/rtp should set RTP mode"""
+        tenant_id = getattr(TestSLA113Tenants, 'created_tenant_id', None)
+        if not tenant_id:
+            pytest.skip("No tenant created to update")
+        
+        response = api_client.put(f"{API_URL}/tenants/{tenant_id}/rtp?rtp=95")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["rtp_mode"] == 95
+    
+    def test_update_tenant_rtp_invalid(self, api_client):
+        """PUT /api/sla113/tenants/{id}/rtp with invalid RTP should return 400"""
+        tenant_id = getattr(TestSLA113Tenants, 'created_tenant_id', None)
+        if not tenant_id:
+            pytest.skip("No tenant created to update")
+        
+        response = api_client.put(f"{API_URL}/tenants/{tenant_id}/rtp?rtp=150")
+        assert response.status_code == 400
+    
+    def test_delete_tenant(self, api_client):
+        """DELETE /api/sla113/tenants/{id} should delete tenant"""
+        tenant_id = getattr(TestSLA113Tenants, 'created_tenant_id', None)
+        if not tenant_id:
+            pytest.skip("No tenant created to delete")
+        
+        response = api_client.delete(f"{API_URL}/tenants/{tenant_id}")
+        assert response.status_code == 200
+        assert response.json()["deleted"] == True
+
+
+class TestSLA113Jobs:
+    """Test Night Queue jobs CRUD - /api/sla113/jobs"""
+    
+    def test_list_jobs(self, api_client):
+        """GET /api/sla113/jobs should return list of jobs"""
+        response = api_client.get(f"{API_URL}/jobs")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "jobs" in data
+        assert "total" in data
+        assert isinstance(data["jobs"], list)
+    
+    def test_create_job(self, api_client):
+        """POST /api/sla113/jobs should create a new job"""
+        job_data = {
+            "preset": "TEST_ARCADE_40",
+            "priority": "high"
+        }
+        response = api_client.post(f"{API_URL}/jobs", json=job_data)
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["preset"] == "TEST_ARCADE_40"
+        assert data["priority"] == "high"
+        assert data["status"] == "pending"
+        assert data["progress"] == 0
+        assert "id" in data
+        assert data["id"].startswith("JOB-")
+        
+        # Store for cleanup
+        TestSLA113Jobs.created_job_id = data["id"]
+    
+    def test_update_job_progress(self, api_client):
+        """PUT /api/sla113/jobs/{id}/progress should update progress"""
+        job_id = getattr(TestSLA113Jobs, 'created_job_id', None)
+        if not job_id:
+            pytest.skip("No job created to update")
+        
+        response = api_client.put(f"{API_URL}/jobs/{job_id}/progress?progress=50&status=processing")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["progress"] == 50
+        assert data["status"] == "processing"
+    
+    def test_process_job(self, api_client):
+        """POST /api/sla113/jobs/{id}/process should advance job progress"""
+        job_id = getattr(TestSLA113Jobs, 'created_job_id', None)
+        if not job_id:
+            pytest.skip("No job created to process")
+        
+        response = api_client.post(f"{API_URL}/jobs/{job_id}/process")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["progress"] >= 50  # Should have advanced
+    
+    def test_delete_job(self, api_client):
+        """DELETE /api/sla113/jobs/{id} should delete job"""
+        job_id = getattr(TestSLA113Jobs, 'created_job_id', None)
+        if not job_id:
+            pytest.skip("No job created to delete")
+        
+        response = api_client.delete(f"{API_URL}/jobs/{job_id}")
+        assert response.status_code == 200
+        assert response.json()["deleted"] == True
+    
+    def test_delete_nonexistent_job(self, api_client):
+        """DELETE /api/sla113/jobs/{id} with invalid ID should return 404"""
+        response = api_client.delete(f"{API_URL}/jobs/JOB-INVALID123")
+        assert response.status_code == 404
+
+
+class TestSLA113Pipelines:
+    """Test Revenue Pipelines CRUD - /api/sla113/pipelines"""
+    
+    def test_list_pipelines_has_seeded_data(self, api_client):
+        """GET /api/sla113/pipelines should return seeded pipelines"""
+        response = api_client.get(f"{API_URL}/pipelines")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "pipelines" in data
+        assert "total" in data
+        assert "total_revenue" in data
+        
+        # Should have 6 seeded pipelines
+        pipelines = data["pipelines"]
+        assert len(pipelines) >= 6, f"Expected at least 6 seeded pipelines, got {len(pipelines)}"
+        
+        # Verify seeded pipeline names
+        names = [p["name"] for p in pipelines]
+        expected_names = [
+            "Lead Qualification Engine",
+            "CRM Syncing Logic",
+            "Pro Voice Over (SaaS)",
+            "SMS/Email Gateway",
+            "White-Label Instance",
+            "Managed Sovereignty"
+        ]
+        for name in expected_names:
+            assert name in names, f"Missing seeded pipeline: {name}"
+    
+    def test_create_pipeline(self, api_client):
+        """POST /api/sla113/pipelines should create a new pipeline"""
+        pipeline_data = {
+            "name": "TEST_Custom_Pipeline",
+            "type": "Automation",
+            "lane": 1
+        }
+        response = api_client.post(f"{API_URL}/pipelines", json=pipeline_data)
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["name"] == "TEST_Custom_Pipeline"
+        assert data["type"] == "Automation"
+        assert data["lane"] == 1
+        assert data["status"] == "active"
+        assert data["executions"] == 0
+        assert data["revenue"] == 0
+        assert "id" in data
+        
+        # Store for cleanup
+        TestSLA113Pipelines.created_pipeline_id = data["id"]
+    
+    def test_pulse_pipeline(self, api_client):
+        """PUT /api/sla113/pipelines/{id}/pulse should trigger heartbeat"""
+        pipeline_id = getattr(TestSLA113Pipelines, 'created_pipeline_id', None)
+        if not pipeline_id:
+            pytest.skip("No pipeline created to pulse")
+        
+        response = api_client.put(f"{API_URL}/pipelines/{pipeline_id}/pulse")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert data["heartbeat"] == "active"
+        assert data["executions"] >= 1
+        assert data["revenue"] >= 50  # Random between 50-500
+    
+    def test_delete_pipeline(self, api_client):
+        """DELETE /api/sla113/pipelines/{id} should delete pipeline"""
+        pipeline_id = getattr(TestSLA113Pipelines, 'created_pipeline_id', None)
+        if not pipeline_id:
+            pytest.skip("No pipeline created to delete")
+        
+        response = api_client.delete(f"{API_URL}/pipelines/{pipeline_id}")
+        assert response.status_code == 200
+        assert response.json()["deleted"] == True
+
+
+class TestSLA113Terminal:
+    """Test AI Terminal endpoint - /api/sla113/terminal"""
+    
+    def test_terminal_command(self, api_client):
+        """POST /api/sla113/terminal should return AI response"""
+        response = api_client.post(f"{API_URL}/terminal", json={
+            "command": "status",
+            "session_id": "test-session"
+        }, timeout=30)
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "response" in data
+        assert "session_id" in data
+        assert data["session_id"] == "test-session"
+        # Response should contain something (either AI response or error message)
+        assert len(data["response"]) > 0
+    
+    def test_terminal_empty_command(self, api_client):
+        """POST /api/sla113/terminal with empty command should still work"""
+        response = api_client.post(f"{API_URL}/terminal", json={
+            "command": "",
+            "session_id": "test-empty"
+        }, timeout=30)
+        # Should return 200 even with empty command
+        assert response.status_code == 200
+
+
+class TestSLA113ImageGeneration:
+    """Test Vision Smith image generation - /api/sla113/vision/generate-image"""
+    
+    def test_generate_image_endpoint_exists(self, api_client):
+        """POST /api/sla113/vision/generate-image should accept requests"""
+        # This test verifies the endpoint exists and accepts the request format
+        # Actual image generation requires API credits
+        response = api_client.post(f"{API_URL}/vision/generate-image", json={
+            "prompt": "test sprite",
+            "style": "pixel_art",
+            "size": "1024x1024"
+        }, timeout=60)
+        
+        # Should either succeed (200) or fail with API error (500)
+        # but not 404 (endpoint not found) or 422 (validation error)
+        assert response.status_code in [200, 500], f"Unexpected status: {response.status_code}"
+        
+        if response.status_code == 200:
+            data = response.json()
+            assert "image_base64" in data
+            assert "prompt" in data
+            assert "style" in data

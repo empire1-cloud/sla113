@@ -6,8 +6,9 @@ import {
   CreditCard, Users, Terminal, AlertTriangle, ChevronRight, Plus, Minus, Trash2,
   HardDrive, Globe, Ghost, Layers, Factory, CheckCircle2, Moon, RefreshCw, XCircle,
   Settings, Server, Lock, SlidersHorizontal, Key, Network, ShieldCheck, Package,
-  BarChart3, Hammer, Code, Grid3X3, Mic, Archive, ChevronDown, Scan, Paintbrush
+  BarChart3, Hammer, Code, Grid3X3, Mic, Archive, ChevronDown, Scan, Paintbrush, Scissors
 } from 'lucide-react';
+import SpriteCutter from './SpriteCutter';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
 
@@ -211,6 +212,7 @@ export default function SLA113Page() {
   const [visionResult, setVisionResult] = useState(null);
   const [visionLoading, setVisionLoading] = useState(false);
   const [generatedImages, setGeneratedImages] = useState([]);
+  const [spriteCutterImage, setSpriteCutterImage] = useState(null);
 
   // Mint Ledger State
   const [agents, setAgents] = useState([]);
@@ -753,9 +755,18 @@ export default function SLA113Page() {
                               {generatedImages.map((img) => (
                                 <div key={img.id} className="border border-zinc-800 bg-black/50 overflow-hidden group relative">
                                   <img src={`data:image/png;base64,${img.base64}`} alt={img.prompt} className="w-full h-auto" />
-                                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent">
-                                    <p className="text-[10px] text-zinc-300 truncate">{img.prompt}</p>
-                                    <a href={`data:image/png;base64,${img.base64}`} download={`sla113_${img.id}.png`} className="text-[9px] text-[#D4AF37] uppercase tracking-widest hover:text-white transition-colors">Download</a>
+                                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent flex items-end justify-between">
+                                    <div>
+                                      <p className="text-[10px] text-zinc-300 truncate">{img.prompt}</p>
+                                      <a href={`data:image/png;base64,${img.base64}`} download={`sla113_${img.id}.png`} className="text-[9px] text-[#D4AF37] uppercase tracking-widest hover:text-white transition-colors">Download</a>
+                                    </div>
+                                    <button
+                                      onClick={() => setSpriteCutterImage(img.base64)}
+                                      className="px-3 py-1.5 border border-cyan-500/50 bg-cyan-500/10 text-cyan-400 text-[9px] uppercase tracking-widest font-bold hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-1.5"
+                                      data-testid={`cut-sprite-btn-${img.id}`}
+                                    >
+                                      <Scissors size={10} /> Cut
+                                    </button>
                                   </div>
                                 </div>
                               ))}
@@ -997,6 +1008,14 @@ export default function SLA113Page() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* SPRITE CUTTER MODAL */}
+      {spriteCutterImage && (
+        <SpriteCutter
+          imageBase64={spriteCutterImage}
+          onClose={() => setSpriteCutterImage(null)}
+        />
       )}
     </>
   );
