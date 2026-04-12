@@ -18,17 +18,45 @@ SLA113 is the **sovereign root OS** for AI-powered game creation. All universes 
 - [x] Composer Engine (game bundle assembly)
 - [x] AI Terminal (Sovereign Overseer)
 - [x] Night Queue (asyncio background worker + dependencies)
-- [x] Build Pipeline (simulated)
+- [x] Build Pipeline — Real HTML5/PixiJS compilation + downloadable ZIP bundles
 - [x] Real Compliance Engine + Auto-Certify
-- [x] Deploy Engine (simulated)
+- [x] Deploy Engine (simulated CDN push)
 - [x] Sprite Cutter + Animation Preview
 - [x] Boss Bestiary
 - [x] Universe Registry (auto-discovery, interactive cards)
 - [x] WebSocket Frontline (real-time metrics)
 - [x] Full 29-type game taxonomy with categorized dropdowns
-- [x] Standalone project export
+- [x] Standalone project export (sla113_standalone.zip)
+- [x] Audio Forge Engine — Real AI-enhanced DSP via GPT-4o-mini with physical modeling, waveform viz, FMOD event paths
+- [x] Admin Control Vault — ArtTech Nexus Generator (8 pipeline archetypes + OS Module Functional Map)
+- [x] Admin Control Vault — Matrix Parameters (5 engine configs + FModel Utility Status + Compilation Readiness)
 
 ## Backlog
-- [ ] Wire Audio Forge to Vertex AI
-- [ ] Upgrade Build/Deploy from simulated to real
-- [ ] Refactor SLA113Page.jsx into sub-components
+- [ ] Upgrade Deploy Engine from simulated to real CDN pushes for HTML5 bundles (P2)
+- [ ] Refactor SLA113Page.jsx into sub-components (Foundry, Vault, Factory, Empire) (P3)
+- [ ] Audio Forge — wire actual Vertex AI sound generation once SDK supports audio output (P2)
+- [ ] Build Pipeline — APK compilation path (P3)
+
+## Architecture
+```
+/app
+├── backend/
+│   ├── routers/sla113.py         # SLA113 router (~2000 lines)
+│   ├── sla113/
+│   │   ├── models.py             # Pydantic models + game taxonomy
+│   │   ├── vision_engine.py      # Gemini 3 Pro image gen
+│   │   ├── logic_engine.py       # Game math/RTP generation
+│   │   ├── composer_engine.py    # Bundle composition
+│   │   └── audio_forge.py        # NEW: Audio asset generation with AI DSP
+│   └── server.py                 # FastAPI + WebSocket mounts
+├── frontend/src/sla113/
+│   ├── SLA113Page.jsx            # Main dashboard (~2300 lines)
+│   ├── FrontlinePanel.jsx        # WebSocket real-time panel
+│   ├── SpriteCutter.jsx          # Sprite sheet cutter
+│   └── DependencyGraph.jsx       # Job dependency visualization
+```
+
+## Key Integrations
+- **OpenAI GPT-4o-mini** — Emergent LLM Key (AI Terminal + Audio DSP enhancement)
+- **Gemini 3 Pro** — User GEMINI_API_KEY (Vision Smith, no watermarks)
+- **Vertex AI** — User VERTEX_AI_KEY stored (Audio Forge credential ready)
