@@ -188,12 +188,49 @@ const ENGINE_PRESETS = [
 ];
 
 const UNIVERSAL_GAME_TYPES = [
-  { id: "ARCADE_40", label: "40-Target Arcade", seats: 40 },
-  { id: "ARCADE_60", label: "60-Target Enterprise", seats: 60 },
-  { id: "SLOTS_20", label: "20-Reel Premium Slots", seats: 20 },
-  { id: "OPEN_WORLD", label: "GTA-Type Persistence", seats: 100 },
-  { id: "CASINO_SUITE", label: "Full Casino Suite", seats: 100 }
+  // Arcade & Action
+  { id: "arcade_classic", label: "Arcade Classic", seats: 40, cat: "arcade" },
+  { id: "fish_shooting", label: "Fish Shooting", seats: 60, cat: "arcade" },
+  { id: "battle_royale", label: "Battle Royale", seats: 100, cat: "arcade" },
+  { id: "tactical_fps", label: "Tactical FPS", seats: 80, cat: "arcade" },
+  { id: "cod_warfare", label: "COD Warfare", seats: 80, cat: "arcade" },
+  { id: "platformer", label: "Platformer", seats: 20, cat: "arcade" },
+  { id: "fighting", label: "Fighting (2D/3D)", seats: 40, cat: "arcade" },
+  { id: "puzzle", label: "Puzzle", seats: 20, cat: "arcade" },
+  { id: "adventure", label: "Adventure", seats: 40, cat: "arcade" },
+  { id: "open_world", label: "Open World (GTA)", seats: 100, cat: "arcade" },
+  // Casino & Gambling
+  { id: "slot_machine", label: "Slot Machine", seats: 20, cat: "casino" },
+  { id: "video_poker", label: "Video Poker", seats: 20, cat: "casino" },
+  { id: "casino_suite", label: "Casino Suite", seats: 100, cat: "casino" },
+  { id: "pachinko", label: "Pachinko", seats: 30, cat: "casino" },
+  { id: "lottery", label: "Lottery", seats: 20, cat: "casino" },
+  { id: "bingo", label: "Bingo", seats: 40, cat: "casino" },
+  { id: "sportsbook", label: "Sportsbook", seats: 60, cat: "casino" },
+  { id: "card_games", label: "Card Games", seats: 30, cat: "casino" },
+  // RPG & Narrative
+  { id: "open_world_rpg", label: "Open World RPG", seats: 100, cat: "rpg" },
+  { id: "dungeon_crawler", label: "Dungeon Crawler", seats: 40, cat: "rpg" },
+  { id: "fantasy_rpg", label: "Fantasy RPG", seats: 60, cat: "rpg" },
+  { id: "cyberpunk", label: "Cyberpunk", seats: 80, cat: "rpg" },
+  { id: "horror", label: "Horror", seats: 40, cat: "rpg" },
+  { id: "southern_barrio", label: "Southern Barrio", seats: 40, cat: "rpg" },
+  { id: "sandbox", label: "Sandbox", seats: 60, cat: "rpg" },
+  // Racing & Simulation
+  { id: "racing_sim", label: "Racing Sim", seats: 60, cat: "racing" },
+  // Hybrid & Custom
+  { id: "hybrid_mix", label: "Hybrid Mix", seats: 40, cat: "hybrid" },
+  { id: "generic_game_asset", label: "Generic Game Asset", seats: 20, cat: "hybrid" },
+  { id: "custom_partner", label: "Custom Partner Games", seats: 60, cat: "hybrid" },
 ];
+
+const CATEGORY_META = {
+  arcade: { label: 'ARCADE & ACTION', color: 'text-cyan-400' },
+  casino: { label: 'CASINO & GAMBLING', color: 'text-amber-400' },
+  rpg: { label: 'RPG & NARRATIVE', color: 'text-indigo-400' },
+  racing: { label: 'RACING & SIMULATION', color: 'text-emerald-400' },
+  hybrid: { label: 'HYBRID & CUSTOM', color: 'text-zinc-400' },
+};
 
 const AGENT_NODES = [
   { id: 'shop-alpha', subdomain: 'alpha.empire1.cloud', credits: 12500, rtp: 92, status: 'ONLINE' },
@@ -268,7 +305,7 @@ export default function SLA113Page() {
   const [stats, setStats] = useState({});
 
   // OS Builder State
-  const [osPartitions, setOsPartitions] = useState([{ id: 1, type: 'ARCADE_40', units: 1 }]);
+  const [osPartitions, setOsPartitions] = useState([{ id: 1, type: 'fish_shooting', units: 1 }]);
   const [isBuilding, setIsBuilding] = useState(false);
   const [genMode, setGenMode] = useState('night');
 
@@ -344,7 +381,7 @@ export default function SLA113Page() {
 
   // Worker State
   const [workerStatus, setWorkerStatus] = useState({ running: false, active_jobs: 0, blocked_jobs: 0, completed_jobs: 0, total_jobs: 0 });
-  const [newJobPreset, setNewJobPreset] = useState('ARCADE_40');
+  const [newJobPreset, setNewJobPreset] = useState('FISH_SHOOTING');
   const [newJobPriority, setNewJobPriority] = useState('normal');
   const [newJobDeps, setNewJobDeps] = useState([]);
   const [depGraph, setDepGraph] = useState({ nodes: [], edges: [] });
@@ -426,9 +463,10 @@ export default function SLA113Page() {
   const handleForgeOS = async () => {
     setIsBuilding(true);
     try {
-      const gameType = osPartitions[0]?.type === 'OPEN_WORLD' ? 'open_world' : osPartitions[0]?.type === 'SLOTS_20' ? 'slot_machine' : 'fish_shooter';
+      const gameType = osPartitions[0]?.type || 'fish_shooting';
+      const gt = UNIVERSAL_GAME_TYPES.find(g => g.id === gameType);
       await axios.post(`${API}/projects`, { name: `OS_BUILD_${Date.now()}`, game_type: gameType, theme: 'sovereign', target_platform: 'both' });
-      await axios.post(`${API}/jobs`, { preset: osPartitions[0]?.type || 'CUSTOM_OS_BUILD', priority: 'high' });
+      await axios.post(`${API}/jobs`, { preset: gameType.toUpperCase(), priority: 'high' });
       await fetchData();
     } catch (e) { console.error(e); }
     setIsBuilding(false);
@@ -1135,15 +1173,19 @@ export default function SLA113Page() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-zinc-500">
                         <span>OS Clusters</span>
-                        <button onClick={() => setOsPartitions([...osPartitions, { id: Date.now(), type: 'SLOTS_20', units: 1 }])} className="text-[#D4AF37] flex items-center gap-1 hover:text-white transition-all bg-[#D4AF37]/10 px-3 py-1 border border-[#D4AF37]/30" data-testid="add-cluster-btn">
+                        <button onClick={() => setOsPartitions([...osPartitions, { id: Date.now(), type: 'slot_machine', units: 1 }])} className="text-[#D4AF37] flex items-center gap-1 hover:text-white transition-all bg-[#D4AF37]/10 px-3 py-1 border border-[#D4AF37]/30" data-testid="add-cluster-btn">
                           <Plus size={12} /> Add Cluster
                         </button>
                       </div>
                       <div className="space-y-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
                         {osPartitions.map((part, index) => (
                           <div key={part.id} className="flex gap-3 items-center group">
-                            <select value={part.type} onChange={(e) => { const n = [...osPartitions]; n[index].type = e.target.value; setOsPartitions(n); }} className="flex-1 input-dark uppercase tracking-widest focus:border-[#D4AF37] text-zinc-300">
-                              {UNIVERSAL_GAME_TYPES.map(g => (<option key={g.id} value={g.id}>{g.label}</option>))}
+                            <select value={part.type} onChange={(e) => { const n = [...osPartitions]; n[index].type = e.target.value; setOsPartitions(n); }} className="flex-1 input-dark uppercase tracking-widest focus:border-[#D4AF37] text-zinc-300 text-[9px]">
+                              {Object.entries(CATEGORY_META).map(([catId, meta]) => (
+                                <optgroup key={catId} label={meta.label}>
+                                  {UNIVERSAL_GAME_TYPES.filter(g => g.cat === catId).map(g => (<option key={g.id} value={g.id}>{g.label}</option>))}
+                                </optgroup>
+                              ))}
                             </select>
                             <div className="flex items-center gap-2 bg-black border border-zinc-800 px-3 py-2">
                               <span className="text-[9px] text-zinc-500 uppercase">Units</span>
@@ -1186,12 +1228,16 @@ export default function SLA113Page() {
                     <Database size={12} className="text-[#D4AF37]" />
                   </div>
                   <div className="p-6 space-y-3 text-[10px] font-mono overflow-y-auto custom-scrollbar flex-1">
-                    {projects.length > 0 ? projects.map((p, i) => (
-                      <div key={i} className="flex justify-between items-center p-3 border border-zinc-900 bg-black/50">
-                        <span className="text-zinc-300">{p.name}</span>
-                        <span className="text-[#D4AF37]">{p.game_type}</span>
-                      </div>
-                    )) : (
+                    {projects.length > 0 ? projects.map((p, i) => {
+                      const gt = UNIVERSAL_GAME_TYPES.find(g => g.id === p.game_type);
+                      const catColor = gt ? (CATEGORY_META[gt.cat]?.color || 'text-zinc-400') : 'text-zinc-400';
+                      return (
+                        <div key={i} className="flex justify-between items-center p-3 border border-zinc-900 bg-black/50">
+                          <span className="text-zinc-300">{p.name}</span>
+                          <span className={catColor}>{gt?.label || p.game_type}</span>
+                        </div>
+                      );
+                    }) : (
                       <div className="flex flex-col items-center justify-center text-center h-full opacity-50 space-y-4">
                         <Layout size={48} className="text-[#D4AF37]"/>
                         <span className="text-zinc-400 uppercase tracking-[0.2em]">Awaiting Compile Directive</span>
@@ -1827,8 +1873,12 @@ export default function SLA113Page() {
                             className="input-dark focus:border-red-500 uppercase tracking-widest text-[10px]"
                             data-testid="job-preset-select"
                           >
-                            {['ARCADE_40','ARCADE_60','SLOTS_20','OPEN_WORLD','CASINO_SUITE','CUSTOM_OS_BUILD','AAA_FISH_SLOT','GTA5_TYPE','COD_WARFARE','FANTASY_RPG'].map(p => (
-                              <option key={p} value={p}>{p.replace(/_/g,' ')}</option>
+                            {Object.entries(CATEGORY_META).map(([catId, meta]) => (
+                              <optgroup key={catId} label={meta.label}>
+                                {UNIVERSAL_GAME_TYPES.filter(g => g.cat === catId).map(g => (
+                                  <option key={g.id} value={g.id.toUpperCase()}>{g.label}</option>
+                                ))}
+                              </optgroup>
                             ))}
                           </select>
                         </div>

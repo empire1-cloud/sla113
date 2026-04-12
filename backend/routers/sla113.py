@@ -14,6 +14,8 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 from database import get_database
 from sla113.models import (
     GAME_TYPES,
+    AUDIO_MIDDLEWARE_TYPES,
+    AUDIO_ENGINES,
     CreateProjectRequest,
     VisionGenerateRequest,
     LogicGenerateRequest,
@@ -117,8 +119,20 @@ def projects_collection():
 # ─── Game Types ───
 @router.get("/game-types")
 async def list_game_types():
-    """List all supported game types."""
-    return {"game_types": GAME_TYPES}
+    """List all supported game types, categorized."""
+    categories = {}
+    for key, gt in GAME_TYPES.items():
+        cat = gt["category"]
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append({"id": key, **gt})
+    return {
+        "game_types": GAME_TYPES,
+        "categories": categories,
+        "total_types": len(GAME_TYPES),
+        "audio_middleware": AUDIO_MIDDLEWARE_TYPES,
+        "audio_engines": AUDIO_ENGINES,
+    }
 
 
 # ─── Projects CRUD ───
