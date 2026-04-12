@@ -12,6 +12,9 @@ import {
 import SpriteCutter from './SpriteCutter';
 import DependencyGraph from './DependencyGraph';
 import FrontlinePanel from './FrontlinePanel';
+import AudioForgePanel from './panels/AudioForgePanel';
+import { ArtTechNexusPanel, MatrixParamsPanel } from './panels/VaultAdminPanels';
+import { synthesizeFromAsset, playBuffer, stopSource, bufferToWav, downloadWav } from './audioSynth';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
 
@@ -356,21 +359,8 @@ export default function SLA113Page() {
   const [whiteLabelLogs, setWhiteLabelLogs] = useState([]);
   const [isForgingTenant, setIsForgingTenant] = useState(false);
 
-  // Audio Forge State
-  const [audioType, setAudioType] = useState('sfx');
-  const [audioTitle, setAudioTitle] = useState('');
-  const [audioEngine, setAudioEngine] = useState('FMOD');
-  const [audioGameType, setAudioGameType] = useState('fish_shooting');
+  // Audio Forge State (managed by AudioForgePanel)
   const [audioAssets, setAudioAssets] = useState([]);
-  const [audioGenerating, setAudioGenerating] = useState(false);
-  const [audioTemplates, setAudioTemplates] = useState({});
-  const [selectedAudioAsset, setSelectedAudioAsset] = useState(null);
-
-  // Audio Forge custom DSP params
-  const [dspReverbMix, setDspReverbMix] = useState(65);
-  const [dspRumbleHz, setDspRumbleHz] = useState(35);
-  const [dspTransientSharpness, setDspTransientSharpness] = useState(95);
-  const [dspDecayMs, setDspDecayMs] = useState(4500);
 
   // Admin Vault — Nexus + Matrix
   const [nexusPipelines, setNexusPipelines] = useState([]);
@@ -793,8 +783,9 @@ export default function SLA113Page() {
                           <span className="text-[10px] font-mono text-zinc-500">{d.progress}%</span>
                         </div>
                         {d.url && (
-                          <a href={d.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-emerald-500/5 border border-emerald-500/20 p-3 text-emerald-400 text-[10px] font-mono hover:bg-emerald-500/10 transition-all" data-testid={`deploy-url-${d.id}`}>
-                            <ExternalLink size={12}/> {d.url}
+                          <a href={`${process.env.REACT_APP_BACKEND_URL}${d.url}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-emerald-500/5 border border-emerald-500/20 p-3 text-emerald-400 text-[10px] font-mono hover:bg-emerald-500/10 transition-all" data-testid={`deploy-url-${d.id}`}>
+                            <Play size={12}/> Play Live Game
+                            <span className="text-zinc-500 mx-2">{d.url}</span>
                             <span className={`ml-auto text-[8px] uppercase tracking-widest ${d.ssl_status === 'active' ? 'text-emerald-500' : 'text-zinc-600'}`}>SSL: {d.ssl_status}</span>
                           </a>
                         )}
@@ -1485,183 +1476,7 @@ export default function SLA113Page() {
 
             {/* FOUNDRY: AUDIO FORGE */}
             {partition === 'foundry' && activeTab === 'AUDIO FORGE' && (
-              <div className="grid grid-cols-12 gap-6 h-full animate-in fade-in max-w-7xl mx-auto w-full" data-testid="audio-forge-panel">
-                <div className="col-span-4 space-y-6">
-                  <div className="glass-panel border-[#D4AF37]/20 p-8 space-y-6">
-                    <h3 className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest border-b border-[#D4AF37]/20 pb-4 flex items-center gap-2"><Music size={14}/> Audio Forge Engine</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2">Sound Title</label>
-                        <input value={audioTitle} onChange={e => setAudioTitle(e.target.value)} placeholder="The Vault Lock (Subterranean)" className="input-dark focus:border-[#D4AF37] uppercase" data-testid="audio-title-input" />
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2">Audio Type</label>
-                        <div className="grid grid-cols-3 gap-1.5">
-                          {['sfx','ambience','foley','music_cues','stems','loops'].map(t => (
-                            <button key={t} onClick={() => setAudioType(t)} className={`py-1.5 text-[8px] uppercase tracking-widest border transition-all ${audioType === t ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-zinc-800 text-zinc-600 hover:text-zinc-300'}`} data-testid={`audio-type-${t}`}>
-                              {t.replace('_',' ')}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2">Engine</label>
-                        <div className="grid grid-cols-4 gap-1.5">
-                          {['FMOD','SonicForge','AudioKing','VoiceKing'].map(e => (
-                            <button key={e} onClick={() => setAudioEngine(e)} className={`py-1.5 text-[7px] uppercase tracking-widest border transition-all ${audioEngine === e ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-zinc-800 text-zinc-600 hover:text-zinc-300'}`}>
-                              {e}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-3 pt-2 border-t border-zinc-800">
-                        <span className="text-[8px] text-zinc-500 uppercase tracking-widest">PDA Environmental DSP</span>
-                        <div>
-                          <div className="flex justify-between text-[9px] text-zinc-400 mb-1"><span>Reverb Wet Mix</span><span className="text-[#D4AF37]">{dspReverbMix}%</span></div>
-                          <input type="range" min="0" max="100" value={dspReverbMix} onChange={e => setDspReverbMix(+e.target.value)} className="text-[#D4AF37]" />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[9px] text-zinc-400 mb-1"><span>LF Rumble</span><span className="text-[#D4AF37]">{dspRumbleHz} Hz</span></div>
-                          <input type="range" min="10" max="120" value={dspRumbleHz} onChange={e => setDspRumbleHz(+e.target.value)} className="text-[#D4AF37]" />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[9px] text-zinc-400 mb-1"><span>Transient Sharpness</span><span className="text-[#D4AF37]">{dspTransientSharpness / 100}</span></div>
-                          <input type="range" min="0" max="100" value={dspTransientSharpness} onChange={e => setDspTransientSharpness(+e.target.value)} className="text-[#D4AF37]" />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[9px] text-zinc-400 mb-1"><span>Decay Tail</span><span className="text-[#D4AF37]">{dspDecayMs} ms</span></div>
-                          <input type="range" min="100" max="15000" step="100" value={dspDecayMs} onChange={e => setDspDecayMs(+e.target.value)} className="text-[#D4AF37]" />
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        if (!audioTitle) return;
-                        setAudioGenerating(true);
-                        try {
-                          const res = await axios.post(`${API}/audio/generate`, {
-                            audio_type: audioType,
-                            title: audioTitle,
-                            game_type: audioGameType,
-                            engine: audioEngine,
-                            custom_params: {
-                              physical_modeling_parameters: {
-                                transient_sharpness: dspTransientSharpness / 100,
-                                decay_tail_ms: dspDecayMs,
-                              },
-                              pda_environmental_dsp: {
-                                reverb_wet_mix: dspReverbMix / 100,
-                                low_frequency_rumble_hz: dspRumbleHz,
-                              },
-                            },
-                          });
-                          setAudioAssets(prev => [res.data, ...prev]);
-                          setSelectedAudioAsset(res.data);
-                        } catch (e) { console.error("Audio gen failed:", e); }
-                        setAudioGenerating(false);
-                      }}
-                      disabled={audioGenerating || !audioTitle}
-                      className="w-full py-4 bg-[#D4AF37]/10 border border-[#D4AF37] text-[#D4AF37] font-bold uppercase text-[10px] tracking-[2px] hover:bg-[#D4AF37] hover:text-black transition-all disabled:opacity-30"
-                      data-testid="generate-audio-btn"
-                    >
-                      {audioGenerating ? 'Forging Sound...' : 'Forge Audio Asset'}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="col-span-8 space-y-4">
-                  {/* Waveform Display */}
-                  {selectedAudioAsset && (
-                    <div className="glass-panel border-[#D4AF37]/20 p-6 space-y-4" data-testid="audio-detail-panel">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="text-zinc-200 text-sm font-bold">{selectedAudioAsset.sfx_metadata?.title}</h4>
-                          <span className="text-[8px] text-zinc-500 uppercase tracking-widest">{selectedAudioAsset.sfx_metadata?.dna_tag_preview} / {selectedAudioAsset.sfx_metadata?.engine}</span>
-                        </div>
-                        <span className="px-2 py-0.5 text-[8px] border border-[#D4AF37]/30 bg-[#D4AF37]/10 text-[#D4AF37] uppercase tracking-widest font-bold">
-                          {selectedAudioAsset.sfx_metadata?.audio_type?.replace('_',' ')}
-                        </span>
-                      </div>
-                      {/* Waveform Visualization */}
-                      <div className="bg-black/80 border border-zinc-800 p-4 h-32 flex items-end gap-px">
-                        {(selectedAudioAsset.waveform_preview || []).map((v, i) => (
-                          <div key={i} className="flex-1 bg-[#D4AF37]/70 transition-all hover:bg-[#D4AF37]" style={{ height: `${v * 100}%` }} />
-                        ))}
-                      </div>
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-4 gap-2">
-                        {[
-                          { label: 'Duration', value: `${(selectedAudioAsset.duration_ms / 1000).toFixed(1)}s` },
-                          { label: 'Sample Rate', value: `${selectedAudioAsset.sample_rate / 1000}kHz` },
-                          { label: 'Bit Depth', value: `${selectedAudioAsset.bit_depth}-bit` },
-                          { label: 'Channels', value: selectedAudioAsset.channels === 2 ? 'Stereo' : 'Mono' },
-                        ].map(s => (
-                          <div key={s.label} className="bg-black/50 border border-zinc-800 p-3 text-center">
-                            <div className="text-[7px] text-zinc-600 uppercase tracking-widest">{s.label}</div>
-                            <div className="text-zinc-200 text-xs font-bold mt-0.5">{s.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                      {/* AI DSP Enhancement */}
-                      {selectedAudioAsset.ai_dsp_enhancement && (
-                        <div className="space-y-2">
-                          <span className="text-[8px] text-[#D4AF37] uppercase tracking-widest font-bold">AI-Enhanced DSP</span>
-                          <div className="grid grid-cols-2 gap-2">
-                            {selectedAudioAsset.ai_dsp_enhancement.eq_bands && (
-                              <div className="bg-black/50 border border-zinc-800 p-3">
-                                <div className="text-[7px] text-zinc-600 uppercase tracking-widest mb-2">EQ Bands</div>
-                                {selectedAudioAsset.ai_dsp_enhancement.eq_bands.map((band, i) => (
-                                  <div key={i} className="flex justify-between text-[9px] text-zinc-400">
-                                    <span>{band.freq_hz}Hz</span>
-                                    <span className={band.gain_db >= 0 ? 'text-[#D4AF37]' : 'text-red-400'}>{band.gain_db > 0 ? '+' : ''}{band.gain_db}dB</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            {selectedAudioAsset.ai_dsp_enhancement.compression && (
-                              <div className="bg-black/50 border border-zinc-800 p-3">
-                                <div className="text-[7px] text-zinc-600 uppercase tracking-widest mb-2">Compression</div>
-                                {Object.entries(selectedAudioAsset.ai_dsp_enhancement.compression).map(([k, v]) => (
-                                  <div key={k} className="flex justify-between text-[9px] text-zinc-400">
-                                    <span>{k.replace(/_/g,' ')}</span>
-                                    <span className="text-zinc-200">{v}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          {selectedAudioAsset.ai_dsp_enhancement.fmod_event_path && (
-                            <div className="bg-black/50 border border-zinc-800 p-2">
-                              <span className="text-[8px] text-zinc-600 uppercase tracking-widest">FMOD Event: </span>
-                              <code className="text-[#D4AF37] text-[10px]">{selectedAudioAsset.ai_dsp_enhancement.fmod_event_path}</code>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Asset List */}
-                  <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[3px]">Generated Assets ({audioAssets.length})</span>
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                    {audioAssets.length === 0 && <div className="glass-panel border-[#D4AF37]/10 p-8 text-center text-zinc-600 text-[10px] uppercase tracking-widest">No audio assets. Forge your first sound above.</div>}
-                    {audioAssets.map(a => (
-                      <button key={a.id} onClick={() => setSelectedAudioAsset(a)} className={`w-full text-left p-4 border transition-all ${selectedAudioAsset?.id === a.id ? 'border-[#D4AF37]/50 bg-[#D4AF37]/5' : 'border-zinc-800 bg-black/50 hover:border-zinc-700'}`} data-testid={`audio-asset-${a.id}`}>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="text-zinc-200 text-xs font-bold">{a.sfx_metadata?.title}</span>
-                            <span className="text-zinc-500 text-[9px] ml-2">{a.sfx_metadata?.audio_type?.replace('_',' ')} / {a.sfx_metadata?.engine}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[8px] text-zinc-500">{(a.duration_ms / 1000).toFixed(1)}s</span>
-                            <span role="button" tabIndex={0} onClick={async (e) => { e.stopPropagation(); await axios.delete(`${API}/audio/assets/${a.id}`); setAudioAssets(prev => prev.filter(x => x.id !== a.id)); if (selectedAudioAsset?.id === a.id) setSelectedAudioAsset(null); }} className="text-zinc-600 hover:text-red-500 cursor-pointer"><XCircle size={12}/></span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <AudioForgePanel API={API} audioAssets={audioAssets} setAudioAssets={setAudioAssets} fetchData={fetchData} />
             )}
 
 
@@ -1954,125 +1769,12 @@ export default function SLA113Page() {
 
             {/* VAULT: ARTTECH NEXUS */}
             {partition === 'vault' && activeTab === 'ARTTECH NEXUS' && (
-              <div className="animate-in fade-in max-w-7xl mx-auto w-full space-y-6" data-testid="arttech-nexus-panel">
-                <div className="flex items-center justify-between">
-                  <span className="text-red-500 text-[10px] font-bold uppercase tracking-[3px] flex items-center gap-2"><Grid3X3 size={14}/> ArtTech Nexus Generator</span>
-                  <span className="text-[8px] text-zinc-600 uppercase tracking-widest">Pipeline Archetypes</span>
-                </div>
-                {/* Pipeline Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {nexusPipelines.map(p => (
-                    <div key={p.id} className="glass-panel border-red-500/20 p-5 space-y-3 hover:scale-[1.02] transition-all group" data-testid={`nexus-pipeline-${p.id}`}>
-                      <div className="flex justify-between items-start">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
-                        <span className={`px-1.5 py-0.5 text-[7px] uppercase tracking-widest border font-bold ${p.status === 'active' ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-500'}`}>{p.status}</span>
-                      </div>
-                      <h4 className="text-zinc-200 text-xs font-bold tracking-wider">{p.name}</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {p.tags.map(tag => (
-                          <span key={tag} className="px-1.5 py-0.5 text-[7px] uppercase tracking-widest border border-zinc-800 text-zinc-500 bg-black/50">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* OS Module Functional Map */}
-                <div className="mt-6">
-                  <span className="text-red-500 text-[10px] font-bold uppercase tracking-[3px] flex items-center gap-2 mb-4"><Code size={14}/> OS Module Functional Map</span>
-                  <div className="glass-panel border-red-500/20 overflow-hidden">
-                    <table className="w-full text-left">
-                      <thead className="bg-red-500/5 border-b border-red-500/20 text-[9px] uppercase tracking-widest text-zinc-500 font-normal">
-                        <tr>
-                          <th className="p-4">OS Module</th>
-                          <th className="p-4">FModel Utility</th>
-                          <th className="p-4">Functional Output</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-[10px] font-mono">
-                        {osModules.map((m, i) => (
-                          <tr key={i} className="border-b border-zinc-900/50 hover:bg-white/5 transition-all">
-                            <td className="p-4 text-red-400 font-bold uppercase tracking-wider">{m.os_module}</td>
-                            <td className="p-4 text-zinc-400">{m.fmodel_utility}</td>
-                            <td className="p-4 text-zinc-300 text-[9px]">{m.functional_output}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              <ArtTechNexusPanel nexusPipelines={nexusPipelines} osModules={osModules} />
             )}
 
-            {/* VAULT: MATRIX PARAMETERS */}
+            {/* VAULT: MATRIX PARAMS */}
             {partition === 'vault' && activeTab === 'MATRIX PARAMS' && (
-              <div className="animate-in fade-in max-w-7xl mx-auto w-full space-y-6" data-testid="matrix-params-panel">
-                <div className="flex items-center justify-between">
-                  <span className="text-red-500 text-[10px] font-bold uppercase tracking-[3px] flex items-center gap-2"><SlidersHorizontal size={14}/> Matrix Parameters</span>
-                  <span className="text-[8px] text-zinc-600 uppercase tracking-widest">Engine Config for AAA Compilation</span>
-                </div>
-
-                {matrixParams && (
-                  <div className="grid grid-cols-12 gap-6">
-                    {/* Engine Parameters */}
-                    <div className="col-span-7 space-y-4">
-                      <span className="text-[9px] text-zinc-500 uppercase tracking-widest">Active Engine Parameters</span>
-                      <div className="grid grid-cols-1 gap-3">
-                        {matrixParams.parameters && Object.entries(matrixParams.parameters).map(([key, param]) => (
-                          <div key={key} className="glass-panel border-red-500/20 p-5 flex items-center justify-between group hover:border-red-500/40 transition-all" data-testid={`matrix-param-${key}`}>
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 border border-red-500/20 bg-red-500/5 flex items-center justify-center">
-                                {param.icon === 'cpu' && <Cpu size={16} className="text-red-400"/>}
-                                {param.icon === 'volume-2' && <Music size={16} className="text-red-400"/>}
-                                {param.icon === 'monitor' && <Server size={16} className="text-red-400"/>}
-                                {param.icon === 'globe' && <Globe size={16} className="text-red-400"/>}
-                                {param.icon === 'shield' && <Shield size={16} className="text-red-400"/>}
-                              </div>
-                              <div>
-                                <h4 className="text-zinc-200 text-xs font-bold tracking-wider uppercase">{key.replace(/_/g, ' ')}</h4>
-                                <p className="text-[#D4AF37] text-[10px] font-mono mt-0.5">{param.value}</p>
-                              </div>
-                            </div>
-                            <span className={`px-2 py-0.5 text-[7px] uppercase tracking-widest border font-bold ${param.status === 'active' ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10' : 'border-zinc-700 text-zinc-500'}`}>{param.status}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* FModel Utility Status */}
-                    <div className="col-span-5 space-y-4">
-                      <span className="text-[9px] text-zinc-500 uppercase tracking-widest">FModel Utility Status</span>
-                      <div className="glass-panel border-red-500/20 p-6 space-y-4 tech-border-red">
-                        {matrixParams.fmodel_utility && Object.entries(matrixParams.fmodel_utility).map(([key, val]) => (
-                          <div key={key} className="flex justify-between items-center py-2 border-b border-zinc-900/50 last:border-0">
-                            <span className="text-[9px] text-zinc-500 uppercase tracking-widest">{key.replace(/_/g, ' ')}</span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                              val === 'ACTIVE' || val === 'READY' || val === 'STABLE' ? 'text-emerald-400' :
-                              val === 'ADMIN_OVERRIDE' ? 'text-[#D4AF37]' : 'text-zinc-300'
-                            }`}>{val}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="glass-panel border-red-500/20 p-6 space-y-3">
-                        <h4 className="text-red-400 text-[9px] font-bold uppercase tracking-[3px]">Compilation Readiness</h4>
-                        <div className="h-3 bg-black border border-zinc-800 overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-red-600 via-[#D4AF37] to-emerald-500 w-full" />
-                        </div>
-                        <div className="flex justify-between text-[8px] text-zinc-500 uppercase tracking-widest">
-                          <span>Physics</span><span>Audio</span><span>Render</span><span>Biome</span><span>Archetype</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {!matrixParams && (
-                  <div className="glass-panel border-red-500/10 p-16 text-center">
-                    <SlidersHorizontal size={32} className="text-zinc-700 mx-auto mb-4"/>
-                    <p className="text-zinc-600 text-[10px] uppercase tracking-widest">Loading matrix parameters...</p>
-                  </div>
-                )}
-              </div>
+              <MatrixParamsPanel matrixParams={matrixParams} />
             )}
 
             {/* VAULT: SYSTEM CORE */}

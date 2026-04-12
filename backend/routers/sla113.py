@@ -1825,39 +1825,73 @@ async def auto_certify(req: AutoCertifyRequest):
     }
 
 
-# ─── Deploy Engine ───
+# ─── Deploy Engine (Real Static Hosting) ───
 class DeployRequest(BaseModel):
     build_id: str
-    target_cdn: str = "cloudflare"  # cloudflare | aws | gcp | custom
+    target_cdn: str = "cloudflare"
     region: str = "us-west"
     auto_ssl: bool = True
 
 
 @router.post("/deploy")
 async def deploy_build(req: DeployRequest):
-    """Deploy a completed build to CDN."""
-    build = await builds_collection().find_one({"id": req.build_id}, {"_id": 0})
-    if not build:
+    """Deploy a completed build — extracts HTML5 bundle to a live-served static directory."""
+    build_full = await builds_collection().find_one({"id": req.build_id})
+    if not build_full:
         raise HTTPException(status_code=404, detail="Build not found")
-    if build["status"] != "completed":
+    if build_full["status"] != "completed":
         raise HTTPException(status_code=400, detail="Build must be completed before deployment")
 
     now = datetime.now(timezone.utc).isoformat()
+    deploy_id = f"DPL-{uuid.uuid4().hex[:8].upper()}"
+    deploy_dir = f"/app/backend/static/deploys/{deploy_id}"
+
     deployment = {
-        "id": f"DPL-{uuid.uuid4().hex[:8].upper()}",
+        "id": deploy_id,
         "build_id": req.build_id,
-        "project_name": build.get("project_name", "Unknown"),
+        "project_name": build_full.get("project_name", "Unknown"),
         "target_cdn": req.target_cdn,
         "region": req.region,
         "auto_ssl": req.auto_ssl,
         "status": "deploying",
         "progress": 0,
         "url": None,
+        "preview_url": None,
         "ssl_status": "pending" if req.auto_ssl else "disabled",
         "logs": [f"[{now}] Deployment initiated. CDN: {req.target_cdn}, Region: {req.region}"],
         "created_at": now,
         "updated_at": now,
     }
+
+    try:
+        import zipfile, shutil
+        os.makedirs(deploy_dir, exist_ok=True)
+
+        zip_data = build_full.get("zip_data")
+        if zip_data:
+            zip_bytes = base64.b64decode(zip_data)
+            zip_path = f"/tmp/deploy_{deploy_id}.zip"
+            with open(zip_path, "wb") as f:
+                f.write(zip_bytes)
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                zf.extractall(deploy_dir)
+            os.remove(zip_path)
+
+            preview_url = f"/api/sla113/live/{deploy_id}/index.html"
+            deployment["progress"] = 100
+            deployment["status"] = "live"
+            deployment["ssl_status"] = "active" if req.auto_ssl else "disabled"
+            deployment["preview_url"] = preview_url
+            deployment["url"] = preview_url
+            deployment["logs"].append(f"[{now}] Files extracted. Preview live.")
+        else:
+            deployment["status"] = "failed"
+            deployment["logs"].append(f"[{now}] FAILED: No zip data in build.")
+    except Exception as e:
+        logger.error(f"Deploy extraction failed: {e}")
+        deployment["status"] = "failed"
+        deployment["logs"].append(f"[{now}] FAILED: {str(e)}")
+
     await deployments_collection().insert_one(deployment)
     deployment.pop("_id", None)
     return deployment
@@ -1865,8 +1899,7 @@ async def deploy_build(req: DeployRequest):
 
 @router.post("/deploy/{deploy_id}/advance")
 async def advance_deployment(deploy_id: str):
-    """Advance deployment progress (simulate CDN propagation)."""
-    import random
+    """Mark deployment as live."""
     deploy = await deployments_collection().find_one({"id": deploy_id}, {"_id": 0})
     if not deploy:
         raise HTTPException(status_code=404, detail="Deployment not found")
@@ -1874,27 +1907,14 @@ async def advance_deployment(deploy_id: str):
         return deploy
 
     now = datetime.now(timezone.utc).isoformat()
-    new_progress = min(deploy["progress"] + random.randint(25, 50), 100)
-    new_status = "live" if new_progress >= 100 else "propagating"
-
-    url = None
-    ssl_status = deploy.get("ssl_status", "pending")
-    if new_progress >= 100:
-        slug = deploy["project_name"].lower().replace(" ", "-")
-        cdn = deploy["target_cdn"]
-        url = f"https://{slug}.{'cdn.cloudflare.com' if cdn == 'cloudflare' else 'd2x.amazonaws.com' if cdn == 'aws' else 'storage.googleapis.com' if cdn == 'gcp' else 'custom-cdn.io'}"
-        ssl_status = "active" if deploy.get("auto_ssl") else "disabled"
-
-    log_msg = f"[{now}] {'LIVE — CDN propagation complete.' if new_progress >= 100 else f'Propagating... {new_progress}%'}"
-
+    url = deploy.get("preview_url") or f"/api/sla113/live/{deploy_id}/index.html"
     await deployments_collection().update_one(
         {"id": deploy_id},
-        {"$set": {"progress": new_progress, "status": new_status, "url": url,
-                  "ssl_status": ssl_status, "updated_at": now},
-         "$push": {"logs": log_msg}}
+        {"$set": {"progress": 100, "status": "live", "url": url,
+                  "preview_url": url, "ssl_status": "active", "updated_at": now},
+         "$push": {"logs": f"[{now}] LIVE."}}
     )
-    deploy = await deployments_collection().find_one({"id": deploy_id}, {"_id": 0})
-    return deploy
+    return await deployments_collection().find_one({"id": deploy_id}, {"_id": 0})
 
 
 @router.get("/deployments")
@@ -1906,10 +1926,35 @@ async def list_deployments():
 
 @router.delete("/deploy/{deploy_id}")
 async def delete_deployment(deploy_id: str):
+    """Delete deployment and clean up static files."""
+    import shutil
+    deploy = await deployments_collection().find_one({"id": deploy_id}, {"_id": 0})
+    deploy_dir = f"/app/backend/static/deploys/{deploy_id}"
+    if os.path.exists(deploy_dir):
+        shutil.rmtree(deploy_dir, ignore_errors=True)
     result = await deployments_collection().delete_one({"id": deploy_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Deployment not found")
     return {"deleted": True}
+
+
+# ─── Live Game Preview (Static Serve) ───
+@router.get("/live/{deploy_id}/{file_path:path}")
+async def serve_live_game(deploy_id: str, file_path: str):
+    """Serve deployed game files from the static directory."""
+    from fastapi.responses import FileResponse
+    full_path = f"/app/backend/static/deploys/{deploy_id}/{file_path}"
+    if not os.path.exists(full_path) or not os.path.isfile(full_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    content_types = {
+        ".html": "text/html", ".js": "application/javascript",
+        ".json": "application/json", ".css": "text/css",
+        ".png": "image/png", ".jpg": "image/jpeg",
+    }
+    ext = os.path.splitext(file_path)[1].lower()
+    media_type = content_types.get(ext, "application/octet-stream")
+    return FileResponse(full_path, media_type=media_type)
 
 
 # ─── Audio Forge Collection ───
