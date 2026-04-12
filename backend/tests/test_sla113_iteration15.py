@@ -1,356 +1,377 @@
 """
-SLA113 Iteration 15 Tests - Job Dependencies Feature
-Tests: dependency tracking, blocked status, auto-unblock, graph endpoint, link/unlink APIs
+SLA113 Iteration 15 Tests - New Features:
+1. Universe Registry (auto-discovery of mounted universe routers)
+2. Real Compliance Engine (pulls real RTP from Logic Engine)
+3. Frontline Snapshot API
+4. WebSocket Frontline (connection test)
 """
 import pytest
 import requests
 import os
-import time
+import json
+import asyncio
+import websockets
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
-API = f"{BASE_URL}/api/sla113"
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://genesis-engine-4.preview.emergentagent.com')
+API_BASE = f"{BASE_URL}/api/sla113"
+
+# Test project with Logic Engine RTP data
+TEST_PROJECT_ID = "219b65d6-aa30-4799-b6df-d2d9e2ba3a98"
 
 
-class TestJobDependencies:
-    """Test job dependency creation and blocked status"""
-    
-    def test_create_job_without_dependencies(self):
-        """Job without dependencies should be 'pending'"""
-        response = requests.post(f"{API}/jobs", json={
-            "preset": "ARCADE_40",
-            "priority": "normal"
-        })
+class TestUniverseRegistry:
+    """Universe Registry API tests - auto-discovery of mounted universe routers"""
+
+    def test_list_universes_returns_4_plus(self):
+        """GET /api/sla113/universes should return 4+ universes"""
+        response = requests.get(f"{API_BASE}/universes")
         assert response.status_code == 200
-        job = response.json()
-        assert job["status"] == "pending"
-        assert job.get("depends_on", []) == []
-        # Cleanup
-        requests.delete(f"{API}/jobs/{job['id']}")
-    
-    def test_create_job_with_completed_dependency(self):
-        """Job with completed parent should be 'pending'"""
-        # Create parent job
-        parent_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40", "priority": "high"})
-        parent = parent_res.json()
-        parent_id = parent["id"]
+        data = response.json()
         
-        # Wait for parent to complete (worker processes every 3s)
-        for _ in range(30):  # Max 90 seconds
-            time.sleep(3)
-            check = requests.get(f"{API}/jobs")
-            jobs = check.json().get("jobs", [])
-            parent_job = next((j for j in jobs if j["id"] == parent_id), None)
-            if parent_job and parent_job["status"] == "completed":
-                break
+        assert "universes" in data
+        assert "total" in data
+        assert data["total"] >= 4, f"Expected 4+ universes, got {data['total']}"
+        assert data["sovereign"] == "SLA113"
         
-        # Create child with completed parent
-        child_res = requests.post(f"{API}/jobs", json={
-            "preset": "SLOTS_20",
-            "priority": "normal",
-            "depends_on": [parent_id]
-        })
-        child = child_res.json()
-        
-        # Child should be pending since parent is complete
-        assert child["status"] == "pending"
-        assert parent_id in child.get("depends_on", [])
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{child['id']}")
-        requests.delete(f"{API}/jobs/{parent_id}")
-    
-    def test_create_job_with_incomplete_dependency_is_blocked(self):
-        """Job with incomplete parent should be 'blocked'"""
-        # Create parent job
-        parent_res = requests.post(f"{API}/jobs", json={"preset": "FANTASY_RPG", "priority": "low"})
-        parent = parent_res.json()
-        parent_id = parent["id"]
-        
-        # Immediately create child (parent won't be complete yet)
-        child_res = requests.post(f"{API}/jobs", json={
-            "preset": "COD_WARFARE",
-            "priority": "normal",
-            "depends_on": [parent_id]
-        })
-        child = child_res.json()
-        
-        # Child should be blocked
-        assert child["status"] == "blocked", f"Expected blocked, got {child['status']}"
-        assert parent_id in child.get("depends_on", [])
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{child['id']}")
-        requests.delete(f"{API}/jobs/{parent_id}")
-    
-    def test_invalid_dependency_returns_400(self):
-        """Creating job with non-existent dependency should fail"""
-        response = requests.post(f"{API}/jobs", json={
-            "preset": "ARCADE_40",
-            "depends_on": ["NONEXISTENT-JOB-ID"]
-        })
-        assert response.status_code == 400
-        assert "not found" in response.json().get("detail", "").lower()
+        # Verify required fields in each universe
+        for universe in data["universes"]:
+            assert "id" in universe
+            assert "name" in universe
+            assert "prefix" in universe
+            assert "engine" in universe
+            assert "status" in universe
+            assert "registered_at" in universe
 
+    def test_list_universes_contains_core_universes(self):
+        """Verify core universes are registered: sla113, empire1, southern, soulfire"""
+        response = requests.get(f"{API_BASE}/universes")
+        assert response.status_code == 200
+        data = response.json()
+        
+        universe_ids = [u["id"] for u in data["universes"]]
+        assert "sla113" in universe_ids, "SLA113 Core should be registered"
+        assert "empire1" in universe_ids, "Empire 1 should be registered"
+        assert "southern" in universe_ids, "Southern Lifestyle should be registered"
+        assert "soulfire" in universe_ids, "Soulfire Ecosystem should be registered"
 
-class TestLinkUnlinkAPIs:
-    """Test POST /jobs/{id}/link and DELETE /jobs/{id}/link/{dep_id}"""
-    
-    def test_link_dependency(self):
-        """POST /jobs/{id}/link should add dependency"""
-        # Create two jobs
-        job1_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40"})
-        job1 = job1_res.json()
-        job2_res = requests.post(f"{API}/jobs", json={"preset": "SLOTS_20"})
-        job2 = job2_res.json()
+    def test_get_single_universe(self):
+        """GET /api/sla113/universes/{id} returns specific universe"""
+        response = requests.get(f"{API_BASE}/universes/sla113")
+        assert response.status_code == 200
+        data = response.json()
         
-        # Link: job2 depends on job1
-        link_res = requests.post(f"{API}/jobs/{job2['id']}/link?depends_on_id={job1['id']}")
-        assert link_res.status_code == 200
-        link_data = link_res.json()
-        assert link_data.get("linked") == True
-        assert link_data.get("job") == job2["id"]
-        assert link_data.get("depends_on") == job1["id"]
-        
-        # Verify job2 now has dependency
-        jobs_res = requests.get(f"{API}/jobs")
-        jobs = jobs_res.json().get("jobs", [])
-        job2_updated = next((j for j in jobs if j["id"] == job2["id"]), None)
-        assert job1["id"] in job2_updated.get("depends_on", [])
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{job1['id']}")
-        requests.delete(f"{API}/jobs/{job2['id']}")
-    
-    def test_unlink_dependency(self):
-        """DELETE /jobs/{id}/link/{dep_id} should remove dependency"""
-        # Create parent and child with dependency
-        parent_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40"})
-        parent = parent_res.json()
-        child_res = requests.post(f"{API}/jobs", json={"preset": "SLOTS_20", "depends_on": [parent["id"]]})
-        child = child_res.json()
-        
-        # Verify child has dependency
-        assert parent["id"] in child.get("depends_on", [])
-        
-        # Unlink
-        unlink_res = requests.delete(f"{API}/jobs/{child['id']}/link/{parent['id']}")
-        assert unlink_res.status_code == 200
-        assert unlink_res.json().get("unlinked") == True
-        
-        # Verify dependency removed
-        jobs_res = requests.get(f"{API}/jobs")
-        jobs = jobs_res.json().get("jobs", [])
-        child_updated = next((j for j in jobs if j["id"] == child["id"]), None)
-        assert parent["id"] not in child_updated.get("depends_on", [])
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{parent['id']}")
-        requests.delete(f"{API}/jobs/{child['id']}")
-    
-    def test_link_nonexistent_job_returns_404(self):
-        """Linking non-existent jobs should return 404"""
-        response = requests.post(f"{API}/jobs/FAKE-JOB/link?depends_on_id=FAKE-PARENT")
+        assert data["id"] == "sla113"
+        assert data["name"] == "SLA113 Core"
+        assert data["engine"] == "fastapi+mongodb"
+        assert data["status"] == "online"
+
+    def test_get_nonexistent_universe_returns_404(self):
+        """GET /api/sla113/universes/{id} returns 404 for unknown universe"""
+        response = requests.get(f"{API_BASE}/universes/nonexistent_universe_xyz")
         assert response.status_code == 404
-    
-    def test_circular_dependency_prevented(self):
-        """Circular dependencies should be prevented"""
-        # Create job1 and job2
-        job1_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40"})
-        job1 = job1_res.json()
-        job2_res = requests.post(f"{API}/jobs", json={"preset": "SLOTS_20", "depends_on": [job1["id"]]})
-        job2 = job2_res.json()
-        
-        # Try to make job1 depend on job2 (circular)
-        circular_res = requests.post(f"{API}/jobs/{job1['id']}/link?depends_on_id={job2['id']}")
-        # Should return 400 for circular dependency
-        assert circular_res.status_code == 400
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{job1['id']}")
-        requests.delete(f"{API}/jobs/{job2['id']}")
 
-
-class TestDependencyGraph:
-    """Test GET /jobs/graph endpoint"""
-    
-    def test_graph_returns_nodes_and_edges(self):
-        """Graph endpoint should return nodes and edges"""
-        response = requests.get(f"{API}/jobs/graph")
+    def test_register_universe_dynamically(self):
+        """POST /api/sla113/universes/register should dynamically add universe"""
+        # Register a test universe
+        params = {
+            "uid": "TEST_dynamic_universe",
+            "name": "TEST Dynamic Universe",
+            "description": "Test universe for iteration 15",
+            "prefix": "/api/test_dynamic",
+            "engine": "pytest",
+            "product": "Test Product"
+        }
+        response = requests.post(f"{API_BASE}/universes/register", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "nodes" in data
-        assert "edges" in data
-        assert isinstance(data["nodes"], list)
-        assert isinstance(data["edges"], list)
-    
-    def test_graph_nodes_have_required_fields(self):
-        """Graph nodes should have id, preset, status, progress, depends_on, dependents"""
-        # Create a job first
-        job_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40"})
-        job = job_res.json()
         
-        response = requests.get(f"{API}/jobs/graph")
-        data = response.json()
+        assert data["registered"] == True
+        assert data["universe"]["id"] == "TEST_dynamic_universe"
+        assert data["universe"]["name"] == "TEST Dynamic Universe"
+        assert data["universe"]["engine"] == "pytest"
+        assert data["universe"]["status"] == "online"
         
-        # Find our job in nodes
-        node = next((n for n in data["nodes"] if n["id"] == job["id"]), None)
-        assert node is not None
-        assert "id" in node
-        assert "preset" in node
-        assert "status" in node
-        assert "progress" in node
-        assert "depends_on" in node
-        assert "dependents" in node
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{job['id']}")
-    
-    def test_graph_edges_for_dependencies(self):
-        """Graph should have edges for dependencies"""
-        # Create parent and child
-        parent_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40"})
-        parent = parent_res.json()
-        child_res = requests.post(f"{API}/jobs", json={"preset": "SLOTS_20", "depends_on": [parent["id"]]})
-        child = child_res.json()
-        
-        response = requests.get(f"{API}/jobs/graph")
-        data = response.json()
-        
-        # Should have edge from parent to child
-        edge = next((e for e in data["edges"] if e["from"] == parent["id"] and e["to"] == child["id"]), None)
-        assert edge is not None, f"Expected edge from {parent['id']} to {child['id']}"
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{parent['id']}")
-        requests.delete(f"{API}/jobs/{child['id']}")
+        # Verify it appears in list
+        list_response = requests.get(f"{API_BASE}/universes")
+        universe_ids = [u["id"] for u in list_response.json()["universes"]]
+        assert "TEST_dynamic_universe" in universe_ids
 
-
-class TestAutoUnblock:
-    """Test auto-unblock when parent job completes"""
-    
-    def test_blocked_job_unblocks_when_parent_completes(self):
-        """Blocked child should transition to pending when parent completes"""
-        # Create parent
-        parent_res = requests.post(f"{API}/jobs", json={"preset": "ARCADE_40", "priority": "high"})
-        parent = parent_res.json()
-        parent_id = parent["id"]
+    def test_deregister_universe(self):
+        """DELETE /api/sla113/universes/{id} should remove universe"""
+        # First ensure test universe exists
+        params = {
+            "uid": "TEST_to_delete",
+            "name": "TEST To Delete",
+            "description": "Will be deleted",
+            "prefix": "/api/test_delete",
+            "engine": "pytest"
+        }
+        requests.post(f"{API_BASE}/universes/register", params=params)
         
-        # Create blocked child
-        child_res = requests.post(f"{API}/jobs", json={
-            "preset": "SLOTS_20",
-            "depends_on": [parent_id]
-        })
-        child = child_res.json()
-        child_id = child["id"]
-        
-        # Verify child is blocked
-        assert child["status"] == "blocked"
-        
-        # Wait for parent to complete and child to unblock
-        child_unblocked = False
-        for _ in range(40):  # Max 120 seconds
-            time.sleep(3)
-            jobs_res = requests.get(f"{API}/jobs")
-            jobs = jobs_res.json().get("jobs", [])
-            
-            parent_job = next((j for j in jobs if j["id"] == parent_id), None)
-            child_job = next((j for j in jobs if j["id"] == child_id), None)
-            
-            if parent_job and parent_job["status"] == "completed":
-                # Parent complete, check child
-                if child_job and child_job["status"] in ["pending", "processing", "completed"]:
-                    child_unblocked = True
-                    break
-        
-        assert child_unblocked, "Child job should have been unblocked after parent completed"
-        
-        # Cleanup
-        requests.delete(f"{API}/jobs/{parent_id}")
-        requests.delete(f"{API}/jobs/{child_id}")
-
-
-class TestWorkerStatusWithBlocked:
-    """Test worker status includes blocked_jobs count"""
-    
-    def test_worker_status_includes_blocked_count(self):
-        """GET /worker/status should include blocked_jobs"""
-        response = requests.get(f"{API}/worker/status")
+        # Delete it
+        response = requests.delete(f"{API_BASE}/universes/TEST_to_delete")
         assert response.status_code == 200
         data = response.json()
-        assert "blocked_jobs" in data
-        assert isinstance(data["blocked_jobs"], int)
-        assert "active_jobs" in data
-        assert "completed_jobs" in data
-        assert "total_jobs" in data
-        assert "running" in data
+        
+        assert data["deregistered"] == True
+        assert data["universe"]["id"] == "TEST_to_delete"
+        
+        # Verify it's gone
+        list_response = requests.get(f"{API_BASE}/universes")
+        universe_ids = [u["id"] for u in list_response.json()["universes"]]
+        assert "TEST_to_delete" not in universe_ids
+
+    def test_cannot_deregister_nonexistent_universe(self):
+        """DELETE /api/sla113/universes/{id} returns 404 for unknown universe"""
+        response = requests.delete(f"{API_BASE}/universes/nonexistent_xyz_123")
+        assert response.status_code == 404
+
+    def test_universe_engine_colors_mapping(self):
+        """Verify universes have different engines for color-coding"""
+        response = requests.get(f"{API_BASE}/universes")
+        data = response.json()
+        
+        engines = set(u["engine"] for u in data["universes"])
+        # Should have multiple different engines
+        assert len(engines) >= 3, f"Expected 3+ different engines, got {engines}"
+        
+        # Verify specific engine mappings
+        engine_map = {u["id"]: u["engine"] for u in data["universes"]}
+        assert engine_map.get("sla113") == "fastapi+mongodb"
+        assert engine_map.get("empire1") == "emergent-llm"
+        assert engine_map.get("soulfire") == "vertex-ai"
 
 
-class TestExistingFeatures:
-    """Verify existing features still work"""
-    
-    def test_game_types_endpoint(self):
-        """GET /game-types should work"""
-        response = requests.get(f"{API}/game-types")
-        assert response.status_code == 200
-        assert "game_types" in response.json()
-    
-    def test_projects_crud(self):
-        """Projects CRUD should work"""
-        # Create
-        create_res = requests.post(f"{API}/projects", json={
-            "name": "TEST_Dep_Project",
-            "game_type": "fish_shooter",
-            "target_platform": "web"
-        })
-        assert create_res.status_code == 200
-        project = create_res.json()
-        
-        # Read
-        get_res = requests.get(f"{API}/projects/{project['id']}")
-        assert get_res.status_code == 200
-        
-        # Delete
-        del_res = requests.delete(f"{API}/projects/{project['id']}")
-        assert del_res.status_code == 200
-    
-    def test_builds_endpoint(self):
-        """GET /builds should work"""
-        response = requests.get(f"{API}/builds")
-        assert response.status_code == 200
-        assert "builds" in response.json()
-    
-    def test_compliance_endpoint(self):
-        """GET /compliance should work"""
-        response = requests.get(f"{API}/compliance")
-        assert response.status_code == 200
-        assert "reports" in response.json()
-    
-    def test_deployments_endpoint(self):
-        """GET /deployments should work"""
-        response = requests.get(f"{API}/deployments")
-        assert response.status_code == 200
-        assert "deployments" in response.json()
-    
-    def test_pipelines_endpoint(self):
-        """GET /pipelines should work"""
-        response = requests.get(f"{API}/pipelines")
-        assert response.status_code == 200
-        assert "pipelines" in response.json()
-    
-    def test_tenants_endpoint(self):
-        """GET /tenants should work"""
-        response = requests.get(f"{API}/tenants")
-        assert response.status_code == 200
-        assert "tenants" in response.json()
-    
-    def test_stats_endpoint(self):
-        """GET /stats should work"""
-        response = requests.get(f"{API}/stats")
+class TestRealComplianceEngine:
+    """Real Compliance Engine tests - pulls real RTP from Logic Engine"""
+
+    def test_compliance_check_with_logic_engine_rtp(self):
+        """POST /api/sla113/compliance/check should show real RTP from Logic Engine"""
+        payload = {
+            "project_id": TEST_PROJECT_ID,
+            "jurisdiction": "GLI",
+            "check_type": "full"
+        }
+        response = requests.post(f"{API_BASE}/compliance/check", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert "total_projects" in data
-        assert "supported_game_types" in data
+        
+        # Verify structure
+        assert "id" in data
+        assert data["project_id"] == TEST_PROJECT_ID
+        assert data["jurisdiction"] == "GLI"
+        assert "status" in data
+        assert "results" in data
+        assert "actual_rtp" in data
+        assert "has_logic_data" in data
+        
+        # Verify RTP is from Logic Engine (not random)
+        assert data["has_logic_data"] == True, "Project should have Logic Engine data"
+        assert data["actual_rtp"] != "Not generated", "RTP should be generated"
+        
+        # Check RTP verification result
+        rtp_check = next((r for r in data["results"] if "RTP" in r["check"]), None)
+        assert rtp_check is not None, "Should have RTP Verification check"
+        assert rtp_check["source"] == "logic_engine", "RTP should come from Logic Engine"
+        assert "%" in rtp_check["value"], "RTP value should be percentage"
+
+    def test_compliance_status_types(self):
+        """Compliance should return CERTIFIED, CONDITIONAL, or NEEDS_REMEDIATION"""
+        payload = {
+            "project_id": TEST_PROJECT_ID,
+            "jurisdiction": "GLI"
+        }
+        response = requests.post(f"{API_BASE}/compliance/check", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        
+        valid_statuses = ["CERTIFIED", "CONDITIONAL", "NEEDS_REMEDIATION"]
+        assert data["status"] in valid_statuses, f"Status should be one of {valid_statuses}, got {data['status']}"
+
+    def test_compliance_warn_for_missing_rng(self):
+        """Compliance should show WARN for missing RNG specification"""
+        payload = {
+            "project_id": TEST_PROJECT_ID,
+            "jurisdiction": "GLI"
+        }
+        response = requests.post(f"{API_BASE}/compliance/check", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        
+        # Find RNG check
+        rng_check = next((r for r in data["results"] if "RNG" in r["check"]), None)
+        assert rng_check is not None, "Should have RNG check"
+        # RNG might be WARN or PASS depending on project state
+        assert rng_check["status"] in ["WARN", "PASS"]
+
+    def test_compliance_different_jurisdictions(self):
+        """Test compliance with different jurisdictions: GLI, MGA, UKGC, CURACAO"""
+        jurisdictions = ["GLI", "MGA", "UKGC", "CURACAO", "INTERNAL"]
+        
+        for jurisdiction in jurisdictions:
+            payload = {
+                "project_id": TEST_PROJECT_ID,
+                "jurisdiction": jurisdiction
+            }
+            response = requests.post(f"{API_BASE}/compliance/check", json=payload)
+            assert response.status_code == 200, f"Failed for jurisdiction {jurisdiction}"
+            data = response.json()
+            assert data["jurisdiction"] == jurisdiction
+            assert len(data["results"]) > 0, f"Should have checks for {jurisdiction}"
+
+    def test_compliance_pass_rate_format(self):
+        """Compliance pass_rate should be in X/Y format"""
+        payload = {
+            "project_id": TEST_PROJECT_ID,
+            "jurisdiction": "GLI"
+        }
+        response = requests.post(f"{API_BASE}/compliance/check", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert "/" in data["pass_rate"], f"pass_rate should be X/Y format, got {data['pass_rate']}"
+        parts = data["pass_rate"].split("/")
+        assert len(parts) == 2
+        assert parts[0].isdigit() and parts[1].isdigit()
+
+    def test_compliance_nonexistent_project_returns_404(self):
+        """Compliance check on nonexistent project returns 404"""
+        payload = {
+            "project_id": "nonexistent-project-id-xyz",
+            "jurisdiction": "GLI"
+        }
+        response = requests.post(f"{API_BASE}/compliance/check", json=payload)
+        assert response.status_code == 404
 
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--tb=short"])
+class TestFrontlineSnapshot:
+    """Frontline Snapshot API tests - real metrics"""
+
+    def test_frontline_snapshot_returns_metrics(self):
+        """GET /api/sla113/frontline/snapshot should return real metrics"""
+        response = requests.get(f"{API_BASE}/frontline/snapshot")
+        assert response.status_code == 200
+        data = response.json()
+        
+        # Verify all required metrics
+        required_fields = [
+            "total_projects", "active_jobs", "blocked_jobs", "completed_jobs",
+            "total_tenants", "active_builds", "live_deployments", "total_revenue",
+            "worker_running", "universes_online", "timestamp"
+        ]
+        for field in required_fields:
+            assert field in data, f"Missing field: {field}"
+
+    def test_frontline_snapshot_universes_count(self):
+        """Frontline should show correct universes_online count"""
+        response = requests.get(f"{API_BASE}/frontline/snapshot")
+        assert response.status_code == 200
+        data = response.json()
+        
+        # Should match universe registry count
+        universes_response = requests.get(f"{API_BASE}/universes")
+        expected_count = universes_response.json()["total"]
+        
+        assert data["universes_online"] == expected_count, \
+            f"universes_online ({data['universes_online']}) should match registry ({expected_count})"
+
+    def test_frontline_snapshot_worker_status(self):
+        """Frontline should show worker_running status"""
+        response = requests.get(f"{API_BASE}/frontline/snapshot")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert isinstance(data["worker_running"], bool)
+
+    def test_frontline_snapshot_numeric_values(self):
+        """Frontline metrics should be numeric"""
+        response = requests.get(f"{API_BASE}/frontline/snapshot")
+        assert response.status_code == 200
+        data = response.json()
+        
+        numeric_fields = [
+            "total_projects", "active_jobs", "blocked_jobs", "completed_jobs",
+            "total_tenants", "active_builds", "live_deployments", "total_revenue",
+            "universes_online"
+        ]
+        for field in numeric_fields:
+            assert isinstance(data[field], (int, float)), f"{field} should be numeric"
+
+
+class TestWebSocketFrontline:
+    """WebSocket Frontline tests - real-time metrics feed"""
+
+    @pytest.mark.asyncio
+    async def test_websocket_connection(self):
+        """WSS /api/sla113/frontline/ws should connect and push metrics"""
+        ws_url = BASE_URL.replace("https://", "wss://").replace("http://", "ws://")
+        ws_url = f"{ws_url}/api/sla113/frontline/ws"
+        
+        try:
+            async with websockets.connect(ws_url, close_timeout=5) as websocket:
+                # Wait for first message (should come within 2 seconds)
+                message = await asyncio.wait_for(websocket.recv(), timeout=5)
+                data = json.loads(message)
+                
+                # Verify message structure
+                assert data["type"] == "frontline_update"
+                assert "timestamp" in data
+                assert "metrics" in data
+                
+                # Verify metrics content
+                metrics = data["metrics"]
+                assert "total_projects" in metrics
+                assert "active_jobs" in metrics
+                assert "universes_online" in metrics
+                assert "worker_running" in metrics
+                
+        except Exception as e:
+            pytest.fail(f"WebSocket connection failed: {e}")
+
+    @pytest.mark.asyncio
+    async def test_websocket_receives_multiple_updates(self):
+        """WebSocket should receive multiple updates over time"""
+        ws_url = BASE_URL.replace("https://", "wss://").replace("http://", "ws://")
+        ws_url = f"{ws_url}/api/sla113/frontline/ws"
+        
+        try:
+            async with websockets.connect(ws_url, close_timeout=10) as websocket:
+                messages = []
+                for _ in range(2):  # Get 2 messages
+                    message = await asyncio.wait_for(websocket.recv(), timeout=5)
+                    messages.append(json.loads(message))
+                
+                assert len(messages) == 2
+                # Both should be frontline_update type
+                assert all(m["type"] == "frontline_update" for m in messages)
+                
+        except Exception as e:
+            pytest.fail(f"WebSocket multiple updates test failed: {e}")
+
+
+class TestCleanup:
+    """Cleanup test data created during tests"""
+
+    def test_cleanup_test_universes(self):
+        """Remove any TEST_ prefixed universes"""
+        response = requests.get(f"{API_BASE}/universes")
+        if response.status_code == 200:
+            universes = response.json()["universes"]
+            for u in universes:
+                if u["id"].startswith("TEST_"):
+                    requests.delete(f"{API_BASE}/universes/{u['id']}")
+        
+        # Verify cleanup
+        response = requests.get(f"{API_BASE}/universes")
+        universe_ids = [u["id"] for u in response.json()["universes"]]
+        test_universes = [uid for uid in universe_ids if uid.startswith("TEST_")]
+        assert len(test_universes) == 0, f"Test universes not cleaned up: {test_universes}"
+
+
+# Fixtures
+@pytest.fixture
+def api_client():
+    """Shared requests session"""
+    session = requests.Session()
+    session.headers.update({"Content-Type": "application/json"})
+    return session

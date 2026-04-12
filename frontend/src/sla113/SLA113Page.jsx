@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import SpriteCutter from './SpriteCutter';
 import DependencyGraph from './DependencyGraph';
+import FrontlinePanel from './FrontlinePanel';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
 
@@ -601,51 +602,9 @@ export default function SLA113Page() {
           <main className="flex-1 overflow-y-auto p-8 custom-scrollbar relative flex flex-col">
             <div className="scanline"></div>
 
-            {/* FACTORY: FRONTLINE */}
+            {/* FACTORY: FRONTLINE — REAL-TIME WEBSOCKET */}
             {partition === 'factory' && activeTab === 'FRONTLINE' && (
-              <div className="grid grid-cols-12 gap-6 h-full animate-in fade-in" data-testid="frontline-panel">
-                <div className="col-span-8 flex flex-col gap-6">
-                  <div className="flex-1 glass-panel border-cyan-500/20 flex flex-col">
-                    <div className="p-4 border-b border-cyan-500/20 bg-cyan-900/10 flex justify-between items-center text-[10px] uppercase tracking-widest">
-                      <span className="flex items-center gap-2 text-cyan-400"><Zap size={12} fill="currentColor" /> Live Ritual Feed</span>
-                      <span className="text-zinc-500">Node: SGV_ELA_WEST</span>
-                    </div>
-                    <div className="flex-1 p-6 font-mono text-[11px] space-y-3 overflow-y-auto">
-                      <p className="text-zinc-600">[02:44:01] Ritual Initialized. Boss: TONATIUH.</p>
-                      <p className="text-zinc-400">[02:44:12] Shot detected from Subdomain: shop-alpha.</p>
-                      <p className="text-zinc-400">[02:44:15] Credit Debit: 0.50 (SLA113_LEDGER).</p>
-                      <p className="text-cyan-400">[02:44:20] Boss Phase Transition: SOLAR_FLARE_INJECTED.</p>
-                      <p className="text-[#D4AF37]">[02:44:30] Jackpot Probability: Clamped at 0.00042%.</p>
-                      {projects.map((p, i) => (
-                        <p key={i} className="text-zinc-400">[LIVE] Project: {p.name} | Type: {p.game_type} | Status: {p.status}</p>
-                      ))}
-                    </div>
-                    <div className="p-4 border-t border-cyan-500/20 flex gap-4 bg-black/50">
-                      <input type="text" placeholder="Inject Owner Intelligence..." className="input-dark focus:border-cyan-500" data-testid="frontline-input" />
-                      <button className="px-6 py-2 bg-cyan-500/20 border border-cyan-500 text-cyan-400 font-bold uppercase text-[10px] tracking-widest hover:bg-cyan-500 hover:text-black transition-all" data-testid="frontline-execute">Execute</button>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-4 space-y-6">
-                  <div className="glass-panel border-cyan-500/20 p-6 space-y-6">
-                    <h3 className="text-cyan-400 text-xs font-bold uppercase tracking-widest border-b border-cyan-500/20 pb-4">Cinematic Engine</h3>
-                    <div className="flex justify-center py-6">
-                      <div className="w-32 h-32 rounded-full bg-cyan-500/5 border border-cyan-500/30 flex items-center justify-center relative shadow-[0_0_40px_rgba(0,200,255,0.1)]">
-                        <div className="w-24 h-24 rounded-full border-2 border-t-cyan-400 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-                        <div className="absolute flex flex-col items-center">
-                          <span className="text-cyan-400 font-bold text-xl">94%</span>
-                          <span className="text-[9px] text-zinc-500 uppercase">RTP Hold</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-[10px] text-zinc-400">
-                      <div className="flex justify-between"><span>Total Projects</span><span className="text-cyan-400 font-bold">{stats.total_projects || 0}</span></div>
-                      <div className="flex justify-between"><span>Game Types</span><span className="text-cyan-400 font-bold">{stats.supported_game_types || 0}</span></div>
-                      <div className="flex justify-between"><span>AI Engines</span><span className="text-cyan-400 font-bold">{stats.engines?.length || 0}</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FrontlinePanel API={API} projects={projects} stats={stats} />
             )}
 
             {/* FACTORY: WHITE LABEL MINT */}
@@ -1568,20 +1527,40 @@ export default function SLA113Page() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`px-3 py-1 text-[9px] uppercase tracking-widest border font-bold ${
-                              r.status === 'CERTIFIED' ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10' : 'border-amber-500/30 text-amber-500 bg-amber-500/10'
+                              r.status === 'CERTIFIED' ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10' : r.status === 'CONDITIONAL' ? 'border-amber-500/30 text-amber-500 bg-amber-500/10' : 'border-red-500/30 text-red-500 bg-red-500/10'
                             }`}>{r.status}</span>
                             <span className="text-zinc-500 text-[9px] font-mono">{r.pass_rate}</span>
                             <button onClick={async () => { await axios.delete(`${API}/compliance/${r.id}`); fetchData(); }} className="text-zinc-600 hover:text-red-500 transition-colors"><XCircle size={14}/></button>
                           </div>
                         </div>
+                        {/* RTP Info Bar */}
+                        {r.actual_rtp && (
+                          <div className="flex gap-3 text-[9px]">
+                            <div className="bg-black/50 border border-zinc-800 px-3 py-1.5 flex gap-2">
+                              <span className="text-zinc-600 uppercase">Actual RTP:</span>
+                              <span className={r.actual_rtp === 'Not generated' ? 'text-amber-400' : 'text-emerald-400 font-bold'}>{r.actual_rtp}</span>
+                            </div>
+                            <div className="bg-black/50 border border-zinc-800 px-3 py-1.5 flex gap-2">
+                              <span className="text-zinc-600 uppercase">Min Required:</span>
+                              <span className="text-zinc-400 font-bold">{r.min_rtp_required || 'N/A'}</span>
+                            </div>
+                            {r.has_logic_data !== undefined && (
+                              <div className="bg-black/50 border border-zinc-800 px-3 py-1.5 flex gap-2">
+                                <span className="text-zinc-600 uppercase">Logic Data:</span>
+                                <span className={r.has_logic_data ? 'text-emerald-400' : 'text-amber-400'}>{r.has_logic_data ? 'YES' : 'NO'}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                         <div className="grid grid-cols-2 gap-2">
                           {r.results?.map((c, i) => (
-                            <div key={i} className={`p-3 border text-[10px] ${c.status === 'PASS' ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
+                            <div key={i} className={`p-3 border text-[10px] ${c.status === 'PASS' ? 'border-emerald-500/20 bg-emerald-500/5' : c.status === 'WARN' ? 'border-amber-500/20 bg-amber-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
                               <div className="flex justify-between items-center">
-                                <span className={c.status === 'PASS' ? 'text-emerald-400' : 'text-red-400'}>{c.check}</span>
-                                <span className={`font-bold ${c.status === 'PASS' ? 'text-emerald-500' : 'text-red-500'}`}>{c.status}</span>
+                                <span className={c.status === 'PASS' ? 'text-emerald-400' : c.status === 'WARN' ? 'text-amber-400' : 'text-red-400'}>{c.check}</span>
+                                <span className={`font-bold ${c.status === 'PASS' ? 'text-emerald-500' : c.status === 'WARN' ? 'text-amber-500' : 'text-red-500'}`}>{c.status}</span>
                               </div>
                               {c.value && <span className="text-zinc-500 text-[9px] font-mono">{c.value}</span>}
+                              {c.details && <p className="text-zinc-600 text-[8px] mt-1 leading-relaxed">{c.details}</p>}
                             </div>
                           ))}
                         </div>
