@@ -998,9 +998,22 @@ export default function SLA113Page() {
                               {(agent.rtp_mode||92) >= 94 ? 'EASY' : (agent.rtp_mode||92) >= 92 ? 'MEDIUM' : 'HARD'} ({agent.rtp_mode||92}%)
                             </span>
                           </td>
-                          <td className="p-4 text-right space-x-2">
-                            <button onClick={async () => { await axios.put(`${API}/tenants/${agent.id}/credits?amount=1000`); fetchData(); }} className="text-[9px] border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-indigo-400 hover:bg-indigo-500 hover:text-black transition-all">+1K</button>
-                            <button onClick={async () => { const rtp = prompt('Set RTP (80-99):', agent.rtp_mode||92); if(rtp) { await axios.put(`${API}/tenants/${agent.id}/rtp?rtp=${rtp}`); fetchData(); }}} className="text-[9px] border border-zinc-700 bg-black px-3 py-1.5 text-zinc-400 hover:bg-zinc-800 transition-all">RTP</button>
+                          <td className="p-4 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              {[500, 1000, 5000, 10000].map(amt => (
+                                <button key={amt} onClick={async () => { await axios.put(`${API}/tenants/${agent.id}/credits?amount=${amt}`); fetchData(); }}
+                                  className="text-[8px] border border-indigo-500/30 bg-indigo-500/10 px-2 py-1.5 text-indigo-400 hover:bg-indigo-500 hover:text-black transition-all font-bold"
+                                  data-testid={`mint-${amt}-${agent.id}`}
+                                >+{amt >= 1000 ? `${amt/1000}K` : amt}</button>
+                              ))}
+                              <button onClick={async () => {
+                                const rtp = window.prompt('Set RTP (80-99):', agent.rtp_mode||92);
+                                if(rtp && !isNaN(rtp) && rtp >= 80 && rtp <= 99) { await axios.put(`${API}/tenants/${agent.id}/rtp?rtp=${rtp}`); fetchData(); }
+                              }} className="text-[8px] border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-amber-400 hover:bg-amber-500 hover:text-black transition-all font-bold" data-testid={`rtp-${agent.id}`}>RTP</button>
+                              <button onClick={async () => { if(window.confirm(`Delete ${agent.name}?`)) { await axios.delete(`${API}/tenants/${agent.id}`); fetchData(); }}}
+                                className="text-[8px] border border-red-500/20 px-2 py-1.5 text-zinc-600 hover:text-red-500 hover:border-red-500/50 transition-all" data-testid={`delete-agent-${agent.id}`}
+                              ><Trash2 size={10}/></button>
+                            </div>
                           </td>
                         </tr>
                       ))}

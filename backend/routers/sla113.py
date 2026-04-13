@@ -1424,8 +1424,9 @@ async def compile_build(build_id: str):
         with open(os.path.join(build_dir, "index.html"), "w") as f:
             f.write(html_content)
 
-        # Write a basic game.js engine
-        js_content = _generate_game_js(game_name, game_type, game_config, asset_manifest, is_casino)
+        # Write a genre-specific game.js engine using template library
+        from sla113.game_templates import get_game_template
+        js_content = get_game_template(game_type, game_name, game_config, asset_manifest)
         with open(os.path.join(build_dir, "game.js"), "w") as f:
             f.write(js_content)
 
