@@ -7,13 +7,16 @@ def get_game_template(game_type, game_name, game_config, asset_manifest):
     config_json = json.dumps(game_config, default=str, indent=2)
     manifest_json = json.dumps(asset_manifest, default=str, indent=2)
 
+    # Extract custom symbols from game_config if present
+    custom_symbols = game_config.get("custom_symbols", None)
+
     templates = {
         "fish_shooting": _fish_shooting_template,
-        "slot_machine": _slot_machine_template,
-        "video_poker": _video_poker_template,
-        "casino_suite": _slot_machine_template,
-        "pachinko": _slot_machine_template,
-        "card_games": _video_poker_template,
+        "slot_machine": _video_slot_5reel_template,
+        "video_poker": _video_slot_5reel_template,
+        "casino_suite": _video_slot_5reel_template,
+        "pachinko": _video_slot_5reel_template,
+        "card_games": _video_slot_5reel_template,
         "tactical_fps": _tactical_fps_template,
         "cod_warfare": _tactical_fps_template,
         "battle_royale": _tactical_fps_template,
@@ -414,6 +417,275 @@ def _slot_machine_template(game_name, game_type, config_json, manifest_json, ass
 
   document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); spin(); } });
   console.log('[SLA113] Slot Machine initialized — Weighted RNG, real paytable');
+})();
+"""
+
+
+def _video_slot_5reel_template(game_name, game_type, config_json, manifest_json, assets):
+    """5-reel, 3-row video slot with wilds, scatters, free spins, and custom symbols."""
+    return _header(game_name, game_type, config_json, manifest_json) + """(async () => {
+  const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x08000a, antialias: true });
+  document.body.appendChild(app.view);
+  document.getElementById('loading').style.display = 'none';
+  window.addEventListener('resize', () => app.renderer.resize(window.innerWidth, window.innerHeight));
+
+  const W = app.screen.width, H = app.screen.height;
+
+  // ─── Custom symbols from config or defaults ───
+  const customSyms = GAME_CONFIG.custom_symbols;
+  const BASE_SYMBOLS = customSyms && customSyms.length >= 5 ? customSyms.map(s => ({
+    name: s.name, color: parseInt((s.color||'#d4af37').replace('#',''), 16), weight: s.weight||5, payout: s.payout||5, special: null
+  })) : [
+    { name: '7',       color: 0xff0000, weight: 2,  payout: 50, special: null },
+    { name: 'DIAMOND', color: 0x00c8ff, weight: 3,  payout: 25, special: null },
+    { name: 'STAR',    color: 0xd4af37, weight: 4,  payout: 15, special: null },
+    { name: 'BAR',     color: 0xf5c542, weight: 6,  payout: 10, special: null },
+    { name: 'BELL',    color: 0xffaa00, weight: 8,  payout: 8,  special: null },
+    { name: 'CHERRY',  color: 0xff4466, weight: 10, payout: 5,  special: null },
+    { name: 'LEMON',   color: 0x88ff44, weight: 12, payout: 3,  special: null },
+    { name: 'PLUM',    color: 0x9944ff, weight: 10, payout: 4,  special: null },
+    { name: 'ORANGE',  color: 0xff8800, weight: 10, payout: 4,  special: null },
+  ];
+
+  // Add WILD and SCATTER
+  const SYMBOLS = [
+    { name: 'WILD',    color: 0x00ff88, weight: 3, payout: 0, special: 'wild' },
+    { name: 'SCATTER', color: 0xff00ff, weight: 3, payout: 0, special: 'scatter' },
+    ...BASE_SYMBOLS,
+  ];
+
+  const REELS = 5, ROWS = 3, SYM_W = 100, SYM_H = 80;
+  let credits = 10000, bet = 10, lines = 9, spinning = false;
+  let freeSpins = 0, freeSpinMult = 2, totalWins = 0, totalSpins = 0;
+
+  // Weighted pool
+  const pool = [];
+  SYMBOLS.forEach((s, i) => { for (let w = 0; w < s.weight; w++) pool.push(i); });
+  const rng = () => pool[Math.floor(Math.random() * pool.length)];
+
+  // 9 paylines (row indices for each reel)
+  const PAYLINES = [
+    [1,1,1,1,1], [0,0,0,0,0], [2,2,2,2,2],
+    [0,1,2,1,0], [2,1,0,1,2], [0,0,1,2,2],
+    [2,2,1,0,0], [1,0,1,2,1], [1,2,1,0,1],
+  ];
+
+  // ─── Machine Layout ───
+  const machW = REELS * SYM_W + 40, machH = ROWS * SYM_H + 20;
+  const mx = W / 2 - machW / 2, my = H / 2 - machH / 2 - 40;
+
+  // Cabinet
+  const cab = new PIXI.Graphics();
+  cab.beginFill(0x0c000e).drawRoundedRect(mx - 30, my - 70, machW + 60, machH + 220, 16).endFill();
+  cab.lineStyle(3, 0xd4af37).drawRoundedRect(mx - 30, my - 70, machW + 60, machH + 220, 16);
+  app.stage.addChild(cab);
+
+  const titleTxt = new PIXI.Text(GAME_CONFIG.name || 'VIDEO SLOTS', { fontSize: 20, fill: 0xd4af37, fontFamily: 'monospace', fontWeight: 'bold', letterSpacing: 4 });
+  titleTxt.anchor.set(0.5); titleTxt.x = W/2; titleTxt.y = my - 40;
+  app.stage.addChild(titleTxt);
+
+  // Reel background
+  const reelBg = new PIXI.Graphics();
+  reelBg.beginFill(0x050008).drawRect(mx, my, machW, machH).endFill();
+  app.stage.addChild(reelBg);
+
+  // ─── Reel System ───
+  const reelState = []; // per reel: { container, strip[], offset, speed, targetIdx, stopped, result }
+
+  for (let r = 0; r < REELS; r++) {
+    const container = new PIXI.Container();
+    const rx = mx + 10 + r * SYM_W;
+    container.x = rx; container.y = my;
+
+    const mask = new PIXI.Graphics();
+    mask.beginFill(0xffffff).drawRect(rx, my, SYM_W - 5, machH).endFill();
+    app.stage.addChild(mask);
+    container.mask = mask;
+
+    const STRIP = SYMBOLS.length * 4;
+    const syms = [];
+    for (let i = 0; i < STRIP; i++) {
+      const sIdx = i % SYMBOLS.length;
+      const s = SYMBOLS[sIdx];
+      const txt = new PIXI.Text(s.name, {
+        fontSize: s.name.length > 5 ? 13 : s.name.length > 3 ? 16 : 22,
+        fill: s.color, fontFamily: 'monospace', fontWeight: 'bold',
+      });
+      txt.anchor.set(0.5); txt.x = (SYM_W - 5) / 2; txt.y = i * SYM_H + SYM_H / 2;
+      txt.symIdx = sIdx;
+      container.addChild(txt); syms.push(txt);
+    }
+    app.stage.addChild(container);
+    reelState.push({ container, symbols: syms, offset: 0, speed: 0, targetIdx: null, stopped: true, result: [0,0,0], stripLen: STRIP });
+  }
+
+  // Reel dividers
+  for (let r = 1; r < REELS; r++) {
+    const d = new PIXI.Graphics();
+    d.lineStyle(1, 0x222222).moveTo(mx + 10 + r * SYM_W - 3, my).lineTo(mx + 10 + r * SYM_W - 3, my + machH);
+    d.zIndex = 10; app.stage.addChild(d);
+  }
+  app.stage.sortableChildren = true;
+
+  // ─── Free Spin Banner ───
+  const fsBanner = new PIXI.Text('', { fontSize: 18, fill: 0xff00ff, fontFamily: 'monospace', fontWeight: 'bold', letterSpacing: 3 });
+  fsBanner.anchor.set(0.5); fsBanner.x = W/2; fsBanner.y = my - 15; fsBanner.visible = false;
+  app.stage.addChild(fsBanner);
+
+  // Win display
+  const winText = new PIXI.Text('', { fontSize: 24, fill: 0xd4af37, fontFamily: 'monospace', fontWeight: 'bold' });
+  winText.anchor.set(0.5); winText.x = W/2; winText.y = my + machH + 15;
+  app.stage.addChild(winText);
+
+  // ─── Controls ───
+  const btnY = my + machH + 45;
+  const spinBtn = new PIXI.Graphics();
+  spinBtn.beginFill(0xd4af37).drawRoundedRect(0,0,160,44,6).endFill();
+  const sTxt = new PIXI.Text('SPIN', { fontSize: 18, fill: 0x000000, fontFamily: 'monospace', fontWeight: 'bold', letterSpacing: 4 });
+  sTxt.anchor.set(0.5); sTxt.x = 80; sTxt.y = 22; spinBtn.addChild(sTxt);
+  spinBtn.x = W/2 - 80; spinBtn.y = btnY;
+  spinBtn.interactive = true; spinBtn.cursor = 'pointer';
+  spinBtn.on('pointerdown', spin);
+  app.stage.addChild(spinBtn);
+
+  // Bet and lines
+  const mkBtn = (label, x, y, w, cb) => {
+    const b = new PIXI.Graphics(); b.beginFill(0x222222).drawRoundedRect(0,0,w,36,4).endFill();
+    const t = new PIXI.Text(label, {fontSize:12,fill:0xcccccc,fontFamily:'monospace'});
+    t.anchor.set(0.5); t.x=w/2; t.y=18; b.addChild(t);
+    b.x=x; b.y=y; b.interactive=true; b.cursor='pointer'; b.on('pointerdown', cb);
+    app.stage.addChild(b); return t;
+  };
+  const betTxt = mkBtn('BET: 10', W/2-200, btnY+4, 80, () => { if(!spinning){bet=bet>=100?10:bet+10; betTxt.text='BET: '+bet; updateHUD();}});
+  const lineTxt = mkBtn('LINES: 9', W/2+120, btnY+4, 80, () => { if(!spinning){lines=lines>=9?1:lines+1; lineTxt.text='LINES: '+lines; updateHUD();}});
+
+  // HUD
+  const hud = document.createElement('div');
+  hud.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);color:#d4af37;font:11px monospace;text-transform:uppercase;letter-spacing:2px;z-index:100;background:rgba(0,0,0,0.85);padding:8px 20px;border:1px solid #d4af3730';
+  document.body.appendChild(hud);
+  function updateHUD() {
+    const fsText = freeSpins > 0 ? ` | FREE: ${freeSpins} (x${freeSpinMult})` : '';
+    hud.textContent = `CREDITS: ${credits.toLocaleString()} | BET: ${bet} x ${lines}L = ${bet*lines} | WON: ${totalWins.toLocaleString()}${fsText}`;
+    document.getElementById('score').textContent = credits.toLocaleString();
+  }
+  updateHUD();
+
+  // ─── Spin ───
+  function spin() {
+    if (spinning) return;
+    const cost = bet * lines;
+    if (freeSpins <= 0 && credits < cost) return;
+    spinning = true;
+    if (freeSpins > 0) { freeSpins--; fsBanner.text = `FREE SPINS: ${freeSpins} (x${freeSpinMult})`; if(freeSpins<=0) fsBanner.visible=false; }
+    else { credits -= cost; }
+    totalSpins++;
+    winText.text = '';
+
+    // Generate 5x3 result grid
+    const grid = [];
+    for (let r = 0; r < REELS; r++) {
+      const col = [rng(), rng(), rng()];
+      grid.push(col);
+      reelState[r].result = col;
+      reelState[r].stopped = false;
+      reelState[r].speed = 20 + Math.random() * 10;
+      reelState[r].targetIdx = null;
+      setTimeout(() => { reelState[r].targetIdx = col[1]; }, 400 + r * 350);
+    }
+  }
+
+  function evaluateWin(grid) {
+    let totalPay = 0;
+    const scatterCount = grid.flat().filter(i => SYMBOLS[i].special === 'scatter').length;
+
+    for (let line = 0; line < lines; line++) {
+      const pl = PAYLINES[line];
+      const lineSyms = pl.map((row, reel) => grid[reel][row]);
+
+      // Count consecutive from left, treating WILD as match
+      const first = SYMBOLS[lineSyms[0]].special === 'wild' ? -1 : lineSyms[0];
+      let count = 1;
+      for (let i = 1; i < 5; i++) {
+        const s = lineSyms[i];
+        if (SYMBOLS[s].special === 'wild' || s === first || first === -1) { count++; }
+        else break;
+      }
+
+      // Find the actual paying symbol (first non-wild)
+      let payIdx = lineSyms.find(i => SYMBOLS[i].special !== 'wild');
+      if (payIdx === undefined) payIdx = lineSyms[0]; // all wilds = use first symbol
+
+      if (count >= 3 && SYMBOLS[payIdx]) {
+        const basePay = SYMBOLS[payIdx].payout * bet;
+        const mult = count === 5 ? 5 : count === 4 ? 2 : 1;
+        totalPay += basePay * mult;
+      }
+    }
+
+    // Scatter pays
+    if (scatterCount >= 3) {
+      totalPay += bet * lines * (scatterCount === 5 ? 50 : scatterCount === 4 ? 10 : 5);
+      // Trigger free spins
+      if (freeSpins <= 0) {
+        freeSpins = scatterCount === 5 ? 25 : scatterCount === 4 ? 15 : 10;
+        freeSpinMult = scatterCount >= 4 ? 3 : 2;
+        fsBanner.text = `FREE SPINS WON: ${freeSpins} (x${freeSpinMult})`;
+        fsBanner.visible = true;
+      }
+    }
+
+    // Apply free spin multiplier
+    if (freeSpins > 0 || freeSpinMult > 1) totalPay *= freeSpinMult;
+
+    return totalPay;
+  }
+
+  // ─── Game Loop ───
+  app.ticker.add(() => {
+    let allStopped = true;
+    reelState.forEach((rd, r) => {
+      if (rd.stopped) return;
+      allStopped = false;
+      rd.offset += rd.speed;
+      const totalH = rd.stripLen * SYM_H;
+      rd.symbols.forEach(txt => {
+        let newY = (txt.symIdx * SYM_H + SYM_H/2 + rd.offset) % totalH;
+        if (newY < 0) newY += totalH;
+        txt.y = newY - SYM_H;
+      });
+      if (rd.targetIdx !== null) {
+        rd.speed *= 0.95;
+        if (rd.speed < 1.2) {
+          rd.stopped = true; rd.speed = 0;
+          // Snap: place result[0] at row 0, result[1] at row 1, result[2] at row 2
+          rd.symbols.forEach(txt => { txt.visible = false; });
+          for (let row = 0; row < ROWS; row++) {
+            const sIdx = rd.result[row];
+            // Find a text node for this symbol
+            const txt = rd.symbols.find(t => t.symIdx === sIdx && !t._used);
+            if (txt) { txt.visible = true; txt.y = row * SYM_H + SYM_H/2; txt._used = true; }
+          }
+          // Reset _used flags for next spin
+          setTimeout(() => rd.symbols.forEach(t => { t._used = false; t.visible = true; }), 100);
+        }
+      }
+    });
+
+    if (!allStopped && reelState.every(rd => rd.stopped) && spinning) {
+      spinning = false;
+      const grid = reelState.map(rd => rd.result);
+      const win = evaluateWin(grid);
+      if (win > 0) {
+        credits += win; totalWins += win;
+        winText.text = `WIN: ${win.toLocaleString()}`;
+        winText.style.fill = win >= bet * lines * 10 ? 0xff0000 : 0xd4af37;
+      }
+      updateHUD();
+    }
+  });
+
+  document.addEventListener('keydown', e => { if(e.code==='Space'){e.preventDefault();spin();}});
+  console.log('[SLA113] 5-Reel Video Slot — Wilds, Scatters, Free Spins, Custom Symbols');
 })();
 """
 

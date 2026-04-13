@@ -27,6 +27,7 @@ from sla113.vision_engine import generate_vision_assets
 from sla113.logic_engine import generate_logic
 from sla113.composer_engine import compose_game_bundle
 from sla113.audio_forge import generate_audio_asset
+from sla113.fish_multiplayer import create_lobby, get_lobby, list_lobbies, delete_lobby
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/sla113", tags=["sla113"])
@@ -2023,6 +2024,155 @@ async def list_audio_templates():
         "audio_types": list(SFX_TEMPLATES.keys()),
         "engines": AUDIO_ENGINES,
     }
+
+
+# ─── Multiplayer Fish Shooting Lobby ───
+@router.get("/fish/lobbies")
+async def list_fish_lobbies():
+    """List all active fish shooting lobbies."""
+    return {"lobbies": list_lobbies()}
+
+
+@router.post("/fish/lobbies")
+async def create_fish_lobby(name: str = "Neon Fish Arena"):
+    """Create a new multiplayer fish shooting lobby."""
+    lobby = create_lobby(name)
+    return {"id": lobby.id, "name": lobby.name, "created_at": lobby.created_at}
+
+
+@router.delete("/fish/lobbies/{lobby_id}")
+async def delete_fish_lobby(lobby_id: str):
+    """Delete a fish shooting lobby."""
+    if delete_lobby(lobby_id):
+        return {"deleted": True}
+    raise HTTPException(status_code=404, detail="Lobby not found")
+
+
+@router.websocket("/fish/play/{lobby_id}")
+async def fish_game_ws(websocket: WebSocket, lobby_id: str):
+    """WebSocket endpoint for multiplayer fish shooting."""
+    lobby = get_lobby(lobby_id)
+    if not lobby:
+        await websocket.close(code=4004, reason="Lobby not found")
+        return
+
+    await websocket.accept()
+    player = None
+    try:
+        # Wait for join message with player name
+        join_msg = await websocket.receive_json()
+        player_name = join_msg.get("name", f"Player_{uuid.uuid4().hex[:4]}")
+        player = await lobby.add_player(websocket, player_name)
+        logger.info(f"Player {player.name} joined lobby {lobby.id}")
+
+        while True:
+            data = await websocket.receive_json()
+            action = data.get("action")
+
+            if action == "shoot":
+                await lobby.handle_shoot(player.id, data.get("fish_id", ""))
+            elif action == "chat":
+                await lobby.handle_chat(player.id, data.get("message", ""))
+            elif action == "cursor":
+                player.x = data.get("x", 0)
+                player.y = data.get("y", 0)
+
+    except (WebSocketDisconnect, RuntimeError):
+        pass
+    except Exception as e:
+        logger.error(f"Fish WS error: {e}")
+    finally:
+        if player and lobby:
+            await lobby.remove_player(player.id)
+            logger.info(f"Player {player.name} left lobby {lobby.id}")
+
+
+# ─── Custom Slot Symbols API ───
+def slot_symbols_collection():
+    return get_database()["sla113_slot_symbols"]
+
+
+class CreateSymbolSetRequest(BaseModel):
+    name: str
+    symbols: list
+
+
+@router.post("/slots/symbols")
+async def create_symbol_set(req: CreateSymbolSetRequest):
+    """Create a custom slot symbol set (e.g., Southern Lifestyle theme).
+    Each symbol: { name, color (hex), weight (1-30), payout (1-100) }
+    """
+    if len(req.symbols) < 5 or len(req.symbols) > 15:
+        raise HTTPException(status_code=400, detail="Need 5-15 symbols")
+
+    now = datetime.now(timezone.utc).isoformat()
+    symbol_set = {
+        "id": f"SYM-{uuid.uuid4().hex[:6].upper()}",
+        "name": req.name,
+        "symbols": req.symbols,
+        "total_symbols": len(req.symbols),
+        "created_at": now,
+    }
+    await slot_symbols_collection().insert_one(symbol_set)
+    symbol_set.pop("_id", None)
+    return symbol_set
+
+
+@router.get("/slots/symbols")
+async def list_symbol_sets():
+    """List all custom slot symbol sets."""
+    cursor = slot_symbols_collection().find({}, {"_id": 0}).sort("created_at", -1)
+    sets = await cursor.to_list(50)
+    # Add default set
+    default_set = {
+        "id": "DEFAULT",
+        "name": "Classic",
+        "symbols": [
+            {"name": "7", "color": "#ff0000", "weight": 2, "payout": 50},
+            {"name": "DIAMOND", "color": "#00c8ff", "weight": 3, "payout": 25},
+            {"name": "STAR", "color": "#d4af37", "weight": 4, "payout": 15},
+            {"name": "BAR", "color": "#f5c542", "weight": 6, "payout": 10},
+            {"name": "BELL", "color": "#ffaa00", "weight": 8, "payout": 8},
+            {"name": "CHERRY", "color": "#ff4466", "weight": 10, "payout": 5},
+            {"name": "LEMON", "color": "#88ff44", "weight": 12, "payout": 3},
+            {"name": "PLUM", "color": "#9944ff", "weight": 10, "payout": 4},
+            {"name": "ORANGE", "color": "#ff8800", "weight": 10, "payout": 4},
+        ],
+        "total_symbols": 9,
+    }
+    return {"sets": [default_set] + sets, "total": len(sets) + 1}
+
+
+@router.get("/slots/symbols/{set_id}")
+async def get_symbol_set(set_id: str):
+    """Get a specific symbol set."""
+    if set_id == "DEFAULT":
+        return {"id": "DEFAULT", "name": "Classic", "symbols": [
+            {"name": "7", "color": "#ff0000", "weight": 2, "payout": 50},
+            {"name": "DIAMOND", "color": "#00c8ff", "weight": 3, "payout": 25},
+            {"name": "STAR", "color": "#d4af37", "weight": 4, "payout": 15},
+            {"name": "BAR", "color": "#f5c542", "weight": 6, "payout": 10},
+            {"name": "BELL", "color": "#ffaa00", "weight": 8, "payout": 8},
+            {"name": "CHERRY", "color": "#ff4466", "weight": 10, "payout": 5},
+            {"name": "LEMON", "color": "#88ff44", "weight": 12, "payout": 3},
+            {"name": "PLUM", "color": "#9944ff", "weight": 10, "payout": 4},
+            {"name": "ORANGE", "color": "#ff8800", "weight": 10, "payout": 4},
+        ]}
+    ss = await slot_symbols_collection().find_one({"id": set_id}, {"_id": 0})
+    if not ss:
+        raise HTTPException(status_code=404, detail="Symbol set not found")
+    return ss
+
+
+@router.delete("/slots/symbols/{set_id}")
+async def delete_symbol_set(set_id: str):
+    """Delete a custom symbol set."""
+    if set_id == "DEFAULT":
+        raise HTTPException(status_code=400, detail="Cannot delete default set")
+    result = await slot_symbols_collection().delete_one({"id": set_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Symbol set not found")
+    return {"deleted": True}
 
 
 # ─── Seed default pipelines if empty ───

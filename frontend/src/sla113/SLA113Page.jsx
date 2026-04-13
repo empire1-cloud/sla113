@@ -7,13 +7,16 @@ import {
   HardDrive, Globe, Ghost, Layers, Factory, CheckCircle2, Moon, RefreshCw, XCircle,
   Settings, Server, Lock, SlidersHorizontal, Key, Network, ShieldCheck, Package,
   BarChart3, Hammer, Code, Grid3X3, Mic, Archive, ChevronDown, Scan, Paintbrush, Scissors,
-  Rocket, FileCheck, Upload, Play, ExternalLink, CloudLightning, Link2, Skull, Heart, Swords
+  Rocket, FileCheck, Upload, Play, ExternalLink, CloudLightning, Link2, Skull, Heart, Swords,
+  Crosshair, Palette
 } from 'lucide-react';
 import SpriteCutter from './SpriteCutter';
 import DependencyGraph from './DependencyGraph';
 import FrontlinePanel from './FrontlinePanel';
 import AudioForgePanel from './panels/AudioForgePanel';
 import { ArtTechNexusPanel, MatrixParamsPanel } from './panels/VaultAdminPanels';
+import FishMultiplayerPanel from './panels/FishMultiplayerPanel';
+import SlotSymbolsPanel from './panels/SlotSymbolsPanel';
 import { synthesizeFromAsset, playBuffer, stopSource, bufferToWav, downloadWav } from './audioSynth';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
@@ -112,9 +115,11 @@ const ALL_NAV_ITEMS = [
   { id: 'WHITE LABEL MINT', icon: Hammer, partition: 'factory' },
   { id: 'DEPLOY CENTER', icon: Upload, partition: 'factory' },
   { id: 'UNIVERSES', icon: Globe, partition: 'factory' },
+  { id: 'FISH ARENA', icon: Crosshair, partition: 'factory' },
   { id: 'MINT LEDGER', icon: CreditCard, partition: 'empire' },
   { id: 'REVENUE PIPELINES', icon: BarChart3, partition: 'empire' },
   { id: 'BESTIARY', icon: Skull, partition: 'empire' },
+  { id: 'SLOT SYMBOLS', icon: Palette, partition: 'empire' },
   { id: 'OS BUILDER', icon: Layout, partition: 'foundry' },
   { id: 'VISION SMITH', icon: ImageIcon, partition: 'foundry' },
   { id: 'AUDIO FORGE', icon: Music, partition: 'foundry' },
@@ -965,6 +970,11 @@ export default function SLA113Page() {
               </div>
             )}
 
+            {/* FACTORY: FISH ARENA */}
+            {partition === 'factory' && activeTab === 'FISH ARENA' && (
+              <FishMultiplayerPanel />
+            )}
+
             {/* EMPIRE: MINT LEDGER */}
             {partition === 'empire' && activeTab === 'MINT LEDGER' && (
               <div className="space-y-6 animate-in fade-in max-w-7xl mx-auto w-full" data-testid="mint-ledger-panel">
@@ -1229,6 +1239,11 @@ export default function SLA113Page() {
                   )}
                 </div>
               </div>
+            )}
+
+            {/* EMPIRE: SLOT SYMBOLS */}
+            {partition === 'empire' && activeTab === 'SLOT SYMBOLS' && (
+              <SlotSymbolsPanel />
             )}
 
             {/* FOUNDRY: OS BUILDER */}
