@@ -1,15 +1,17 @@
 """SLA113 API Router - Universal AI Game Studio"""
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
 import logging
 import os
+import re
 import json
 import asyncio
 import random as _random
 import base64
+import tempfile
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 from database import get_database
@@ -1437,7 +1439,8 @@ async def compile_build(build_id: str):
         )
 
         # Package into zip
-        zip_filename = f"sla113_{game_name.lower().replace(' ', '_')}_{build_id}.zip"
+        safe_name = re.sub(r'[^a-z0-9_]', '_', game_name.lower())[:50]
+        zip_filename = f"sla113_{safe_name}_{build_id}.zip"
         zip_path = os.path.join("/tmp", zip_filename)
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
             for root, dirs, files in os.walk(build_dir):
@@ -1875,7 +1878,12 @@ async def deploy_build(req: DeployRequest):
             zip_path = f"/tmp/deploy_{deploy_id}.zip"
             with open(zip_path, "wb") as f:
                 f.write(zip_bytes)
+            # Security: validate zip entries against path traversal (zipslip)
             with zipfile.ZipFile(zip_path, 'r') as zf:
+                for member in zf.namelist():
+                    member_path = os.path.realpath(os.path.join(deploy_dir, member))
+                    if not member_path.startswith(os.path.realpath(deploy_dir)):
+                        raise HTTPException(status_code=400, detail="Malicious zip entry detected")
                 zf.extractall(deploy_dir)
             os.remove(zip_path)
 
@@ -1944,17 +1952,33 @@ async def delete_deployment(deploy_id: str):
 @router.get("/live/{deploy_id}/{file_path:path}")
 async def serve_live_game(deploy_id: str, file_path: str):
     """Serve deployed game files from the static directory."""
+    import re
     from fastapi.responses import FileResponse
-    full_path = f"/app/backend/static/deploys/{deploy_id}/{file_path}"
+
+    # Security: validate deploy_id format (DPL-XXXXXXXX)
+    if not re.match(r'^DPL-[A-F0-9]{8}$', deploy_id):
+        raise HTTPException(status_code=400, detail="Invalid deploy ID format")
+
+    # Security: prevent path traversal
+    base_dir = os.path.realpath("/app/backend/static/deploys")
+    full_path = os.path.realpath(os.path.join(base_dir, deploy_id, file_path))
+    if not full_path.startswith(base_dir):
+        raise HTTPException(status_code=403, detail="Access denied")
+
     if not os.path.exists(full_path) or not os.path.isfile(full_path):
         raise HTTPException(status_code=404, detail="File not found")
+
+    ALLOWED_EXTENSIONS = {".html", ".js", ".json", ".css", ".png", ".jpg", ".svg", ".ico", ".wav"}
+    ext = os.path.splitext(file_path)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=403, detail="File type not allowed")
 
     content_types = {
         ".html": "text/html", ".js": "application/javascript",
         ".json": "application/json", ".css": "text/css",
-        ".png": "image/png", ".jpg": "image/jpeg",
+        ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml",
+        ".wav": "audio/wav",
     }
-    ext = os.path.splitext(file_path)[1].lower()
     media_type = content_types.get(ext, "application/octet-stream")
     return FileResponse(full_path, media_type=media_type)
 
