@@ -1,40 +1,42 @@
 # SLA113 — Universal AI Game Studio Operator OS
 
 ## Product Overview
-SLA113 is the **sovereign root OS** for AI-powered game creation. All universes are routers under SLA113.
+SLA113 is the **sovereign root OS** for AI-powered game creation. Cultural backbone: Aztec myth + Chicano SGV + IELA roots.
 
-## Completed Features
-- [x] Vision Smith v2 (Gemini 3 Pro, no watermarks)
-- [x] Logic Engine (RTP, RNG, paytable, mechanics)
-- [x] Composer Engine (game bundle assembly)
-- [x] AI Terminal (Sovereign Overseer)
-- [x] Night Queue (asyncio background worker + dependencies)
-- [x] Build Pipeline — Real HTML5/PixiJS compilation + downloadable ZIP bundles
-- [x] Real Compliance Engine + Auto-Certify
-- [x] Deploy Engine — Real static file hosting with live playable game preview (iframe)
-- [x] Audio Forge Engine — AI-enhanced DSP + Web Audio API synthesis
-- [x] Admin Control Vault — ArtTech Nexus Generator + Matrix Parameters
-- [x] Game Template Library — Genre-specific PixiJS (fish, 5-reel slots, FPS, platformer, RPG, racing)
-- [x] 5-Reel Video Slots — Wilds, Scatters, Free Spins, 9 paylines, custom symbols
-- [x] Custom Slot Symbol Sets — Southern Lifestyle theme support
-- [x] Multiplayer Fish Shooting Lobby — WebSocket rooms, real-time fish, scoreboard, chat
-- [x] Code Review Hardening — Security (path traversal, zipslip, input sanitization, ext whitelist), quality (0 console.log, 0 index-as-key, hook deps fixed, stale closure fix)
+## Game Engines (FireKirin/Juwa Tier)
+
+### Fish Shooter Engine (fish_engine.py)
+- 6 weapons: Cannon, Laser (pierce), Chain Lightning (3-chain), Bomb (120px AOE), Auto (triple), Railgun (boss killer)
+- 12 fish species across 8 tiers (Clownfish → Sovereign Whale) with weighted spawn rates
+- 3 Boss types: Jaguar Warrior (200hp, 1000x), Quetzalcoatl (300hp, 2000x), Tezcatlipoca (500hp, 5000x)
+- 4 Special fish: Treasure Chest, Bomb Fish, Freeze Fish, Jackpot Crab
+- 7 bet levels (1x-100x), progressive jackpot pool (2% of every shot)
+- Movement patterns: linear, sine, zigzag, circle, drift, boss figure-8
+- Damage numbers, death particles, boss announcements
+
+### Video Slots Engine (slots_engine.py)
+- 5 reels x 3 rows, up to 20 paylines
+- 4 Progressive Jackpots: Grand (50K), Major (10K), Minor (2K), Mini (500)
+- Cascading/Avalanche wins (winning symbols removed, new fall from top)
+- Hold & Spin (6+ coins = lock & respin, fill all = GRAND JACKPOT)
+- Bonus Wheel (5x-200x multipliers or free spins)
+- Wild expansion + sticky wilds during free spins
+- Free Spins: 3+ scatters = 10-25 spins with 2-3x multiplier
+- Custom symbol support (Southern Lifestyle, Aztec, etc.)
 
 ## Architecture
 ```
-/app/backend/routers/sla113.py        # Main router (~2200 lines)
-/app/backend/sla113/                   # Engine modules
-  ├── audio_forge.py, fish_multiplayer.py, game_templates.py
-  ├── vision_engine.py, logic_engine.py, composer_engine.py, models.py
-/app/frontend/src/sla113/
-  ├── SLA113Page.jsx                   # Main dashboard (~2180 lines)
-  ├── panels/                          # Extracted components
-  │   ├── AudioForgePanel.jsx, FishMultiplayerPanel.jsx
-  │   ├── SlotSymbolsPanel.jsx, VaultAdminPanels.jsx
-  ├── audioSynth.js, FrontlinePanel.jsx, SpriteCutter.jsx, DependencyGraph.jsx
+/app/backend/sla113/
+  ├── fish_engine.py        # FireKirin-tier fish shooter
+  ├── slots_engine.py       # Juwa-tier video slots
+  ├── fish_multiplayer.py   # WebSocket multiplayer
+  ├── game_templates.py     # Template router
+  ├── audio_forge.py, vision_engine.py, logic_engine.py, composer_engine.py, models.py
 ```
 
 ## Backlog
-- [ ] Wire custom symbols into build compile (pass symbol set ID) (P2)
-- [ ] Continue panel extraction (Foundry + Empire) (P3)
-- [ ] Tournament system across tenants (P3)
+- [ ] Wire custom symbol sets into compile pipeline (P1)
+- [ ] Add sprite-based fish rendering (replace Graphics with actual art assets) (P1)
+- [ ] Agent/distributor cashier system (P2)
+- [ ] Game library lobby with thumbnails (P2)
+- [ ] Tournament system (P3)

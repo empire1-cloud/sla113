@@ -11,12 +11,12 @@ def get_game_template(game_type, game_name, game_config, asset_manifest):
     custom_symbols = game_config.get("custom_symbols", None)
 
     templates = {
-        "fish_shooting": _fish_shooting_template,
-        "slot_machine": _video_slot_5reel_template,
-        "video_poker": _video_slot_5reel_template,
-        "casino_suite": _video_slot_5reel_template,
-        "pachinko": _video_slot_5reel_template,
-        "card_games": _video_slot_5reel_template,
+        "fish_shooting": _fish_shooter_pro_template,
+        "slot_machine": _video_slots_pro_template,
+        "video_poker": _video_slots_pro_template,
+        "casino_suite": _video_slots_pro_template,
+        "pachinko": _video_slots_pro_template,
+        "card_games": _video_slots_pro_template,
         "tactical_fps": _tactical_fps_template,
         "cod_warfare": _tactical_fps_template,
         "battle_royale": _tactical_fps_template,
@@ -44,6 +44,18 @@ def _header(game_name, game_type, config_json, manifest_json):
         f"const GAME_CONFIG = {config_json};\n"
         f"const ASSET_MANIFEST = {manifest_json};\n\n"
     )
+
+
+def _fish_shooter_pro_template(game_name, game_type, config_json, manifest_json, assets):
+    """FireKirin-tier fish shooter with weapons, bosses, jackpots."""
+    from sla113.fish_engine import generate_fish_shooter
+    return generate_fish_shooter(game_name, json.loads(config_json), assets)
+
+
+def _video_slots_pro_template(game_name, game_type, config_json, manifest_json, assets):
+    """Juwa-tier 5-reel slots with cascading wins, hold & spin, bonus wheel, jackpots."""
+    from sla113.slots_engine import generate_video_slots
+    return generate_video_slots(game_name, json.loads(config_json), assets)
 
 
 def _fish_shooting_template(game_name, game_type, config_json, manifest_json, assets):
