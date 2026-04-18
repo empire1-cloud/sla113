@@ -1,17 +1,13 @@
-"""SLA113 Fish Shooter Engine v2 — Production Visual Layer
-Sprite-based rendering, particle systems, layered ocean, weapon VFX, boss cinematics"""
-
-
-def generate_fish_shooter(game_name, game_config, asset_manifest):
-    import json
-    config_json = json.dumps(game_config, default=str, indent=2)
-    manifest_json = json.dumps(asset_manifest, default=str, indent=2)
-
-    return f"""// SLA113 Fish Shooter Engine v2 — {game_name}
+// SLA113 Fish Shooter Engine v2 — Sovereign Fish Arena v2
 // Production Visual Layer — Sprite-based + Canvas Fallback
-const GAME_CONFIG = {config_json};
-const ASSET_MANIFEST = {manifest_json};
-""" + r"""
+const GAME_CONFIG = {
+  "type": "fish_shooting",
+  "name": "Sovereign Fish Arena v2",
+  "version": "1.0.0",
+  "built_by": "SLA113"
+};
+const ASSET_MANIFEST = [];
+
 (async () => {
   const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000a14, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
   document.body.appendChild(app.view);
@@ -537,4 +533,3 @@ const ASSET_MANIFEST = {manifest_json};
     bubbles.forEach(b => { b.x += b.vx + Math.sin(now / 1000 + b.wob) * 0.08; b.y += b.vy; if (b.y < -10) { b.y = H() + 10; b.x = Math.random() * W(); } });
   });
 })();
-"""

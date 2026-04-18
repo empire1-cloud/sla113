@@ -1,17 +1,13 @@
-"""SLA113 Video Slots Engine v2 — Production Visual Layer
-Canvas-drawn symbol icons, smooth reel animation, cascading wins, jackpots"""
-
-
-def generate_video_slots(game_name, game_config, asset_manifest):
-    import json
-    config_json = json.dumps(game_config, default=str, indent=2)
-    manifest_json = json.dumps(asset_manifest, default=str, indent=2)
-
-    return f"""// SLA113 Video Slots v2 — {game_name}
+// SLA113 Video Slots v2 — Aztec Gold v2
 // Production Visual Layer
-const GAME_CONFIG = {config_json};
-const ASSET_MANIFEST = {manifest_json};
-""" + r"""
+const GAME_CONFIG = {
+  "type": "slot_machine",
+  "name": "Aztec Gold v2",
+  "version": "1.0.0",
+  "built_by": "SLA113"
+};
+const ASSET_MANIFEST = [];
+
 (async () => {
   const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x080010, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
   document.body.appendChild(app.view);
@@ -326,4 +322,3 @@ const ASSET_MANIFEST = {manifest_json};
   document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); spin(); } });
   renderGrid(); updateHUD();
 })();
-"""
