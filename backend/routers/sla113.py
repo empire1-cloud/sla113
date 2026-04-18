@@ -1482,11 +1482,6 @@ async def compile_build(build_id: str):
         is_casino = category == "casino"
         game_desc = GAME_TYPES.get(game_type, {}).get("description", "Game")
 
-        html_content = _generate_html5_shell(game_name, game_type, game_desc, game_config, asset_manifest, is_casino)
-
-        with open(os.path.join(build_dir, "index.html"), "w") as f:
-            f.write(html_content)
-
         # Write a genre-specific game.js engine using template library
         # Auto-inject registered sprites into game config (newest first)
         sprite_cursor = sprite_registry_collection().find({}, {"_id": 0}).sort("created_at", -1)
@@ -1546,6 +1541,12 @@ async def compile_build(build_id: str):
                 "jackpot_tier": lobby_cfg.get("jackpot_tier", "MAJOR"),
                 "base_bet": lobby_cfg.get("base_bet", 0.10),
             }
+
+        # Generate the HTML5/PixiJS game shell (after config enrichment so lobby/loader are available)
+        html_content = _generate_html5_shell(game_name, game_type, game_desc, game_config, asset_manifest, is_casino)
+
+        with open(os.path.join(build_dir, "index.html"), "w") as f:
+            f.write(html_content)
 
         from sla113.game_templates import get_game_template
         js_content = get_game_template(game_type, game_name, game_config, asset_manifest)
@@ -2326,6 +2327,8 @@ async def proxy_sprite(url: str):
     from fastapi.responses import Response
     if not url.startswith("https://"):
         raise HTTPException(status_code=400, detail="Only HTTPS URLs allowed")
+    if "customer-assets" not in url and "emergentagent" not in url:
+        raise HTTPException(status_code=403, detail="Domain not allowed")
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.get(url)
