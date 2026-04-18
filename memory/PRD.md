@@ -45,11 +45,15 @@ SLA113 is the **sovereign root OS** for AI-powered game creation. Cultural backb
 - `POST /api/sla113/deploy` → extracts zip to `/app/backend/static/deploys/{deploy_id}/`, served at `/api/sla113/live/{deploy_id}/index.html`
 
 ## Changelog
-- **2026-02-18** — **Game OS Composer** shipped — full pick/mix/deploy lobby system. Backend: lobbies CRUD + one-shot deploy endpoint at `/api/sla113/lobbies/{id}/deploy` (project→build→compile→deploy). Compile pipeline reads lobby_config and filters BOSSES + picks specified background. Frontend: `GameComposerPanel.jsx` with 7 lobby cards (Shadow Pack, Jaguar Warrior, Quetzalcoatl, Ocelotl Voidmane, Wolf Sovereign, Jaguar Elite, Jaguar Champion) + lobby editor modal. 7 default lobbies seeded on startup. G-Wolf renamed (was Wolf Huntress / Aztec Wolf Female). Watermark crop strengthened (copies bottom-LEFT 11% over bottom-right + vignette blend). Roar SFX (Web Audio sawtooth low-rumble + high-snarl + noise burst) + screen shake (22px intensity, 1.4s decay) wired into boss intro cinematic.
-- 2026-02-18 — Wolf Xolotls Arena + Xolotl Pack + Jaguar Elite + Jaguar Champion + Aztec Fish V2 registered. Boss intro cinematic (dim+flash+banners+hero+rings+title+reward) added.
-- 2026-02-18 — Fish Engine v6 verified: 4-player 2-top+2-bottom layout. Wolf Sovereign (male) + G-Wolf (female, previously Aztec Wolf Female) registered & wired as bosses. Template map bug fixed (`fish_shooter` alias). Sprite loader sorted newest-first.
-- 2026-02-18 — Sprite Asset Registry + CORS proxy; Aztec Fish, Three Worlds background, 5 boss sprites uploaded
-- Earlier — Vision Smith (Gemini 3 Pro), Audio Forge (Vertex AI / Web Audio), Deploy Engine inline iframe preview, panel extraction
+- **2026-02-18** — **Go-Live Pack** shipped: (1) Public Arcade Portal at `/arcade` with localStorage balance, analytics, fullscreen, 7 lobby cards, ADMIN shortcut link; (2) Mobile touch/pointer events + tap-to-fire + drag-to-aim + swipe-to-spin + safe-area padding + iOS bounce disabled; (3) Volume slider + fullscreen buttons in every deployed game HTML shell; (4) Juwa-tier slots upgrade (metallic brushed-gold cabinet with rivets, pulsing glow spin button, 8-slice animated bonus wheel, 4 live jackpot tiers, cascade SFX, swipe-down-to-spin, animated win text); (5) Audio expansion (Web Audio master gain, underwater ambient drone loop, per-boss pentatonic theme stingers tied to theme color, roar SFX, screen shake); (6) Theme-color tinting propagated to jackpot bar, crosshair, HUD chips, meta tags; (7) Deep-link support: `/sla113?p=foundry&tab=GAME%20COMPOSER` auto-lands on composer.
+- **2026-02-18** — Game OS Composer shipped — full pick/mix/deploy lobby system with 7 seeded lobbies. Wolf Xolotls Arena bg + G-Wolf + Xolotl Pack + Jaguar Elite + Jaguar Champion + Aztec Fish V2 registered. Cinematic boss intro.
+- 2026-02-18 — Fish Engine v6 verified: 4-player 2-top+2-bottom layout. Template map bug fixed. Sprite loader sorted newest-first.
+- 2026-02-18 — Sprite Asset Registry + CORS proxy; first boss sprite batch uploaded
+- Earlier — Vision Smith, Audio Forge, Deploy Engine, panel extraction
+
+## Public URLs
+- **Admin / SLA113 Operator OS**: `{BACKEND_URL}/sla113` (deep-link: `/sla113?p=foundry&tab=GAME%20COMPOSER`)
+- **Public Arcade Portal**: `{BACKEND_URL}/arcade`
 
 ## Backlog (priority)
 - [ ] (P1) **Juwa-tier Slots upgrade** — metallic 3D reel frame, side bonus wheels, 4 live jackpot tiers, game lobby with thumbnails

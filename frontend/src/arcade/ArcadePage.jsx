@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Play, ExternalLink, Maximize, Minimize, Wallet, Users, Crown, Zap, Gamepad2, Home, X } from 'lucide-react';
+import { Play, ExternalLink, Maximize, Minimize, Wallet, Users, Crown, Zap, Gamepad2, Home, X, Shield } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
 const LS_BAL_KEY = 'sla_arcade_balance';
@@ -110,6 +110,9 @@ export default function ArcadePage() {
             <span className="text-[10px] uppercase text-zinc-400">balance</span>
             <span className="font-bold text-[#d4af37] font-mono">${balance.toLocaleString()}</span>
           </div>
+          <a href="/sla113?p=foundry&tab=GAME%20COMPOSER" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-[10px] uppercase tracking-widest font-bold" data-testid="arcade-admin-link">
+            <Shield size={12}/> Admin
+          </a>
           <button onClick={toggleFS} className="p-2 border border-zinc-800 hover:border-[#d4af37]/50 transition-all" data-testid="arcade-fs-btn">
             {fullscreen ? <Minimize size={14}/> : <Maximize size={14}/>}
           </button>

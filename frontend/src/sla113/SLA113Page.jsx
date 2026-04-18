@@ -306,8 +306,12 @@ const AdminHeartbeat = ({ processingCount, theme }) => {
 
 export default function SLA113Page() {
   const navigate = useNavigate();
-  const [partition, setPartition] = useState('foundry');
-  const [activeTab, setActiveTab] = useState('OS BUILDER');
+  // Allow deep-link: /sla113?p=foundry&tab=GAME%20COMPOSER (or tab=game-composer)
+  const _qp = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const _qpTab = (_qp.get('tab') || '').replace(/-/g, ' ').toUpperCase();
+  const _qpPart = (_qp.get('p') || 'foundry').toLowerCase();
+  const [partition, setPartition] = useState(['factory','empire','foundry','vault'].includes(_qpPart) ? _qpPart : 'foundry');
+  const [activeTab, setActiveTab] = useState(_qpTab || 'OS BUILDER');
 
   const [revenue] = useState(142500);
   const [isCritical, setIsCritical] = useState(false);
