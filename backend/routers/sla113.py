@@ -1155,7 +1155,12 @@ def deployments_collection():
 # ─── HTML5/PixiJS Game Shell Generators ───
 def _generate_html5_shell(game_name, game_type, game_desc, game_config, asset_manifest, is_casino):
     """Generate a playable HTML5 game shell with mobile support + safe-area + fullscreen."""
-    theme_color = (game_config.get("lobby") or {}).get("theme_color", "#d4af37")
+    lobby = game_config.get("lobby") or {}
+    theme_color = lobby.get("theme_color", "#d4af37")
+    tier = lobby.get("jackpot_tier", "")
+    tagline = lobby.get("name") or game_name
+    subtitle = game_type.replace('_', ' ').upper() + (f" · {tier} TIER" if tier else "")
+    loader_url = game_config.get("loader_url", "")
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1177,6 +1182,22 @@ canvas{{display:block;touch-action:none}}
 #loading h1{{font-family:'Orbitron',sans-serif;color:{theme_color};font-size:clamp(22px,6vw,42px);letter-spacing:10px;text-transform:uppercase;text-shadow:0 0 20px {theme_color}55}}
 #loading p{{color:#555;font-size:10px;letter-spacing:5px;text-transform:uppercase}}
 #loading .spinner{{width:36px;height:36px;border:2px solid {theme_color}33;border-top-color:{theme_color};border-radius:50%;animation:spin 1s linear infinite}}
+#title{{position:fixed;inset:0;z-index:1900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;overflow:hidden;padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)}}
+#title .bg{{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(1.05)}}
+#title .bg::before{{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.55) 60%,rgba(0,0,0,0.92) 100%)}}
+#title .content{{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:92%}}
+#title .brand{{font-family:'Dancing Script',cursive;font-size:clamp(18px,3.5vw,28px);color:{theme_color};font-style:italic;text-shadow:0 0 24px {theme_color}aa,0 2px 4px rgba(0,0,0,0.9);letter-spacing:1px;margin-bottom:-6px}}
+#title .brand-sub{{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,1.5vw,11px);color:#ffd966cc;letter-spacing:8px;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,0.9)}}
+#title h1{{font-family:'Cinzel',serif;color:#ffd966;font-size:clamp(38px,10vw,96px);letter-spacing:clamp(3px,1vw,10px);text-transform:uppercase;font-weight:900;text-shadow:0 0 40px {theme_color}cc,0 0 80px {theme_color}55,0 4px 8px rgba(0,0,0,0.95);line-height:1;margin:6px 0}}
+#title .sub{{font-family:'Rajdhani',sans-serif;color:#e8d8a8;font-size:clamp(11px,2vw,14px);letter-spacing:5px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,0.9)}}
+#title .tier{{font-family:'Cinzel',serif;font-size:11px;letter-spacing:6px;padding:6px 14px;border:1px solid {theme_color};color:{theme_color};background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);text-transform:uppercase;box-shadow:0 0 20px {theme_color}55}}
+#title .cta{{margin-top:28px;padding:16px 54px;border:2px solid {theme_color};color:#ffd966;font-family:'Cinzel',serif;font-size:13px;letter-spacing:6px;background:rgba(0,0,0,0.3);backdrop-filter:blur(6px);cursor:pointer;animation:pulseBtn 1.8s ease-in-out infinite;text-transform:uppercase;font-weight:700;box-shadow:0 0 30px {theme_color}55,inset 0 0 20px {theme_color}15}}
+#title .cta:active{{transform:scale(0.97)}}
+#title .loader{{width:min(320px,70vw);height:3px;background:rgba(0,0,0,0.6);overflow:hidden;margin-top:18px;border:1px solid {theme_color}33}}
+#title .loader-fill{{height:100%;width:40%;background:linear-gradient(90deg,transparent,{theme_color},transparent);animation:slideIn 1.6s ease-in-out infinite}}
+@keyframes pulseBtn{{0%,100%{{box-shadow:0 0 20px {theme_color}55,inset 0 0 20px {theme_color}15;transform:scale(1)}}50%{{box-shadow:0 0 50px {theme_color}aa,inset 0 0 30px {theme_color}33;transform:scale(1.04)}}}}
+@keyframes slideIn{{0%{{transform:translateX(-120%)}}100%{{transform:translateX(220%)}}}}
+#title.fade{{opacity:0;pointer-events:none;transition:opacity 0.7s ease-out;transform:scale(1.05);transition-property:opacity,transform}}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
 #topbar{{position:fixed;top:env(safe-area-inset-top);left:0;right:0;z-index:150;display:flex;justify-content:flex-end;gap:6px;padding:8px 12px;pointer-events:none}}
 #topbar button{{pointer-events:auto;background:rgba(0,0,0,0.6);border:1px solid {theme_color}55;color:{theme_color};width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;backdrop-filter:blur(8px)}}
@@ -1189,6 +1210,18 @@ canvas{{display:block;touch-action:none}}
 </head>
 <body>
 <div id="loading"><h1>{game_name}</h1><div class="spinner"></div><p>SLA113 {game_type.replace('_',' ').upper()}</p></div>
+<div id="title">
+  <div class="bg" style="background-image:url('{loader_url or ''}'); background-color:#0b0509"></div>
+  <div class="content">
+    {'<div class="tier">' + tier + ' JACKPOT</div>' if tier else ''}
+    <div class="brand">Southern Lyfestyle Arcade</div>
+    <div class="brand-sub">— IELA · Members Only —</div>
+    <h1>{tagline}</h1>
+    <div class="sub">{subtitle}</div>
+    <div class="loader"><div class="loader-fill"></div></div>
+    <button class="cta" id="title-cta">Tap to Enter</button>
+  </div>
+</div>
 <div id="topbar">
   <button id="btn-vol" title="Volume">♪</button>
   <button id="btn-fs" title="Fullscreen">⛶</button>
@@ -1198,6 +1231,10 @@ canvas{{display:block;touch-action:none}}
 // iOS scroll bounce + zoom prevention
 document.addEventListener('touchmove',e=>{{if(e.scale!==1)e.preventDefault();}},{{passive:false}});
 document.addEventListener('gesturestart',e=>e.preventDefault());
+// Title screen: tap/click/key to dismiss (unlocks audio too)
+const _title=document.getElementById('title');
+const dismissTitle=()=>{{if(_title&&!_title.classList.contains('fade')){{_title.classList.add('fade');setTimeout(()=>_title.remove(),650);try{{if(window.__sla_ac&&window.__sla_ac.state==='suspended')window.__sla_ac.resume();}}catch(_){{}}}}}};
+if(_title){{_title.addEventListener('click',dismissTitle);document.addEventListener('keydown',dismissTitle,{{once:true}});document.addEventListener('touchstart',dismissTitle,{{once:true}});}}
 // Fullscreen toggle
 const fsBtn=document.getElementById('btn-fs');
 fsBtn.onclick=async()=>{{try{{if(!document.fullscreenElement){{await(document.documentElement.requestFullscreen?.()||document.documentElement.webkitRequestFullscreen?.());}}else{{await(document.exitFullscreen?.()||document.webkitExitFullscreen?.());}}}}catch(_){{}} }};
@@ -1471,6 +1508,14 @@ async def compile_build(build_id: str):
                 "animations": spr.get("animations", {}),
             }
         game_config["sprites"] = sprite_map
+
+        # Surface loader image (ui sprite whose name includes "loader")
+        loader_sprite = next((s for s in all_sprites if s["entity_type"] == "ui" and "loader" in s["name"].lower()), None)
+        if loader_sprite:
+            lu = loader_sprite["sprite_url"]
+            if "customer-assets" in lu or "emergentagent" in lu:
+                lu = f"/api/sla113/sprites/proxy?url={lu}"
+            game_config["loader_url"] = lu
 
         # ─── Lobby overrides ───
         # If this project was created from a lobby, use its specified assets

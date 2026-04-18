@@ -320,7 +320,7 @@ const ASSET_MANIFEST = {manifest_json};
     const cost = freeSpins > 0 ? 0 : bet * lines;
     const fs = freeSpins > 0 ? ` | FREE: ${freeSpins} (x${freeSpinMult})` : '';
     hud.textContent = `CREDITS: ${credits.toLocaleString()} | COST: ${cost} | WON: ${totalWins.toLocaleString()}${fs}`;
-    document.getElementById('score').textContent = credits.toLocaleString();
+    const _s=document.getElementById('score');if(_s)_s.textContent = credits.toLocaleString();
     Object.entries(JP).forEach(([n, j]) => { if (jpTexts[n]) jpTexts[n].text = `${n}: ${Math.floor(j.pool).toLocaleString()}`; });
   }
   updateHUD();

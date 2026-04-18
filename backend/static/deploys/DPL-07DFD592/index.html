@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#d4af37">
+<title>Shadow Pack — SLA113</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;touch-action:none;background:#050505;font-family:'Rajdhani','Courier New',monospace;color:#fff}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+canvas{display:block;touch-action:none}
+#loading{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a0a1a 0%,#050505 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:2000}
+#loading h1{font-family:'Orbitron',sans-serif;color:#d4af37;font-size:clamp(22px,6vw,42px);letter-spacing:10px;text-transform:uppercase;text-shadow:0 0 20px #d4af3755}
+#loading p{color:#555;font-size:10px;letter-spacing:5px;text-transform:uppercase}
+#loading .spinner{width:36px;height:36px;border:2px solid #d4af3733;border-top-color:#d4af37;border-radius:50%;animation:spin 1s linear infinite}
+#title{position:fixed;inset:0;z-index:1900;background:radial-gradient(ellipse at center,#1a0a1a 0%,#050505 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;cursor:pointer;padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)}
+#title .brand{font-size:clamp(10px,2.5vw,13px);color:#888;letter-spacing:8px;text-transform:uppercase;font-family:'Rajdhani',sans-serif}
+#title h1{font-family:'Orbitron',sans-serif;color:#d4af37;font-size:clamp(34px,9vw,82px);letter-spacing:clamp(4px,1.5vw,14px);text-transform:uppercase;font-weight:900;text-shadow:0 0 40px #d4af37aa,0 0 80px #d4af3744;text-align:center;line-height:1;margin:0}
+#title .sub{font-family:'Rajdhani',sans-serif;color:#bbb;font-size:clamp(11px,2vw,14px);letter-spacing:4px;text-transform:uppercase;text-align:center;max-width:90%}
+#title .cta{margin-top:22px;padding:14px 46px;border:2px solid #d4af37;color:#d4af37;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:6px;background:transparent;cursor:pointer;animation:pulseBtn 1.6s ease-in-out infinite;border-radius:4px;text-transform:uppercase;font-weight:700}
+@keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #d4af3766,inset 0 0 0 0 #d4af3722;transform:scale(1)}50%{box-shadow:0 0 30px 6px #d4af3744,inset 0 0 12px #d4af3722;transform:scale(1.03)}}
+#title .tier{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:6px;padding:5px 12px;border:1px solid #d4af3788;color:#d4af37;background:#d4af3712;margin-bottom:6px;text-transform:uppercase}
+#title.fade{opacity:0;pointer-events:none;transition:opacity 0.6s ease-out}
+@keyframes spin{to{transform:rotate(360deg)}}
+#topbar{position:fixed;top:env(safe-area-inset-top);left:0;right:0;z-index:150;display:flex;justify-content:flex-end;gap:6px;padding:8px 12px;pointer-events:none}
+#topbar button{pointer-events:auto;background:rgba(0,0,0,0.6);border:1px solid #d4af3755;color:#d4af37;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;backdrop-filter:blur(8px)}
+#topbar button:active{background:#d4af3722}
+#volbar{position:fixed;top:calc(env(safe-area-inset-top) + 52px);right:12px;z-index:149;background:rgba(0,0,0,0.85);border:1px solid #d4af3755;padding:10px;border-radius:4px;display:none}
+#volbar input{writing-mode:bt-lr;-webkit-appearance:slider-vertical;width:18px;height:100px;accent-color:#d4af37}
+.mobile-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);color:#d4af37;font-size:12px;letter-spacing:3px;text-transform:uppercase;pointer-events:none;z-index:160;opacity:0;animation:fadepulse 2s ease-out forwards}
+@keyframes fadepulse{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+</style>
+</head>
+<body>
+<div id="loading"><h1>Shadow Pack</h1><div class="spinner"></div><p>SLA113 FISH SHOOTING</p></div>
+<div id="title">
+  
+  <div class="brand">SouthernLifestyle Arcade</div>
+  <h1>Shadow Pack</h1>
+  <div class="sub">FISH SHOOTING</div>
+  <button class="cta" id="title-cta">Tap to Enter</button>
+</div>
+<div id="topbar">
+  <button id="btn-vol" title="Volume">♪</button>
+  <button id="btn-fs" title="Fullscreen">⛶</button>
+</div>
+<div id="volbar"><input id="vol-slider" type="range" min="0" max="100" value="70"></div>
+<script>
+// iOS scroll bounce + zoom prevention
+document.addEventListener('touchmove',e=>{if(e.scale!==1)e.preventDefault();},{passive:false});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+// Title screen: tap/click/key to dismiss (unlocks audio too)
+const _title=document.getElementById('title');
+const dismissTitle=()=>{if(_title&&!_title.classList.contains('fade')){_title.classList.add('fade');setTimeout(()=>_title.remove(),650);try{if(window.__sla_ac&&window.__sla_ac.state==='suspended')window.__sla_ac.resume();}catch(_){}}};
+if(_title){_title.addEventListener('click',dismissTitle);document.addEventListener('keydown',dismissTitle,{once:true});document.addEventListener('touchstart',dismissTitle,{once:true});}
+// Fullscreen toggle
+const fsBtn=document.getElementById('btn-fs');
+fsBtn.onclick=async()=>{try{if(!document.fullscreenElement){await(document.documentElement.requestFullscreen?.()||document.documentElement.webkitRequestFullscreen?.());}else{await(document.exitFullscreen?.()||document.webkitExitFullscreen?.());}}catch(_){} };
+// Volume panel
+const volBtn=document.getElementById('btn-vol'),volBar=document.getElementById('volbar'),volSl=document.getElementById('vol-slider');
+volBtn.onclick=()=>{volBar.style.display=volBar.style.display==='block'?'none':'block';};
+window.__sla_volume=0.7;
+volSl.oninput=()=>{window.__sla_volume=parseInt(volSl.value)/100;if(window.__sla_master_gain)window.__sla_master_gain.gain.value=window.__sla_volume;};
+</script>
+<script src="game.js"></script>
+</body>
+</html>

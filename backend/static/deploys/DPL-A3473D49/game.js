@@ -1,18 +1,532 @@
-"""SLA113 Fish Shooter Engine v6 — FireKirin Surpass
-4-player table, continuous rapid-fire, net deployment, bullet trails + muzzle flash,
-multi-kill combos, coin scatter, ornate rotating turrets, hold-to-shoot"""
-
-
-def generate_fish_shooter(game_name, game_config, asset_manifest):
-    import json
-    config_json = json.dumps(game_config, default=str, indent=2)
-    manifest_json = json.dumps(asset_manifest, default=str, indent=2)
-
-    return f"""// SLA113 Fish Shooter v6 — {game_name}
+// SLA113 Fish Shooter v6 — Ocelotl Voidmane
 // 4-Player Table / FireKirin Surpass
-const GAME_CONFIG = {config_json};
-const ASSET_MANIFEST = {manifest_json};
-""" + r"""
+const GAME_CONFIG = {
+  "type": "fish_shooting",
+  "name": "Ocelotl Voidmane",
+  "version": "1.0.0",
+  "built_by": "SLA113",
+  "sprites": {
+    "g-wolf": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/kfmzgzqn_spritesheet1.png",
+      "frame_width": 410,
+      "frame_height": 512,
+      "columns": 5,
+      "rows": 4,
+      "total_frames": 19,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "walk": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "run": [
+          10,
+          11,
+          12,
+          13
+        ],
+        "ultra": [
+          14
+        ],
+        "hit": [
+          15
+        ],
+        "die": [
+          16,
+          17,
+          18
+        ]
+      }
+    },
+    "aztec_fish_species_v2": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/594ce0tv_image.png",
+      "frame_width": 512,
+      "frame_height": 512,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 15,
+      "animations": {
+        "gold_pair": [
+          0
+        ],
+        "blue_school": [
+          1,
+          2,
+          3
+        ],
+        "gold_school": [
+          4
+        ],
+        "blue_school_dense": [
+          5
+        ],
+        "gold_school_dense": [
+          6
+        ],
+        "silver_school": [
+          7
+        ],
+        "cyan_serpent": [
+          8
+        ],
+        "cursed_black": [
+          9
+        ],
+        "cursed_school": [
+          10,
+          11
+        ],
+        "cyan_serpent_alt": [
+          12
+        ],
+        "treasure_fish": [
+          13
+        ],
+        "golden_puffer": [
+          14
+        ]
+      }
+    },
+    "jaguar_warrior_champion": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/zvo9csfi_image.jpeg",
+      "frame_width": 400,
+      "frame_height": 400,
+      "columns": 4,
+      "rows": 5,
+      "total_frames": 19,
+      "animations": {
+        "idle": [
+          0
+        ],
+        "walk": [
+          4
+        ],
+        "attack": [
+          5,
+          8,
+          9
+        ],
+        "ground_slam": [
+          6
+        ],
+        "swing": [
+          3,
+          7
+        ],
+        "hurt": [
+          12
+        ],
+        "ultra": [
+          15
+        ],
+        "death": [
+          16,
+          17,
+          18
+        ]
+      }
+    },
+    "jaguar_warrior_elite": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m8pbtswb_image.jpeg",
+      "frame_width": 320,
+      "frame_height": 400,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 23,
+      "animations": {
+        "idle": [
+          0,
+          1
+        ],
+        "walk": [
+          5,
+          6
+        ],
+        "attack": [
+          6,
+          7,
+          11,
+          12
+        ],
+        "ground_slam": [
+          8,
+          13
+        ],
+        "swing": [
+          9
+        ],
+        "hurt": [
+          15
+        ],
+        "ultra": [
+          17
+        ],
+        "death": [
+          19,
+          20,
+          21
+        ]
+      }
+    },
+    "wolf_xolotl_pack": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/pbmyew6l_image.png",
+      "frame_width": 400,
+      "frame_height": 340,
+      "columns": 5,
+      "rows": 6,
+      "total_frames": 28,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "stand": [
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "walk": [
+          10,
+          11,
+          12,
+          13
+        ],
+        "howl": [
+          12
+        ],
+        "run": [
+          15,
+          16,
+          17,
+          18
+        ],
+        "turn": [
+          20,
+          21,
+          22,
+          23
+        ],
+        "die": [
+          25,
+          26,
+          27
+        ]
+      }
+    },
+    "wolf_xolotls_arena": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/zfvily4d_image.png",
+      "frame_width": 2048,
+      "frame_height": 2048,
+      "columns": 1,
+      "rows": 1,
+      "total_frames": 1,
+      "animations": {
+        "idle": [
+          0
+        ]
+      }
+    },
+    "aztec_wolf_male": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/z1ncb721_boss%20%281%29.jpg",
+      "frame_width": 1024,
+      "frame_height": 1024,
+      "columns": 1,
+      "rows": 1,
+      "total_frames": 1,
+      "animations": {
+        "idle": [
+          0
+        ]
+      }
+    },
+    "aztec_temple_guardians": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/2u8qf3cj_unnamed%20%283%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "power": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "summon": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "three_worlds_pyramid": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg",
+      "frame_width": 341,
+      "frame_height": 1024,
+      "columns": 3,
+      "rows": 1,
+      "total_frames": 3,
+      "animations": {
+        "fire_world": [
+          0
+        ],
+        "teal_world": [
+          1
+        ],
+        "void_world": [
+          2
+        ]
+      }
+    },
+    "aztec_fish_species": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/cvci6vxx_spritesheet2_fish.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "tiny_fish": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "small_fish": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "medium_fish": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "jellyfish": [
+          12,
+          13
+        ],
+        "shark": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "pufferfish": [
+          18
+        ],
+        "large_fish": [
+          19,
+          20,
+          21
+        ],
+        "serpent": [
+          22,
+          23
+        ],
+        "treasure": [
+          24
+        ]
+      }
+    },
+    "ocelotl_voidmane": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/ncd8zsod_unnamed%20%284%29.jpg",
+      "frame_width": 270,
+      "frame_height": 340,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "wing_spread": [
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    },
+    "jaguar_warrior": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/xooi0xfr_boss%20%283%29.jpg",
+      "frame_width": 512,
+      "frame_height": 512,
+      "columns": 1,
+      "rows": 1,
+      "total_frames": 1,
+      "animations": {
+        "idle": [
+          0
+        ]
+      }
+    },
+    "quetzalcoatl_fireborn": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/vr76ezmx_spritesheet1%20%284%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fire_breath": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "death": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "mictlantecuilti_bone_sovereign": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/aufgqv07_spritesheet1%20%285%29.jpg",
+      "frame_width": 256,
+      "frame_height": 341,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "shield": [
+          4
+        ],
+        "attack": [
+          5,
+          6,
+          7
+        ],
+        "fire": [
+          8,
+          9
+        ],
+        "explosion": [
+          10
+        ],
+        "defend": [
+          11
+        ]
+      }
+    },
+    "quetzalflare_prismwing": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m9d2kcms_spritesheet1%20%282%29.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "fire_breath": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "lightning": [
+          12,
+          13
+        ],
+        "wing_spread": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "death": [
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    }
+  },
+  "background_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg",
+  "lobby": {
+    "name": "Ocelotl Voidmane",
+    "main_boss": "ocelotl_voidmane",
+    "partner_boss": null,
+    "extra_bosses": [],
+    "theme_color": "#9900ff",
+    "jackpot_tier": "MAJOR",
+    "base_bet": 0.2
+  }
+};
+const ASSET_MANIFEST = [];
+
 (async () => {
   const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000810, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
   app.view.style.touchAction = 'none'; app.view.style.cursor = 'none';
@@ -109,14 +623,19 @@ const ASSET_MANIFEST = {manifest_json};
 
   // ═══ BACKGROUND ═══
   if(GAME_CONFIG.background_url){try{const img=new Image();img.crossOrigin='anonymous';img.src=GAME_CONFIG.background_url;await new Promise((r,e)=>{img.onload=r;img.onerror=e;setTimeout(e,8000);});
-    // Watermark killer: solid-black radial vignette over ALL four corners (no mirror copy)
+    // Hard-crop Gemini watermarks (both bottom-right AND top-right corners) by copying clean regions over them
     const cn=document.createElement('canvas');const cW=img.naturalWidth,cH=img.naturalHeight;cn.width=cW;cn.height=cH;const cx=cn.getContext('2d');cx.drawImage(img,0,0);
-    const pct=0.13;const mW=Math.ceil(cW*pct),mH=Math.ceil(cH*pct);
+    const mW=Math.ceil(cW*0.11),mH=Math.ceil(cH*0.11);
     try{
-      [[cW-mW*0.5,cH-mH*0.5],[cW-mW*0.5,mH*0.5],[mW*0.5,cH-mH*0.5],[mW*0.5,mH*0.5]].forEach(([px,py])=>{
-        const gd=cx.createRadialGradient(px,py,mH*0.1,px,py,mH*1.05);
-        gd.addColorStop(0,'rgba(0,0,0,1)');gd.addColorStop(0.6,'rgba(0,0,0,0.92)');gd.addColorStop(1,'rgba(0,0,0,0)');
-        cx.fillStyle=gd;cx.fillRect(px-mW*0.7,py-mH*0.7,mW*1.4,mH*1.4);
+      // Cover bottom-right with bottom-LEFT patch
+      cx.drawImage(cn,0,cH-mH,mW,mH,cW-mW,cH-mH,mW,mH);
+      // Cover top-right with top-LEFT patch (watermarks appear in any corner)
+      cx.drawImage(cn,0,0,mW,mH,cW-mW,0,mW,mH);
+      // Vignette both corners
+      [{cx:cW-mW*0.5,cy:cH-mH*0.5},{cx:cW-mW*0.5,cy:mH*0.5}].forEach(p=>{
+        const gd=cx.createRadialGradient(p.cx,p.cy,mH*0.2,p.cx,p.cy,mH*1.2);
+        gd.addColorStop(0,'rgba(0,0,0,0)');gd.addColorStop(0.7,'rgba(0,0,0,0.35)');gd.addColorStop(1,'rgba(0,0,0,0.85)');
+        cx.fillStyle=gd;cx.fillRect(p.cx-mW*0.7,p.cy-mH*0.7,mW*1.4,mH*1.4);
       });
     }catch(_){}
     const s=new PIXI.Sprite(PIXI.Texture.from(cn));s.width=W();s.height=H();L.bg.addChild(s);
@@ -507,7 +1026,7 @@ const ASSET_MANIFEST = {manifest_json};
   function dmg(x,y,text,color){const t=new PIXI.Text(String(text),{fontSize:String(text).startsWith('+')?14:10,fill:color,fontFamily:'monospace',fontWeight:'bold',stroke:0x000000,strokeThickness:3});t.anchor.set(0.5);t.x=x;t.y=y;t.vy=-1.5;t.life=50;L.ui.addChild(t);dmgNums.push(t);}
   function announce(text,color){const t=new PIXI.Text(text,{fontSize:26,fill:color,fontFamily:'monospace',fontWeight:'bold',letterSpacing:4,stroke:0x000000,strokeThickness:5});t.anchor.set(0.5);t.x=W()/2;t.y=H()/2-50;t.life=100;L.ui.addChild(t);dmgNums.push(t);}
 
-  function updateHUD(){myBal.text=credits.toFixed(2);myTurret._betTxt.text=betLevel.toFixed(2);const _s=document.getElementById('score');if(_s)_s.textContent=credits.toFixed(2);}
+  function updateHUD(){myBal.text=credits.toFixed(2);myTurret._betTxt.text=betLevel.toFixed(2);document.getElementById('score').textContent=credits.toFixed(2);}
   updateHUD();
 
   // ═══ SPAWN TIMERS ═══
@@ -584,4 +1103,3 @@ const ASSET_MANIFEST = {manifest_json};
     bubbles.forEach(b=>{b.x+=b.vx+Math.sin(now/1000)*0.04;b.y+=b.vy;if(b.y<-10){b.y=H()+10;b.x=Math.random()*W();}});
   });
 })();
-"""
