@@ -12,7 +12,10 @@ def get_game_template(game_type, game_name, game_config, asset_manifest):
 
     templates = {
         "fish_shooting": _fish_shooter_pro_template,
+        "fish_shooter": _fish_shooter_pro_template,
         "slot_machine": _video_slots_pro_template,
+        "slots": _video_slots_pro_template,
+        "video_slots": _video_slots_pro_template,
         "video_poker": _video_slots_pro_template,
         "casino_suite": _video_slots_pro_template,
         "pachinko": _video_slots_pro_template,

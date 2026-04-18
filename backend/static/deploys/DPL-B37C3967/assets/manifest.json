@@ -1,0 +1,78 @@
+{
+  "assets": [
+    {
+      "id": "score_panel",
+      "name": "Score Panel",
+      "type": "ui",
+      "dimensions": {
+        "width": 300,
+        "height": 50
+      }
+    },
+    {
+      "id": "weapon_selector",
+      "name": "Weapon Selector",
+      "type": "ui",
+      "dimensions": {
+        "width": 400,
+        "height": 70
+      }
+    },
+    {
+      "id": "health_bar",
+      "name": "Health Bar",
+      "type": "ui",
+      "dimensions": {
+        "width": 250,
+        "height": 30
+      }
+    },
+    {
+      "id": "coin_counter",
+      "name": "Coin Counter",
+      "type": "ui",
+      "dimensions": {
+        "width": 60,
+        "height": 60
+      }
+    },
+    {
+      "id": "game_over_screen",
+      "name": "Game Over Screen",
+      "type": "ui",
+      "dimensions": {
+        "width": 800,
+        "height": 600
+      }
+    },
+    {
+      "id": "asset_5",
+      "name": "Xochipili",
+      "type": "character",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "id": "asset_6",
+      "name": "Aztec Warrior Queen",
+      "type": "character",
+      "dimensions": {
+        "height": "2.0 meters",
+        "width": "0.7 meters",
+        "depth": "0.5 meters"
+      }
+    },
+    {
+      "id": "asset_7",
+      "name": "Cholo Fish",
+      "type": "character",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      }
+    }
+  ],
+  "total": 8
+}

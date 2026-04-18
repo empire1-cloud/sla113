@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Fish Hunt — SLA113 Build</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0a; overflow:hidden; font-family:'Courier New',monospace; }
+canvas { display:block; }
+#hud { position:fixed; top:16px; left:16px; color:#00c8ff; font-size:11px; z-index:100; text-transform:uppercase; letter-spacing:2px; }
+#hud .label { color:#666; font-size:9px; }
+#hud .value { color:#fff; font-size:14px; font-weight:bold; }
+#hud .row { margin-bottom:8px; }
+#loading { position:fixed; inset:0; background:#0a0a0a; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:1000; }
+#loading h1 { color:#00c8ff; font-size:24px; letter-spacing:6px; text-transform:uppercase; }
+#loading p { color:#444; font-size:10px; letter-spacing:3px; margin-top:8px; text-transform:uppercase; }
+</style>
+</head>
+<body>
+<div id="loading"><h1>Neon Fish Hunt</h1><p>SLA113 Engine — Fish Shooter</p></div>
+<div id="hud">
+  <div class="row"><span class="label">Game</span><br><span class="value">Neon Fish Hunt</span></div>
+  <div class="row"><span class="label">Type</span><br><span class="value">FISH SHOOTER</span></div>
+  <div class="row"><span class="label">Assets</span><br><span class="value" id="asset-count">8</span></div>
+  <div class="row"><span class="label">Score</span><br><span class="value" id="score">0</span></div>
+  <div class="row"><span class="label">Engine</span><br><span class="value">SLA113 v1.0</span></div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>

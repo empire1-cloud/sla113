@@ -1,0 +1,153 @@
+{
+  "mechanics": [
+    {
+      "name": "Weapon Types",
+      "description": "Various weapons available for the player to use to shoot fish.",
+      "parameters": {
+        "Basic Gun": {
+          "damage": 10,
+          "rate_of_fire": 0.5,
+          "max_ammo": 30,
+          "reload_time": 2
+        },
+        "Plasma Blaster": {
+          "damage": 20,
+          "rate_of_fire": 0.4,
+          "max_ammo": 20,
+          "reload_time": 3
+        },
+        "Electric Harpoon": {
+          "damage": 40,
+          "rate_of_fire": 1,
+          "max_ammo": 10,
+          "reload_time": 5
+        }
+      },
+      "interactions": [
+        "Different weapons affect fishing efficiency and experience points gained per fish."
+      ]
+    },
+    {
+      "name": "Fish Values",
+      "description": "Different types of fish available in the game with values for scoring.",
+      "parameters": {
+        "Common Fish": {
+          "value": 5,
+          "spawn_rate": 0.7
+        },
+        "Rare Fish": {
+          "value": 15,
+          "spawn_rate": 0.2
+        },
+        "Legendary Fish": {
+          "value": 30,
+          "spawn_rate": 0.1
+        }
+      },
+      "interactions": [
+        "Catch different fish to earn points. Rare and Legendary fish have higher points."
+      ]
+    },
+    {
+      "name": "Hit Detection",
+      "description": "Mechanics for determining successful hits on fish.",
+      "parameters": {
+        "hit_radius": 1.5,
+        "critical_hit_chance": 0.1,
+        "headshot_multiplier": 1.5
+      },
+      "interactions": [
+        "Accuracy of the shot determines hit success; critical hits give bonus points."
+      ]
+    },
+    {
+      "name": "Multipliers",
+      "description": "Score multipliers based on player performance.",
+      "parameters": {
+        "combo_multiplier": 1.2,
+        "max_combo": 5,
+        "time_limit_for_combo": 10
+      },
+      "interactions": [
+        "Achieving combos by catching multiple fish in succession increases score."
+      ]
+    },
+    {
+      "name": "Boss Mechanics",
+      "description": "Unique battles against boss fish with special abilities.",
+      "parameters": {
+        "boss_health": 200,
+        "attack_damage": 15,
+        "spawn_rate": 0.05
+      },
+      "interactions": [
+        "Defeating boss fish grants significant points and special items."
+      ]
+    }
+  ],
+  "core_loop": "Players navigate the underwater arena to shoot various fish with chosen weapons. Players earn points by hitting fish, while managing ammo and reloads. Players can achieve score multipliers through combos. Occasionally, players will face boss fish requiring unique strategies to defeat.",
+  "state_machine": {
+    "states": [
+      "MainMenu",
+      "Playing",
+      "Paused",
+      "GameOver",
+      "BossFight"
+    ],
+    "transitions": {
+      "MainMenu": {
+        "to": [
+          "Playing"
+        ]
+      },
+      "Playing": {
+        "to": [
+          "Paused",
+          "GameOver",
+          "BossFight"
+        ]
+      },
+      "Paused": {
+        "to": [
+          "Playing"
+        ]
+      },
+      "GameOver": {
+        "to": [
+          "MainMenu"
+        ]
+      },
+      "BossFight": {
+        "to": [
+          "Playing",
+          "GameOver"
+        ]
+      }
+    }
+  },
+  "input_map": {
+    "Fire": {
+      "effect": "Shoot selected weapon."
+    },
+    "Reload": {
+      "effect": "Reload weapon."
+    },
+    "SwitchWeapon": {
+      "effect": "Change to the next weapon."
+    },
+    "Pause": {
+      "effect": "Pause the game."
+    },
+    "NavigateMenu": {
+      "effect": "Move through menu options."
+    }
+  },
+  "difficulty_scaling": {
+    "parameters": {
+      "fish_health_multiplier": 1.0,
+      "attack_damage_multiplier": 1.0,
+      "combo_time_limit_multiplier": 1.0
+    },
+    "description": "At medium difficulty, enemies exhibit normal health and damage. Combo timing remains unchanged, offering a balanced experience for players."
+  }
+}

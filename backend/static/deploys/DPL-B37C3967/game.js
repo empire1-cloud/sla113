@@ -1,18 +1,600 @@
-"""SLA113 Fish Shooter Engine v6 — FireKirin Surpass
-4-player table, continuous rapid-fire, net deployment, bullet trails + muzzle flash,
-multi-kill combos, coin scatter, ornate rotating turrets, hold-to-shoot"""
-
-
-def generate_fish_shooter(game_name, game_config, asset_manifest):
-    import json
-    config_json = json.dumps(game_config, default=str, indent=2)
-    manifest_json = json.dumps(asset_manifest, default=str, indent=2)
-
-    return f"""// SLA113 Fish Shooter v6 — {game_name}
+// SLA113 Fish Shooter v6 — Neon Fish Hunt
 // 4-Player Table / FireKirin Surpass
-const GAME_CONFIG = {config_json};
-const ASSET_MANIFEST = {manifest_json};
-""" + r"""
+const GAME_CONFIG = {
+  "type": "fish_shooter",
+  "name": "Neon Fish Hunt",
+  "version": "1.0.0",
+  "built_by": "SLA113",
+  "mechanics": {
+    "mechanics": [
+      {
+        "name": "Weapon Types",
+        "description": "Various weapons available for the player to use to shoot fish.",
+        "parameters": {
+          "Basic Gun": {
+            "damage": 10,
+            "rate_of_fire": 0.5,
+            "max_ammo": 30,
+            "reload_time": 2
+          },
+          "Plasma Blaster": {
+            "damage": 20,
+            "rate_of_fire": 0.4,
+            "max_ammo": 20,
+            "reload_time": 3
+          },
+          "Electric Harpoon": {
+            "damage": 40,
+            "rate_of_fire": 1,
+            "max_ammo": 10,
+            "reload_time": 5
+          }
+        },
+        "interactions": [
+          "Different weapons affect fishing efficiency and experience points gained per fish."
+        ]
+      },
+      {
+        "name": "Fish Values",
+        "description": "Different types of fish available in the game with values for scoring.",
+        "parameters": {
+          "Common Fish": {
+            "value": 5,
+            "spawn_rate": 0.7
+          },
+          "Rare Fish": {
+            "value": 15,
+            "spawn_rate": 0.2
+          },
+          "Legendary Fish": {
+            "value": 30,
+            "spawn_rate": 0.1
+          }
+        },
+        "interactions": [
+          "Catch different fish to earn points. Rare and Legendary fish have higher points."
+        ]
+      },
+      {
+        "name": "Hit Detection",
+        "description": "Mechanics for determining successful hits on fish.",
+        "parameters": {
+          "hit_radius": 1.5,
+          "critical_hit_chance": 0.1,
+          "headshot_multiplier": 1.5
+        },
+        "interactions": [
+          "Accuracy of the shot determines hit success; critical hits give bonus points."
+        ]
+      },
+      {
+        "name": "Multipliers",
+        "description": "Score multipliers based on player performance.",
+        "parameters": {
+          "combo_multiplier": 1.2,
+          "max_combo": 5,
+          "time_limit_for_combo": 10
+        },
+        "interactions": [
+          "Achieving combos by catching multiple fish in succession increases score."
+        ]
+      },
+      {
+        "name": "Boss Mechanics",
+        "description": "Unique battles against boss fish with special abilities.",
+        "parameters": {
+          "boss_health": 200,
+          "attack_damage": 15,
+          "spawn_rate": 0.05
+        },
+        "interactions": [
+          "Defeating boss fish grants significant points and special items."
+        ]
+      }
+    ],
+    "core_loop": "Players navigate the underwater arena to shoot various fish with chosen weapons. Players earn points by hitting fish, while managing ammo and reloads. Players can achieve score multipliers through combos. Occasionally, players will face boss fish requiring unique strategies to defeat.",
+    "state_machine": {
+      "states": [
+        "MainMenu",
+        "Playing",
+        "Paused",
+        "GameOver",
+        "BossFight"
+      ],
+      "transitions": {
+        "MainMenu": {
+          "to": [
+            "Playing"
+          ]
+        },
+        "Playing": {
+          "to": [
+            "Paused",
+            "GameOver",
+            "BossFight"
+          ]
+        },
+        "Paused": {
+          "to": [
+            "Playing"
+          ]
+        },
+        "GameOver": {
+          "to": [
+            "MainMenu"
+          ]
+        },
+        "BossFight": {
+          "to": [
+            "Playing",
+            "GameOver"
+          ]
+        }
+      }
+    },
+    "input_map": {
+      "Fire": {
+        "effect": "Shoot selected weapon."
+      },
+      "Reload": {
+        "effect": "Reload weapon."
+      },
+      "SwitchWeapon": {
+        "effect": "Change to the next weapon."
+      },
+      "Pause": {
+        "effect": "Pause the game."
+      },
+      "NavigateMenu": {
+        "effect": "Move through menu options."
+      }
+    },
+    "difficulty_scaling": {
+      "parameters": {
+        "fish_health_multiplier": 1.0,
+        "attack_damage_multiplier": 1.0,
+        "combo_time_limit_multiplier": 1.0
+      },
+      "description": "At medium difficulty, enemies exhibit normal health and damage. Combo timing remains unchanged, offering a balanced experience for players."
+    }
+  },
+  "rtp": {
+    "target_rtp": 96.5,
+    "calculated_rtp": 96.49,
+    "house_edge": 3.51,
+    "variance_profile": {
+      "level": "medium-high",
+      "standard_deviation": 2.5
+    },
+    "hit_frequency": 22.5,
+    "max_win_multiplier": 500,
+    "simulation_results": {
+      "total_rounds": 10000,
+      "wins": 2250,
+      "losses": 7750,
+      "win_percentage": 22.5,
+      "average_win_amount": 120,
+      "total_won": 270000,
+      "total_bet": 280000,
+      "net_profit": -10000
+    },
+    "certification_notes": "This game complies with gaming regulations, including RTP requirements and variance disclosures. The simulation results are consistent with the expected outcomes for medium-high variance profiles."
+  },
+  "rng": {
+    "RNG_specification": {
+      "algorithm": "Mersenne Twister",
+      "seed_strategy": {
+        "initial_seed": "current_timestamp + player_id",
+        "rotation": {
+          "frequency_in_minutes": 10,
+          "new_seed_logic": "combine last_seed with system_clock + random_bytes"
+        }
+      },
+      "distribution_tables": {
+        "enemy_spawn": {
+          "common": {
+            "probability": 0.6,
+            "spawn_rate": 10
+          },
+          "uncommon": {
+            "probability": 0.25,
+            "spawn_rate": 5
+          },
+          "rare": {
+            "probability": 0.1,
+            "spawn_rate": 2
+          },
+          "legendary": {
+            "probability": 0.05,
+            "spawn_rate": 1
+          }
+        },
+        "power_up": {
+          "basic": {
+            "probability": 0.7,
+            "effect_duration": 15
+          },
+          "enhanced": {
+            "probability": 0.2,
+            "effect_duration": 30
+          },
+          "ultimate": {
+            "probability": 0.1,
+            "effect_duration": 60
+          }
+        }
+      },
+      "fairness_proof": {
+        "uniform_distribution": "All outcomes within defined ranges from RNG are uniformly distributed.",
+        "sample_test": "Conduct Kolmogorov-Smirnov test on 100,000 samples, with p-value > 0.05."
+      },
+      "anti_manipulation": {
+        "measures": [
+          "Shuffling seeds using cryptographic techniques after each round.",
+          "Regular audits by external agents to ensure integrity.",
+          "Implementing entropy sources with system-based randomness."
+        ]
+      },
+      "audit_trail": {
+        "logging": {
+          "event": "RNG Event Log",
+          "details": [
+            {
+              "event_id": "unique_event_identifier",
+              "timestamp": "ISO 8601 format",
+              "seed_used": "current_seed_value",
+              "outcome": "result_of_random_event"
+            }
+          ],
+          "retention_policy": "logs stored for a minimum of 1 year"
+        }
+      }
+    }
+  },
+  "paytable": {
+    "raw_output": "{\n  \"paytable\": {\n    \"symbols\": [\n      {\n        \"name\": \"Goldfish\",\n        \"value_3\": 50,\n        \"value_4\": 150,\n        \"value_5\": 300\n      },\n      {\n        \"name\": \"Clownfish\",\n        \"value_3\": 40,\n        \"value_4\": 100,\n        \"value_5\": 200\n      },\n      {\n        \"name\": \"Angelfish\",\n        \"value_3\": 30,\n        \"value_4\": 80,\n        \"value_5\": 150\n      },\n      {\n        \"name\": \"Betta Fish\",\n        \"value_3\": 20,\n        \"value_4\": 60,\n        \"value_5\": 120\n      },\n      {\n        \"name\": \"Guppy\",\n        \"value_3\": 10,\n        \"value_4\": 30,\n        \"value_5\": 60\n      },\n      {\n        \"name\": \"Treasure Chest\",\n        \"value_3\": 80,\n        \"value_4\": 200,\n        \"value_5\": 400\n      }\n    ],\n    \"special_symbols\": {\n      \"wilds\": {\n        \"name\": \"Neon Star\",\n        \"effect\": \"Substitutes for all symbols except scatters.\"\n      },\n      \"scatters\": {\n        \"name\": \"Treasure Map\",\n        \"effect\": \"3 or more scatters trigger the bonus round.\"\n      }\n    },\n    \"bonus_triggers\": {\n      \"conditions\": \"3 or more Scatter symbols appearing anywhere on the screen.\",\n      \"rewards\": {\n        \"free_spins\": 10,\n        \"multiplier\": 2\n      }\n    },\n    \"jackpot_tiers\": {\n      \"mini\": {\n        \"value\": 100,\n        \"odds\": 1 / 1000\n      },\n      \"minor\": {\n        \"value\": 500,\n        \"odds\": 1 / 500\n      },\n      \"major\": {\n        \"value\": 2000,\n        \"odds\": 1 / 250\n      },\n      \"grand\": {\n        \"value\": 10000,\n        \"odds\": 1 / 10000\n      }\n    },\n    \"payline_patterns\": [\n      [1, 1, 1, 1, 1],\n      [0, 0, 0, 0, 0],\n      [0, 1, 2, 1, 0],\n      [1, 2, 3, 2, 1],\n      [0, 2, 0, 2, 0],\n      [2, 2, 2, 2, 2]\n    ]\n  }\n}",
+    "logic_type": "paytable"
+  },
+  "sprites": {
+    "quetzalflare_prismwing": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m9d2kcms_spritesheet1%20%282%29.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "fire_breath": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "lightning": [
+          12,
+          13
+        ],
+        "wing_spread": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "death": [
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    },
+    "mictlantecuilti_bone_sovereign": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/aufgqv07_spritesheet1%20%285%29.jpg",
+      "frame_width": 256,
+      "frame_height": 341,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "shield": [
+          4
+        ],
+        "attack": [
+          5,
+          6,
+          7
+        ],
+        "fire": [
+          8,
+          9
+        ],
+        "explosion": [
+          10
+        ],
+        "defend": [
+          11
+        ]
+      }
+    },
+    "quetzalcoatl_fireborn": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/vr76ezmx_spritesheet1%20%284%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fire_breath": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "death": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "jaguar_warrior": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/xooi0xfr_boss%20%283%29.jpg",
+      "frame_width": 512,
+      "frame_height": 512,
+      "columns": 1,
+      "rows": 1,
+      "total_frames": 1,
+      "animations": {
+        "idle": [
+          0
+        ]
+      }
+    },
+    "ocelotl_voidmane": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/ncd8zsod_unnamed%20%284%29.jpg",
+      "frame_width": 270,
+      "frame_height": 340,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "wing_spread": [
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    },
+    "aztec_fish_species": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/cvci6vxx_spritesheet2_fish.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "tiny_fish": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "small_fish": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "medium_fish": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "jellyfish": [
+          12,
+          13
+        ],
+        "shark": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "pufferfish": [
+          18
+        ],
+        "large_fish": [
+          19,
+          20,
+          21
+        ],
+        "serpent": [
+          22,
+          23
+        ],
+        "treasure": [
+          24
+        ]
+      }
+    },
+    "three_worlds_pyramid": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg",
+      "frame_width": 341,
+      "frame_height": 1024,
+      "columns": 3,
+      "rows": 1,
+      "total_frames": 3,
+      "animations": {
+        "fire_world": [
+          0
+        ],
+        "teal_world": [
+          1
+        ],
+        "void_world": [
+          2
+        ]
+      }
+    },
+    "aztec_temple_guardians": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/2u8qf3cj_unnamed%20%283%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "power": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "summon": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    }
+  },
+  "background_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg"
+};
+const ASSET_MANIFEST = [
+  {
+    "id": "score_panel",
+    "name": "Score Panel",
+    "type": "ui",
+    "dimensions": {
+      "width": 300,
+      "height": 50
+    }
+  },
+  {
+    "id": "weapon_selector",
+    "name": "Weapon Selector",
+    "type": "ui",
+    "dimensions": {
+      "width": 400,
+      "height": 70
+    }
+  },
+  {
+    "id": "health_bar",
+    "name": "Health Bar",
+    "type": "ui",
+    "dimensions": {
+      "width": 250,
+      "height": 30
+    }
+  },
+  {
+    "id": "coin_counter",
+    "name": "Coin Counter",
+    "type": "ui",
+    "dimensions": {
+      "width": 60,
+      "height": 60
+    }
+  },
+  {
+    "id": "game_over_screen",
+    "name": "Game Over Screen",
+    "type": "ui",
+    "dimensions": {
+      "width": 800,
+      "height": 600
+    }
+  },
+  {
+    "id": "asset_5",
+    "name": "Xochipili",
+    "type": "character",
+    "dimensions": {
+      "width": 64,
+      "height": 64
+    }
+  },
+  {
+    "id": "asset_6",
+    "name": "Aztec Warrior Queen",
+    "type": "character",
+    "dimensions": {
+      "height": "2.0 meters",
+      "width": "0.7 meters",
+      "depth": "0.5 meters"
+    }
+  },
+  {
+    "id": "asset_7",
+    "name": "Cholo Fish",
+    "type": "character",
+    "dimensions": {
+      "width": 64,
+      "height": 64
+    }
+  }
+];
+
 (async () => {
   const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000810, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
   app.view.style.touchAction = 'none'; app.view.style.cursor = 'none';
@@ -87,13 +669,7 @@ const ASSET_MANIFEST = {manifest_json};
     {name:'Sovereign',tier:7,color:0xffffff,hp:50,val:500,sz:72,spd:0.3,pat:'drift'},
   ];
   const SW=[15,15,12,10,8,6,5,4,4,3,2,1];
-  const BOSSES=[
-    {name:'JAGUAR WARRIOR',color:0xd4af37,hp:200,val:1000,sz:80,sprite:'jaguar_warrior'},
-    {name:'QUETZALCOATL',color:0x00ffcc,hp:300,val:2000,sz:90,sprite:'quetzalcoatl_fireborn'},
-    {name:'TEZCATLIPOCA',color:0x9900ff,hp:500,val:5000,sz:100,sprite:'ocelotl_voidmane'},
-    {name:'WOLF SOVEREIGN',color:0xd4af37,hp:400,val:3000,sz:95,sprite:'aztec_wolf_male'},
-    {name:'WOLF HUNTRESS',color:0xffd700,hp:350,val:2500,sz:88,sprite:'aztec_wolf_female'}
-  ];
+  const BOSSES=[{name:'JAGUAR WARRIOR',color:0xd4af37,hp:200,val:1000,sz:80},{name:'QUETZALCOATL',color:0x00ffcc,hp:300,val:2000,sz:90},{name:'TEZCATLIPOCA',color:0x9900ff,hp:500,val:5000,sz:100}];
   const fishTex=FISH.map((f,i)=>drawFish(f.color,f.sz,f.tier));
   const bossTex=BOSSES.map(b=>drawBoss(b.color,b.sz));
 
@@ -114,12 +690,12 @@ const ASSET_MANIFEST = {manifest_json};
   // ═══ 4-PLAYER TURRET SYSTEM ═══
   const PLAYER_COLORS=[0x00c8ff,0xff4444,0x44ff44,0xd4af37];
   const PLAYER_NAMES=['P1 (YOU)','P2 (BOT)','P3 (BOT)','P4 (BOT)'];
-  // Positions: 2 top + 2 bottom (FireKirin table layout)
+  // Positions: P1=bottom-center, P2=top-center, P3=bottom-left, P4=bottom-right
   const TURRET_POS=[
-    {x:0.28,y:0.92,rot:0},        // P1 bottom-left (YOU)
-    {x:0.72,y:0.92,rot:0},        // P2 bottom-right (BOT)
-    {x:0.28,y:0.08,rot:Math.PI},  // P3 top-left (BOT)
-    {x:0.72,y:0.08,rot:Math.PI},  // P4 top-right (BOT)
+    {x:0.5,y:0.92,rot:0},     // P1 bottom center (you)
+    {x:0.5,y:0.08,rot:Math.PI}, // P2 top center
+    {x:0.18,y:0.92,rot:0},    // P3 bottom left
+    {x:0.82,y:0.92,rot:0},    // P4 bottom right
   ];
 
   function buildTurret(playerIdx) {
@@ -184,11 +760,10 @@ const ASSET_MANIFEST = {manifest_json};
     const id=new PIXI.Text(name,{fontSize:7,fill:color,fontFamily:'monospace'});id.x=8;id.y=27;
     bg.addChild(bal);bg.addChild(id);L.hud.addChild(bg);return bal;
   }
-  // Balance chips sit under/above each turret (2 top + 2 bottom)
-  const myBal=makeBalance(6,H()-44,0x00c8ff,'P1 (YOU)',credits.toFixed(2),'left');                 // bottom-left
-  makeBalance(W()-146,H()-44,0xff4444,'P2 (BOT)',botCredits[0].toFixed(2),'right');               // bottom-right
-  makeBalance(6,4,0x44ff44,'P3 (BOT)',botCredits[1].toFixed(2),'left');                            // top-left
-  makeBalance(W()-146,4,0xd4af37,'P4 (BOT)',botCredits[2].toFixed(2),'right');                     // top-right
+  const myBal=makeBalance(6,4,0x00c8ff,'P1 (YOU)',credits.toFixed(2),'left');
+  makeBalance(W()-146,4,0xff4444,'P2 (BOT)',botCredits[0].toFixed(2),'right');
+  makeBalance(6,H()-44,0x44ff44,'P3 (BOT)',botCredits[1].toFixed(2),'left');
+  makeBalance(W()-146,H()-44,0xd4af37,'P4 (BOT)',botCredits[2].toFixed(2),'right');
 
   // ═══ JACKPOT BANNER ═══
   const jpBar=new PIXI.Graphics();jpBar.beginFill(0x1a0020,0.92).drawRoundedRect(W()/2-200,2,400,32,6).endFill();jpBar.lineStyle(2,0xd4af37,0.5).drawRoundedRect(W()/2-200,2,400,32,6);L.hud.addChild(jpBar);
@@ -246,8 +821,8 @@ const ASSET_MANIFEST = {manifest_json};
     if(bossActive)return;bossActive=true;
     const type=BOSSES[Math.floor(Math.random()*BOSSES.length)],bi=BOSSES.indexOf(type);
     const f=new PIXI.Container();
-    const sn=type.sprite||type.name.toLowerCase().replace(/[\s,]+/g,'_');
-    if(loadedTex[sn]){const td=loadedTex[sn];const a=new PIXI.AnimatedSprite(td.anims.walk||td.anims.run||td.anims.idle||td.frames.slice(0,4));a.anchor.set(0.5);a.animationSpeed=0.12;a.play();a.scale.set((type.sz*2.5)/td.cfg.frame_width);f.addChild(a);f._a=a;f._td=td;}
+    const sn=type.name.toLowerCase().replace(/[\s,]+/g,'_');
+    if(loadedTex[sn]){const td=loadedTex[sn];const a=new PIXI.AnimatedSprite(td.anims.idle||td.frames.slice(0,4));a.anchor.set(0.5);a.animationSpeed=0.08;a.play();a.scale.set((type.sz*2.5)/td.cfg.frame_width);f.addChild(a);f._a=a;f._td=td;}
     else{const s=new PIXI.Sprite(bossTex[bi]);s.anchor.set(0.5);s.scale.set(0.5);f.addChild(s);}
     const nm=new PIXI.Text(type.name,{fontSize:13,fill:type.color,fontFamily:'monospace',fontWeight:'bold',letterSpacing:2,stroke:0x000000,strokeThickness:4});nm.anchor.set(0.5);nm.y=-type.sz-12;f.addChild(nm);
     const hw=type.sz*2;const bg=new PIXI.Graphics();bg.beginFill(0x000000,0.7).drawRoundedRect(-hw/2,-type.sz-5,hw,5,2).endFill();const fl=new PIXI.Graphics();fl.beginFill(0xff0000).drawRoundedRect(-hw/2,-type.sz-5,hw,5,2).endFill();f.addChild(bg);f.addChild(fl);f._hf=fl;f._hw=hw;
@@ -359,7 +934,7 @@ const ASSET_MANIFEST = {manifest_json};
   // ═══ SPAWN TIMERS ═══
   for(let i=0;i<18;i++)spawnFish();
   setInterval(()=>{if(fishes.filter(f=>f.alive).length<22)spawnFish();},1200);
-  setTimeout(spawnBoss,8000);setInterval(()=>{if(!bossActive)spawnBoss();},30000);
+  setTimeout(spawnBoss,20000);setInterval(()=>{if(!bossActive)spawnBoss();},45000);
 
   // ═══ GAME LOOP ═══
   app.ticker.add(()=>{
@@ -430,4 +1005,3 @@ const ASSET_MANIFEST = {manifest_json};
     bubbles.forEach(b=>{b.x+=b.vx+Math.sin(now/1000)*0.04;b.y+=b.vy;if(b.y<-10){b.y=H()+10;b.x=Math.random()*W();}});
   });
 })();
-"""

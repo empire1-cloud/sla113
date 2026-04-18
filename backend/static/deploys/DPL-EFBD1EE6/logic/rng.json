@@ -1,0 +1,71 @@
+{
+  "RNG_specification": {
+    "algorithm": "Mersenne Twister",
+    "seed_strategy": {
+      "initial_seed": "current_timestamp + player_id",
+      "rotation": {
+        "frequency_in_minutes": 10,
+        "new_seed_logic": "combine last_seed with system_clock + random_bytes"
+      }
+    },
+    "distribution_tables": {
+      "enemy_spawn": {
+        "common": {
+          "probability": 0.6,
+          "spawn_rate": 10
+        },
+        "uncommon": {
+          "probability": 0.25,
+          "spawn_rate": 5
+        },
+        "rare": {
+          "probability": 0.1,
+          "spawn_rate": 2
+        },
+        "legendary": {
+          "probability": 0.05,
+          "spawn_rate": 1
+        }
+      },
+      "power_up": {
+        "basic": {
+          "probability": 0.7,
+          "effect_duration": 15
+        },
+        "enhanced": {
+          "probability": 0.2,
+          "effect_duration": 30
+        },
+        "ultimate": {
+          "probability": 0.1,
+          "effect_duration": 60
+        }
+      }
+    },
+    "fairness_proof": {
+      "uniform_distribution": "All outcomes within defined ranges from RNG are uniformly distributed.",
+      "sample_test": "Conduct Kolmogorov-Smirnov test on 100,000 samples, with p-value > 0.05."
+    },
+    "anti_manipulation": {
+      "measures": [
+        "Shuffling seeds using cryptographic techniques after each round.",
+        "Regular audits by external agents to ensure integrity.",
+        "Implementing entropy sources with system-based randomness."
+      ]
+    },
+    "audit_trail": {
+      "logging": {
+        "event": "RNG Event Log",
+        "details": [
+          {
+            "event_id": "unique_event_identifier",
+            "timestamp": "ISO 8601 format",
+            "seed_used": "current_seed_value",
+            "outcome": "result_of_random_event"
+          }
+        ],
+        "retention_policy": "logs stored for a minimum of 1 year"
+      }
+    }
+  }
+}
