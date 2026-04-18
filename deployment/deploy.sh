@@ -31,7 +31,7 @@ BACKEND_SERVICE="sla113-api"
 FRONTEND_SERVICE="sla113-frontend"
 
 # Domains (Tee Architecture)
-BACKEND_DOMAIN="sla113.southernlifestyle.org"
+BACKEND_DOMAIN="api.sla113.southernlifestyle.org"
 FRONTEND_DOMAIN="sla113.southernlifestyle.org"
 
 # Image tags
@@ -86,6 +86,16 @@ docker build -t "${FRONTEND_IMAGE}:latest" \
 docker push "${FRONTEND_IMAGE}:latest"
 echo -e "${GREEN}✓ Frontend image pushed${NC}"
 
+# ─── Resolve JWT_SECRET_KEY (persist across deploys) ───
+if [ -z "$JWT_SECRET_KEY" ]; then
+    EXISTING_JWT=$(gcloud run services describe "$BACKEND_SERVICE" --region "$REGION" --format 'value(spec.template.spec.containers[0].env.filter(name=JWT_SECRET_KEY).value)' 2>/dev/null || true)
+    if [ -n "$EXISTING_JWT" ]; then
+        JWT_SECRET_KEY="$EXISTING_JWT"
+    else
+        JWT_SECRET_KEY=$(openssl rand -hex 32)
+    fi
+fi
+
 # ─── Deploy backend to Cloud Run ───
 echo -e "${YELLOW}[5/6] Deploying backend to Cloud Run...${NC}"
 gcloud run deploy "$BACKEND_SERVICE" \
@@ -100,8 +110,8 @@ gcloud run deploy "$BACKEND_SERVICE" \
     --max-instances 10 \
     --concurrency 80 \
     --timeout 300 \
-    --set-env-vars "MONGO_URL=${MONGO_URL},DB_NAME=${DB_NAME},CORS_ORIGINS=https://${FRONTEND_DOMAIN}" \
-    --set-env-vars "JWT_SECRET_KEY=${JWT_SECRET_KEY:-$(openssl rand -hex 32)}" \
+    --set-env-vars "^||^MONGO_URL=${MONGO_URL}||DB_NAME=${DB_NAME}||CORS_ORIGINS=https://${FRONTEND_DOMAIN}" \
+    --set-env-vars "JWT_SECRET_KEY=${JWT_SECRET_KEY}" \
     ${EMERGENT_LLM_KEY:+--set-env-vars "EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY}"} \
     ${GEMINI_API_KEY:+--set-env-vars "GEMINI_API_KEY=${GEMINI_API_KEY}"} \
     ${STRIPE_SECRET_KEY:+--set-env-vars "STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}"} \
@@ -144,7 +154,7 @@ echo "  2. Update DNS CNAME records to point to ghs.googlehosted.com"
 echo "  3. Verify: curl https://${BACKEND_DOMAIN}/api/health"
 echo ""
 echo -e "${YELLOW}TEE ARCHITECTURE — Domain Map:${NC}"
-echo "  sla113-api           → sla113.southernlifestyle.org"
+echo "  sla113-api           → api.sla113.southernlifestyle.org"
 echo "  empire1-api           → empire1.cloud              (future)"
 echo "  lyrica3-api           → lyrica3.com                (future)"
 echo "  arcade-frontend       → arcade.southernlifestyle.org (future)"

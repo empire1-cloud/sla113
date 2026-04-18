@@ -905,7 +905,7 @@ export default function SLA113Page() {
                           {u.domain && (
                             <div className="bg-black/50 border border-zinc-800 p-3">
                               <span className="text-[8px] text-zinc-600 uppercase tracking-widest block mb-1">Domain</span>
-                              <a href={`https://${u.domain}`} target="_blank" rel="noopener noreferrer" className={`text-xs font-bold ${ec.text} hover:underline`}>{u.domain}</a>
+                              <a href={`https://${u.domain}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className={`text-xs font-bold ${ec.text} hover:underline`}>{u.domain}</a>
                             </div>
                           )}
                           <div className="flex gap-3">
