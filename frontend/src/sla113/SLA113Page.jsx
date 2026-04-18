@@ -18,6 +18,7 @@ import { ArtTechNexusPanel, MatrixParamsPanel } from './panels/VaultAdminPanels'
 import FishMultiplayerPanel from './panels/FishMultiplayerPanel';
 import SlotSymbolsPanel from './panels/SlotSymbolsPanel';
 import SpriteRegistryPanel from './panels/SpriteRegistryPanel';
+import GameComposerPanel from './panels/GameComposerPanel';
 import { synthesizeFromAsset, playBuffer, stopSource, bufferToWav, downloadWav } from './audioSynth';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
@@ -125,6 +126,7 @@ const ALL_NAV_ITEMS = [
   { id: 'VISION SMITH', icon: ImageIcon, partition: 'foundry' },
   { id: 'AUDIO FORGE', icon: Music, partition: 'foundry' },
   { id: 'SPRITE REGISTRY', icon: Layers, partition: 'foundry' },
+  { id: 'GAME COMPOSER', icon: Swords, partition: 'foundry' },
   { id: 'BUILD PIPELINE', icon: Rocket, partition: 'vault' },
   { id: 'COMPLIANCE', icon: FileCheck, partition: 'vault' },
   { id: 'ARTTECH NEXUS', icon: Grid3X3, partition: 'vault' },
@@ -1324,7 +1326,7 @@ export default function SLA113Page() {
                       const gt = UNIVERSAL_GAME_TYPES.find(g => g.id === p.game_type);
                       const catColor = gt ? (CATEGORY_META[gt.cat]?.color || 'text-zinc-400') : 'text-zinc-400';
                       return (
-                        <div key={`osp-${p.name}-${p.game_type}`} className="flex justify-between items-center p-3 border border-zinc-900 bg-black/50">
+                        <div key={p.id} className="flex justify-between items-center p-3 border border-zinc-900 bg-black/50">
                           <span className="text-zinc-300">{p.name}</span>
                           <span className={catColor}>{gt?.label || p.game_type}</span>
                         </div>
@@ -1551,6 +1553,11 @@ export default function SLA113Page() {
             {/* FOUNDRY: SPRITE REGISTRY */}
             {partition === 'foundry' && activeTab === 'SPRITE REGISTRY' && (
               <SpriteRegistryPanel />
+            )}
+
+            {/* FOUNDRY: GAME COMPOSER */}
+            {partition === 'foundry' && activeTab === 'GAME COMPOSER' && (
+              <GameComposerPanel />
             )}
 
             {/* VAULT: BUILD PIPELINE */}

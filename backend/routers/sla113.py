@@ -1,7 +1,7 @@
 """SLA113 API Router - Universal AI Game Studio"""
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import uuid
 import logging
@@ -1449,13 +1449,35 @@ async def compile_build(build_id: str):
             }
         game_config["sprites"] = sprite_map
 
-        # Also inject background if available
-        bg_sprites = [s for s in all_sprites if s["entity_type"] == "background"]
-        if bg_sprites:
-            bg_url = bg_sprites[0]["sprite_url"]
-            if "customer-assets" in bg_url or "emergentagent" in bg_url:
-                bg_url = f"/api/sla113/sprites/proxy?url={bg_url}"
-            game_config["background_url"] = bg_url
+        # ─── Lobby overrides ───
+        # If this project was created from a lobby, use its specified assets
+        lobby_cfg = project.get("lobby_config") or {}
+        chosen_bg_key = lobby_cfg.get("background_sprite")
+        chosen_bg_url = None
+        if chosen_bg_key and chosen_bg_key in sprite_map:
+            chosen_bg_url = sprite_map[chosen_bg_key]["sprite_url"]
+        else:
+            # Fall back to newest registered background
+            bg_sprites = [s for s in all_sprites if s["entity_type"] == "background"]
+            if bg_sprites:
+                bg_url = bg_sprites[0]["sprite_url"]
+                if "customer-assets" in bg_url or "emergentagent" in bg_url:
+                    bg_url = f"/api/sla113/sprites/proxy?url={bg_url}"
+                chosen_bg_url = bg_url
+        if chosen_bg_url:
+            game_config["background_url"] = chosen_bg_url
+
+        # Inject lobby config for engine to filter bosses / theme
+        if lobby_cfg:
+            game_config["lobby"] = {
+                "name": lobby_cfg.get("name"),
+                "main_boss": lobby_cfg.get("main_boss_sprite"),
+                "partner_boss": lobby_cfg.get("partner_boss_sprite"),
+                "extra_bosses": lobby_cfg.get("extra_bosses") or [],
+                "theme_color": lobby_cfg.get("theme_color", "#d4af37"),
+                "jackpot_tier": lobby_cfg.get("jackpot_tier", "MAJOR"),
+                "base_bet": lobby_cfg.get("base_bet", 0.10),
+            }
 
         from sla113.game_templates import get_game_template
         js_content = get_game_template(game_type, game_name, game_config, asset_manifest)
@@ -2313,6 +2335,189 @@ async def delete_sprite(sprite_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Sprite not found")
     return {"deleted": True}
+
+# ═══════════════════════════════════════════════════════════════════════
+# ─── LOBBY / GAME OS COMPOSER ───
+# A "Lobby" is a fish-shooter game variant defined by which assets to mix:
+# main boss sprite(s), background, theme color, audio track, jackpot tier.
+# One lobby = one deployed game URL.
+# ═══════════════════════════════════════════════════════════════════════
+def lobbies_collection():
+    return get_database()["sla113_lobbies"]
+
+
+class LobbyRequest(BaseModel):
+    name: str
+    slug: str
+    game_type: str = "fish_shooting"
+    main_boss_sprite: str               # e.g. "wolf_xolotl_pack"
+    partner_boss_sprite: Optional[str] = None  # e.g. "g_wolf" (shared lobbies)
+    background_sprite: Optional[str] = None    # sprite name_key (lower_snake) or "" for default
+    theme_color: str = "#d4af37"
+    description: str = ""
+    jackpot_tier: str = "MAJOR"          # MINI/MINOR/MAJOR/GRAND
+    base_bet: float = 0.10
+    audio_track: Optional[str] = None
+    fish_sprite: Optional[str] = None    # override fish spritesheet
+    extra_bosses: List[str] = []         # optional additional boss sprite keys
+
+
+@router.post("/lobbies")
+async def create_composer_lobby(req: LobbyRequest):
+    now = datetime.now(timezone.utc).isoformat()
+    lobby = {
+        "id": f"LBY-{uuid.uuid4().hex[:8].upper()}",
+        **req.model_dump(),
+        "created_at": now,
+        "updated_at": now,
+    }
+    await lobbies_collection().insert_one(lobby)
+    lobby.pop("_id", None)
+    return lobby
+
+
+@router.get("/lobbies")
+async def list_composer_lobbies():
+    cursor = lobbies_collection().find({}, {"_id": 0}).sort("created_at", 1)
+    lobbies = await cursor.to_list(200)
+    return {"lobbies": lobbies, "total": len(lobbies)}
+
+
+@router.get("/lobbies/{lobby_id}")
+async def get_composer_lobby(lobby_id: str):
+    lobby = await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
+    if not lobby:
+        raise HTTPException(status_code=404, detail="Lobby not found")
+    return lobby
+
+
+@router.patch("/lobbies/{lobby_id}")
+async def update_lobby(lobby_id: str, body: Dict[str, Any]):
+    body.pop("id", None); body.pop("_id", None)
+    body["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await lobbies_collection().update_one({"id": lobby_id}, {"$set": body})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lobby not found")
+    return await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
+
+
+@router.delete("/lobbies/{lobby_id}")
+async def delete_lobby_row(lobby_id: str):
+    result = await lobbies_collection().delete_one({"id": lobby_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lobby not found")
+    return {"deleted": True}
+
+
+@router.post("/lobbies/{lobby_id}/deploy")
+async def deploy_lobby(lobby_id: str):
+    """One-shot: create project from lobby config, compile, deploy, return preview URL."""
+    lobby = await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
+    if not lobby:
+        raise HTTPException(status_code=404, detail="Lobby not found")
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    # Step 1: create project
+    project_id = str(uuid.uuid4())
+    project = {
+        "id": project_id,
+        "name": lobby["name"],
+        "game_type": lobby["game_type"],
+        "theme": lobby.get("description", "")[:60],
+        "status": "in_dev",
+        "lobby_id": lobby_id,
+        "lobby_config": lobby,   # snapshot
+        "created_at": now, "updated_at": now,
+    }
+    await projects_collection().insert_one(project)
+
+    # Step 2: create build
+    build_id = f"BLD-{uuid.uuid4().hex[:8].upper()}"
+    build = {
+        "id": build_id, "project_id": project_id,
+        "project_name": lobby["name"], "game_type": lobby["game_type"],
+        "target": "web", "optimization": "balanced",
+        "include_assets": True, "include_logic": True,
+        "status": "queued", "progress": 0,
+        "stages": [
+            {"name": "Asset Compilation", "status": "pending", "progress": 0},
+            {"name": "Logic Binding", "status": "pending", "progress": 0},
+            {"name": "Shader Compilation", "status": "pending", "progress": 0},
+            {"name": "Bundle Packaging", "status": "pending", "progress": 0},
+            {"name": "Optimization Pass", "status": "pending", "progress": 0},
+        ],
+        "output": None, "download_url": None, "size_mb": None,
+        "logs": [f"[{now}] Lobby deploy initiated: {lobby['name']}"],
+        "created_at": now, "updated_at": now,
+    }
+    await builds_collection().insert_one(build)
+
+    # Step 3: compile (reuses existing pipeline)
+    await compile_build(build_id)
+
+    # Step 4: deploy
+    from pydantic import BaseModel as _BM
+    dep_req = DeployRequest(build_id=build_id, target_cdn="emergent-mock", region="us-east-1", auto_ssl=True)
+    deployment = await deploy_build(dep_req)
+    return {
+        "lobby_id": lobby_id,
+        "lobby_name": lobby["name"],
+        "project_id": project_id,
+        "build_id": build_id,
+        "deployment": deployment,
+        "preview_url": deployment.get("preview_url"),
+    }
+
+
+async def seed_default_lobbies():
+    count = await lobbies_collection().count_documents({})
+    if count > 0:
+        return
+    now = datetime.now(timezone.utc).isoformat()
+    defaults = [
+        {"name": "Shadow Pack", "slug": "shadow_pack",
+         "main_boss_sprite": "wolf_xolotl_pack", "partner_boss_sprite": "g_wolf",
+         "background_sprite": "wolf_xolotls_arena", "theme_color": "#d4af37",
+         "description": "Xolotl Pack + G-Wolf hunt as one. Aztec gold shields. Dual-boss lobby.",
+         "jackpot_tier": "GRAND", "base_bet": 0.25},
+        {"name": "Jaguar Warrior", "slug": "jaguar_warrior",
+         "main_boss_sprite": "jaguar_warrior", "background_sprite": "three_worlds_pyramid",
+         "theme_color": "#d4af37",
+         "description": "Classic jaguar spirit. Mid-tier lobby.", "jackpot_tier": "MINOR", "base_bet": 0.10},
+        {"name": "Quetzalcoatl Fireborn", "slug": "quetzalcoatl",
+         "main_boss_sprite": "quetzalcoatl_fireborn", "background_sprite": "three_worlds_pyramid",
+         "theme_color": "#00ffcc",
+         "description": "The Feathered Serpent. Major jackpot tier.", "jackpot_tier": "MAJOR", "base_bet": 0.15},
+        {"name": "Ocelotl Voidmane", "slug": "ocelotl_voidmane",
+         "main_boss_sprite": "ocelotl_voidmane", "background_sprite": "three_worlds_pyramid",
+         "theme_color": "#9900ff",
+         "description": "Shadow jaguar of the night realm.", "jackpot_tier": "MAJOR", "base_bet": 0.20},
+        {"name": "Wolf Sovereign", "slug": "wolf_sovereign",
+         "main_boss_sprite": "aztec_wolf_male", "background_sprite": "wolf_xolotls_arena",
+         "theme_color": "#d4af37",
+         "description": "Alpha male. Solo boss hunt.", "jackpot_tier": "MAJOR", "base_bet": 0.20},
+        {"name": "Jaguar Elite", "slug": "jaguar_elite",
+         "main_boss_sprite": "jaguar_warrior_elite", "background_sprite": "wolf_xolotls_arena",
+         "theme_color": "#ff6600",
+         "description": "Armored temple guardian. High stakes.", "jackpot_tier": "GRAND", "base_bet": 0.30},
+        {"name": "Jaguar Champion", "slug": "jaguar_champion",
+         "main_boss_sprite": "jaguar_warrior_champion", "background_sprite": "wolf_xolotls_arena",
+         "theme_color": "#ff2244",
+         "description": "The Champion. Ultimate solo boss.", "jackpot_tier": "GRAND", "base_bet": 0.50},
+    ]
+    for d in defaults:
+        await lobbies_collection().insert_one({
+            "id": f"LBY-{uuid.uuid4().hex[:8].upper()}",
+            "game_type": "fish_shooting",
+            "partner_boss_sprite": d.get("partner_boss_sprite"),
+            "audio_track": None, "fish_sprite": None, "extra_bosses": [],
+            "created_at": now, "updated_at": now,
+            **d,
+        })
+    logger.info("Seeded %d default lobbies", len(defaults))
+
+
 
 
 # ─── Seed default pipelines if empty ───
