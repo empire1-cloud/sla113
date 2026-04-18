@@ -1,18 +1,276 @@
-"""SLA113 Fish Shooter Engine v3 — FireKirin Production Parity
-Multi-seat table, ornate turrets, jackpot banner, side menus, explosion VFX,
-coin values on fish, room navigation, tutorial modal, PNG sprite support"""
-
-
-def generate_fish_shooter(game_name, game_config, asset_manifest):
-    import json
-    config_json = json.dumps(game_config, default=str, indent=2)
-    manifest_json = json.dumps(asset_manifest, default=str, indent=2)
-
-    return f"""// SLA113 Fish Shooter v3 — {game_name}
+// SLA113 Fish Shooter v3 — Aztec Depths v5
 // FireKirin Production Parity
-const GAME_CONFIG = {config_json};
-const ASSET_MANIFEST = {manifest_json};
-""" + r"""
+const GAME_CONFIG = {
+  "type": "fish_shooting",
+  "name": "Aztec Depths v5",
+  "version": "1.0.0",
+  "built_by": "SLA113",
+  "sprites": {
+    "quetzalflare_prismwing": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m9d2kcms_spritesheet1%20%282%29.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "fire_breath": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "lightning": [
+          12,
+          13
+        ],
+        "wing_spread": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "death": [
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    },
+    "mictlantecuilti_bone_sovereign": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/aufgqv07_spritesheet1%20%285%29.jpg",
+      "frame_width": 256,
+      "frame_height": 341,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "shield": [
+          4
+        ],
+        "attack": [
+          5,
+          6,
+          7
+        ],
+        "fire": [
+          8,
+          9
+        ],
+        "explosion": [
+          10
+        ],
+        "defend": [
+          11
+        ]
+      }
+    },
+    "quetzalcoatl_fireborn": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/vr76ezmx_spritesheet1%20%284%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "fire_breath": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "death": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    "jaguar_warrior": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/xooi0xfr_boss%20%283%29.jpg",
+      "frame_width": 512,
+      "frame_height": 512,
+      "columns": 1,
+      "rows": 1,
+      "total_frames": 1,
+      "animations": {
+        "idle": [
+          0
+        ]
+      }
+    },
+    "ocelotl_voidmane": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/ncd8zsod_unnamed%20%284%29.jpg",
+      "frame_width": 270,
+      "frame_height": 340,
+      "columns": 4,
+      "rows": 3,
+      "total_frames": 12,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "attack": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "wing_spread": [
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    },
+    "aztec_fish_species": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/cvci6vxx_spritesheet2_fish.jpg",
+      "frame_width": 200,
+      "frame_height": 200,
+      "columns": 5,
+      "rows": 5,
+      "total_frames": 25,
+      "animations": {
+        "tiny_fish": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "small_fish": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "medium_fish": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "jellyfish": [
+          12,
+          13
+        ],
+        "shark": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "pufferfish": [
+          18
+        ],
+        "large_fish": [
+          19,
+          20,
+          21
+        ],
+        "serpent": [
+          22,
+          23
+        ],
+        "treasure": [
+          24
+        ]
+      }
+    },
+    "three_worlds_pyramid": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg",
+      "frame_width": 341,
+      "frame_height": 1024,
+      "columns": 3,
+      "rows": 1,
+      "total_frames": 3,
+      "animations": {
+        "fire_world": [
+          0
+        ],
+        "teal_world": [
+          1
+        ],
+        "void_world": [
+          2
+        ]
+      }
+    },
+    "aztec_temple_guardians": {
+      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/2u8qf3cj_unnamed%20%283%29.jpg",
+      "frame_width": 256,
+      "frame_height": 256,
+      "columns": 4,
+      "rows": 4,
+      "total_frames": 16,
+      "animations": {
+        "idle": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "power": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "attack": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "summon": [
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    }
+  },
+  "background_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg"
+};
+const ASSET_MANIFEST = [];
+
 (async () => {
   const app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000a14, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
   app.view.style.touchAction = 'none';
@@ -446,4 +704,3 @@ const ASSET_MANIFEST = {manifest_json};
     if (autoFire && fishes.length > 0) { const closest = fishes.filter(f => f.alive).sort((a, b) => Math.hypot(a.x - turret.x, a.y - turret.y) - Math.hypot(b.x - turret.x, b.y - turret.y))[0]; if (closest && Math.random() < 0.1) shoot(closest); }
   });
 })();
-"""
