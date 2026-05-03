@@ -1,0 +1,13 @@
+{
+  "release_id": "XCB_001",
+  "status": "template",
+  "created_utc": "2026-05-03T00:00:00Z",
+  "universe": "LYRICA3 (U1)",
+  "owner": "lyrica",
+  "title": "",
+  "description": "",
+  "tracks": [],
+  "render_spec_ref": "render_spec.json",
+  "checksum_manifest_ref": "checksum_manifest.json",
+  "release_receipt_ref": "release_receipt.json"
+}
