@@ -2,6 +2,27 @@
 
 Multi-universe AI entertainment platform with unified authentication and game studio.
 
+## 🎵 NEW: Empire Lyric Master (Zero-API Music Production)
+
+**Generate complete tracks in one command - zero API costs, 100% local:**
+
+```bash
+python3 LYRICA3/empire_lyric_master.py "toxic breakup anthem trap 120bpm"
+```
+
+**What you get:**
+- ✅ Generated lyrics with vocal expression tags
+- ✅ MIDI patterns (kick/snare/hihat with Late-Pocket timing)
+- ✅ Mastering blueprint (DSP parameters for all stems)
+- ✅ DSP automation events
+- ✅ Complete track metadata
+
+**[→ Full Guide](./LYRICA3/docs/EMPIRE_LYRIC_MASTER_GUIDE.md)** | **[→ Test it now](./tests/test_empire_lyric_master.py)**
+
+**This is its own lane** - not competing with Suno/Udio, built for producers who need CONTROL.
+
+---
+
 ## 🌐 The Empire1 Ecosystem
 
 | Universe | Domain | Purpose |
@@ -84,6 +105,13 @@ See [memory/test_credentials.md](./memory/test_credentials.md) for details.
 - API key management
 
 ### Lyrica3 (Music Universe)
+- **🎵 Empire Lyric Master** - Complete zero-API music production system
+  - One-command track generation: `python3 LYRICA3/empire_lyric_master.py "your song idea"`
+  - Zero API costs - 100% local processing
+  - <5ms generation time per track
+  - 20+ global genres (SGV/Chicano + Afrobeats/UK Drill/K-pop/etc)
+  - Complete blueprints: lyrics, MIDI, DSP, mastering
+  - See [EMPIRE_LYRIC_MASTER_GUIDE.md](./LYRICA3/docs/EMPIRE_LYRIC_MASTER_GUIDE.md) for usage
 - AI music creation with Gemini
 - Duet engine & emotional grammar
 - Vocal logic system
