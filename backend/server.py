@@ -78,6 +78,8 @@ from routers.engines import (
 from routers.engines.history_protected import router as history_protected_router
 from routers.pipelines import router as pipelines_router
 from routers.sla113 import router as sla113_router
+from routers.omni_router import router as omni_router
+from routers.empire_router import router as empire_router
 
 # Include auth and team routers first (higher priority)
 api_router.include_router(auth_router)
@@ -112,6 +114,8 @@ api_router.include_router(art_direction_router)
 api_router.include_router(money_pipeline_router)
 api_router.include_router(analytics_router)  # Analytics remains public for now (system-wide metrics)
 api_router.include_router(sla113_router)  # SLA113 - Universal AI Game Studio
+api_router.include_router(omni_router)  # OMNI_AGENT - SLA113 Task Orchestration
+api_router.include_router(empire_router)  # Empire Lyric Master - Zero-API Music Production
 
 
 # Define Models
