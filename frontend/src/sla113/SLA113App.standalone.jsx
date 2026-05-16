@@ -2,6 +2,7 @@
  * SLA113App.standalone.jsx — Standalone SLA113 Operator OS
  * EVOLVED from SLA113App.jsx — routes from root instead of /sla113
  * For deployment to sla113.southernlifestyle.org
+ * NO LOGIN GATE — Sovereign operator mode only (login gate removed)
  */
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
