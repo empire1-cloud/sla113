@@ -30,23 +30,29 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 // SLA113 runs on its own domain/port — NOT embedded in Empire 1
 import SLA113App from "./sla113/SLA113App";
 import ArcadePage from "./arcade/ArcadePage";
+import ShowcasePage from "./pages/ShowcasePage";
 
 /**
  * Root Router — splits traffic at the top level.
  * /sla113/* → SLA113App (isolated, no Empire 1 providers)
  * /arcade    → Public Arcade Portal (no auth)
+ * /showcase  → Public Investor Showcase (no auth)
  * Everything else → Empire 1 (AuthProvider, AppHeader, etc.)
  */
 function RootRouter() {
   const location = useLocation();
   const isSLA113 = location.pathname.startsWith("/sla113");
   const isArcade = location.pathname.startsWith("/arcade");
+  const isShowcase = location.pathname.startsWith("/showcase");
 
   if (isSLA113) {
     return <SLA113App />;
   }
   if (isArcade) {
     return <ArcadePage />;
+  }
+  if (isShowcase) {
+    return <ShowcasePage />;
   }
 
   return (
