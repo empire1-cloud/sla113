@@ -8,13 +8,34 @@ import {
 const BASE = process.env.REACT_APP_BACKEND_URL || '';
 const API = BASE + '/api';
 
-const PILLARS = [
+const PILLARS_FALLBACK = [
   { id: 'empire1', name: 'Empire 1', tag: 'Control Plane', icon: Cpu, color: '#3b82ff', desc: 'Hybrid Intelligence Core orchestrating 15+ specialized AI engines.', status: 'live', deeplink: '/' },
   { id: 'ecosystem', name: 'Empire-Lyrica', tag: 'Integration Layer', icon: Network, color: '#ff2d92', desc: 'Cross-app glue. Shared auth, billing, agent runtime.', status: 'linked', deeplink: null },
   { id: 'lyrica', name: 'Lyrica 3 Pro', tag: 'Sonic IP', icon: Music, color: '#00c8ff', desc: 'Music, lyrics, audio generation pillar.', status: 'linked', deeplink: null },
   { id: 'cultura', name: 'Cultura Vibe Forge', tag: 'Cultural IP', icon: Palette, color: '#ff4488', desc: 'Aztec, Chicano, SGV, IELA aesthetic engine.', status: 'linked', deeplink: null },
   { id: 'sla113', name: 'SLA113', tag: 'Arcade OS', icon: Gamepad2, color: '#4488ff', desc: 'Sovereign game compiler + public arcade portal.', status: 'live', deeplink: '/sla113' },
 ];
+
+const ICON_BY_ID = { empire1: Cpu, ecosystem: Network, lyrica: Music, cultura: Palette, sla113: Gamepad2 };
+
+const SESSION_ID = (() => {
+  try {
+    let s = sessionStorage.getItem('sla_showcase_sid');
+    if (!s) { s = 'sid_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); sessionStorage.setItem('sla_showcase_sid', s); }
+    return s;
+  } catch (_) { return 'sid_anon'; }
+})();
+
+const track = (type, meta = {}) => {
+  try {
+    axios.post(API + '/empire1/analytics/event', {
+      type, meta,
+      session_id: SESSION_ID,
+      referrer: document.referrer || null,
+      ua: navigator.userAgent || null,
+    }).catch(() => {});
+  } catch (_) {}
+};
 
 const TIERS = [
   { tier: 'I', name: 'Methodology License', price: '$5–25K /yr', color: '#3b82ff', desc: 'The Emergent DNA framework codified — templates, checklists, decision trees, 4hr video, workbooks, quarterly office hours.', target: 'Founders · Engineering teams', cta: 'License the DNA' },
@@ -146,6 +167,7 @@ export default function ShowcasePage() {
   const [demoUrl, setDemoUrl] = useState(null);
   const [demoBusy, setDemoBusy] = useState(false);
   const [lobbies, setLobbies] = useState([]);
+  const [pillars, setPillars] = useState(PILLARS_FALLBACK);
   const iframeRef = useRef(null);
 
   const demoLobby = useMemo(() => lobbies.find(l => l.slug === 'shadow_pack') || lobbies[0] || null, [lobbies]);
@@ -154,16 +176,37 @@ export default function ShowcasePage() {
     try {
       const lRes = await axios.get(API + '/sla113/lobbies');
       const sRes = await axios.get(API + '/sla113/sprites');
+      const eRes = await axios.get(API + '/empire1/ecosystem').catch(() => ({ data: { repos: [] } }));
       const lobs = lRes.data.lobbies || [];
       const sprs = sRes.data.sprites || [];
+      const repos = eRes.data.repos || [];
       setLobbies(lobs);
       setStats({ LOBBIES: lobs.length, SPRITES: sprs.length });
+      if (repos.length) {
+        setPillars(repos.map(r => ({ ...r, icon: ICON_BY_ID[r.id] || Cpu })));
+      }
     } catch (e) { console.error(e); }
   }, []);
   useEffect(() => { loadStats(); }, [loadStats]);
 
+  // Track page view once
+  useEffect(() => { track('view', { page: 'showcase' }); }, []);
+
+  // Track scroll depth at thresholds 25/50/75/100
+  useEffect(() => {
+    const sent = new Set();
+    const onScroll = () => {
+      const h = document.documentElement;
+      const pct = Math.round(((h.scrollTop + window.innerHeight) / h.scrollHeight) * 100);
+      [25, 50, 75, 100].forEach(t => { if (pct >= t && !sent.has(t)) { sent.add(t); track('scroll_depth', { depth: t }); } });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const runDemo = useCallback(async () => {
     if (!demoLobby) return;
+    track('demo_run', { lobby: demoLobby.name });
     setDemoBusy(true);
     setDemoUrl(null);
     try {
@@ -173,6 +216,8 @@ export default function ShowcasePage() {
     } catch (e) { alert('Demo failed: ' + (e?.response?.data?.detail || e.message)); }
     setDemoBusy(false);
   }, [demoLobby]);
+
+  const trackCta = (target) => track('cta_click', { target });
 
   const heroBgStyle = { background: 'radial-gradient(ellipse at top, rgba(212,175,55,0.12) 0%, transparent 50%), radial-gradient(ellipse at bottom right, rgba(153,68,255,0.08) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(0,200,255,0.06) 0%, transparent 50%)' };
   const gridLineStyle = { backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, #fff 2px, #fff 3px)' };

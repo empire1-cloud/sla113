@@ -17,6 +17,7 @@ load_dotenv(ROOT_DIR / '.env')
 # Import database connection
 from database import connect_to_database, close_database_connection, get_database
 from routers.sla113 import seed_default_pipelines, seed_default_lobbies, start_worker, stop_worker
+from routers.empire1 import router as empire1_router, seed_ecosystem
 
 # Lifespan context manager for startup/shutdown
 @asynccontextmanager
@@ -26,6 +27,7 @@ async def lifespan(app: FastAPI):
     logging.info("Database connected on startup")
     await seed_default_pipelines()
     await seed_default_lobbies()
+    await seed_ecosystem()
     start_worker()
     logging.info("Night Queue Worker started")
     yield
@@ -167,6 +169,7 @@ async def get_status_checks():
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(empire1_router)  # /api/empire1/* — ecosystem registry + showcase analytics
 
 app.add_middleware(
     CORSMiddleware,
