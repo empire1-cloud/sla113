@@ -1,0 +1,371 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Instrument definitions — sound characteristics, synthesis parameters, and tiered quality levels. Used by procedural generation, TTS, and FX chains.",
+  "instruments": [
+    {
+      "id": "electric-piano",
+      "aliases": ["Rhodes", "Wurlitzer", "EP"],
+      "category": "keys",
+      "description": "Electric piano — bell-like tone with warm harmonics. Rhodes: mellow. Wurlitzer: barky.",
+      "frequency_range": {"low": 80, "high": 8000},
+      "typical_register": "mid to upper-mid",
+      "synthesis": {
+        "type": "FM + noise modulation",
+        "default_patch": "mark-1-studio",
+        "velocity_sensitivity": 0.7,
+        "tine_decay": "moderate"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 4},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 8},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 16}
+      },
+      "effects_defaults": {"reverb": "room 1.2s", "chorus": "stereo 0.3Hz"}
+    },
+    {
+      "id": "acoustic-guitar",
+      "aliases": ["nylon-guitar", "steel-string", "classical-guitar"],
+      "category": "string",
+      "description": "Acoustic guitar — nylon or steel string. Nylon: warm, soft. Steel: bright, percussive.",
+      "frequency_range": {"low": 82, "high": 10000},
+      "typical_register": "mid",
+      "synthesis": {
+        "type": "physical modeling Karplus-Strong",
+        "default_patch": "nylon-fingerpicked",
+        "velocity_sensitivity": 0.8,
+        "body_resonance": 0.6
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 3},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 6},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 8}
+      },
+      "effects_defaults": {"reverb": "hall 1.5s", "compression": "gentle 2:1"}
+    },
+    {
+      "id": "bass",
+      "aliases": ["electric-bass", "fender-bass", "jazz-bass", "precision-bass"],
+      "category": "bass",
+      "description": "Electric bass guitar — fundamental and first two harmonics define the tone. Finger-style, pick, or slap.",
+      "frequency_range": {"low": 40, "high": 4000},
+      "typical_register": "low",
+      "synthesis": {
+        "type": "subtractive + physical modeling",
+        "default_patch": "finger-jazz",
+        "velocity_sensitivity": 0.5,
+        "pickup_blend": "neck 60% bridge 40%"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      },
+      "effects_defaults": {"compression": "opto 4:1", "eq": "low-mid boost"}
+    },
+    {
+      "id": "808-bass",
+      "aliases": ["808", "sub-bass", "TR-808"],
+      "category": "bass",
+      "description": "TR-808 bass drum and sub-bass. The foundation of trap, drill, and phonk. Sine wave with pitch envelope.",
+      "frequency_range": {"low": 20, "high": 120},
+      "typical_register": "sub",
+      "synthesis": {
+        "type": "sine wave + pitch envelope",
+        "default_patch": "heavy-808",
+        "decay": "long (800ms-2s)",
+        "tuning": "root note",
+        "distortion": "optional soft clip"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      },
+      "effects_defaults": {"saturation": "light tube", "eq": "sub boost +3dB at 40Hz"}
+    },
+    {
+      "id": "drums",
+      "aliases": ["drum-kit", "trap-drums", "acoustic-drums"],
+      "category": "percussion",
+      "description": "Drum sounds — kick, snare, hi-hat, clap, rimshot, toms. Acoustic or electronic.",
+      "frequency_range": {"low": 60, "high": 16000},
+      "typical_register": "full",
+      "elements": {
+        "kick": {"freq": "60-100Hz", "decay": "short (trap) to long (rock)", "type": "pitch-decay sine + click"},
+        "snare": {"freq": "150-250Hz body, 3-5kHz snap", "decay": "short"},
+        "hi-hat": {"freq": "5-12kHz", "decay": "very short", "type": "noise-based"},
+        "clap": {"freq": "1-4kHz", "decay": "short", "type": "layered noise burst"},
+        "rimshot": {"freq": "2-5kHz", "decay": "very short", "type": "bright transient"}
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      },
+      "effects_defaults": {"parallel_compression": "NY style", "reverb": "room 0.6s"}
+    },
+    {
+      "id": "hi-hat",
+      "aliases": ["trap-hats", "closed-hh", "open-hh"],
+      "category": "percussion",
+      "description": "Hi-hat sounds — closed, open, and pedal. Trap uses rapid triplet and 16th-note patterns.",
+      "frequency_range": {"low": 4000, "high": 16000},
+      "typical_register": "high",
+      "synthesis": {
+        "type": "filtered noise burst",
+        "default_patch": "trap-metal",
+        "decay_closed": "30ms",
+        "decay_open": "200ms"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      }
+    },
+    {
+      "id": "synth-pad",
+      "aliases": ["pad", "ambient-pad", "string-pad"],
+      "category": "synth",
+      "description": "Sustained synthesizer textures — lush, atmospheric, evolving. Foundation of ambient and trap-soul.",
+      "frequency_range": {"low": 60, "high": 8000},
+      "typical_register": "mid to wide",
+      "synthesis": {
+        "type": "subtractive + wavetable",
+        "default_patch": "warm-analog-pad",
+        "unison": 3,
+        "detune": "8-12 cents",
+        "filter": "low-pass 2kHz with key-follow"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 4},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 8},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 16}
+      },
+      "effects_defaults": {"reverb": "hall 3s", "chorus": "stereo 0.5Hz", "delay": "stereo 1/4 dotted"}
+    },
+    {
+      "id": "hammond-organ",
+      "aliases": ["B3", "organ", "leslie-organ"],
+      "category": "keys",
+      "description": "Hammond B3 organ with rotary Leslie speaker. Gospel, soul, and jazz standard.",
+      "frequency_range": {"low": 40, "high": 8000},
+      "typical_register": "full",
+      "synthesis": {
+        "type": "additive tonewheel + rotating speaker",
+        "default_patch": "soul-gospel",
+        "drawbar_setting": "888000000",
+        "leslie_speed": "slow then fast",
+        "percussion": "2nd harmonic soft"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      },
+      "effects_defaults": {"leslie_simulation": true, "overdrive": "light tube"}
+    },
+    {
+      "id": "horns",
+      "aliases": ["brass-section", "saxophone", "trumpet", "trombone"],
+      "category": "wind",
+      "description": "Brass/woodwind section — saxophone lead, trumpet accents, trombone pads. Stax-style horn punches.",
+      "frequency_range": {"low": 120, "high": 12000},
+      "typical_register": "mid to high",
+      "synthesis": {
+        "type": "subtractive + sample hybrid",
+        "default_patch": "soul-section",
+        "articulation": "staccato punches",
+        "falloff": "0.5s"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 3},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 5},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 7}
+      },
+      "effects_defaults": {"reverb": "plate 1.2s", "compression": "bus 3:1"}
+    },
+    {
+      "id": "saxophone",
+      "aliases": ["tenor-sax", "alto-sax", "soprano-sax"],
+      "category": "wind",
+      "description": "Saxophone — reedy, expressive lead instrument. Tenor: warm and breathy. Alto: bright. Soprano: piercing.",
+      "frequency_range": {"low": 120, "high": 10000},
+      "typical_register": "mid",
+      "synthesis": {
+        "type": "physical modeling + noise reed",
+        "default_patch": "tenor-jazz",
+        "vibrato": "moderate",
+        "growl": "optional"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      },
+      "effects_defaults": {"reverb": "hall 2s", "saturation": "tape warm"}
+    },
+    {
+      "id": "strings",
+      "aliases": ["string-section", "violin", "cello", "orchestra"],
+      "category": "string",
+      "description": "String section — lush pads, arco sustains, pizzicato accents. Soul and cinematic.",
+      "frequency_range": {"low": 60, "high": 12000},
+      "typical_register": "full range",
+      "synthesis": {
+        "type": "wavetable + additive",
+        "default_patch": "soul-strings",
+        "bow_pressure": 0.6,
+        "section_size": "8 violins, 4 violas, 4 celli",
+        "attack": "slow 200ms"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 4},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 8},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 12}
+      },
+      "effects_defaults": {"reverb": "hall 3.5s", "width": "150% stereo"}
+    },
+    {
+      "id": "piano",
+      "aliases": ["acoustic-piano", "grand-piano", "upright-piano"],
+      "category": "keys",
+      "description": "Acoustic piano — grand or upright. Full harmonic spectrum, dynamic range.",
+      "frequency_range": {"low": 27.5, "high": 8000},
+      "typical_register": "full range",
+      "synthesis": {
+        "type": "multi-sample + physical resonance",
+        "default_patch": "grand-concert",
+        "velocity_layers": 5,
+        "pedal_noise": true,
+        "stretch_tuning": true
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "velocity_layers": 2},
+        "preview": {"sample_rate": 44100, "bits": 16, "velocity_layers": 3},
+        "final": {"sample_rate": 48000, "bits": 24, "velocity_layers": 5}
+      },
+      "effects_defaults": {"reverb": "room 1.5s", "width": "100%"}
+    },
+    {
+      "id": "synth-pluck",
+      "aliases": ["pluck", "sync-pluck", "detuned-pluck"],
+      "category": "synth",
+      "description": "Synthesizer pluck — percussive attack with filter decay. Trap and house staple.",
+      "frequency_range": {"low": 200, "high": 8000},
+      "typical_register": "mid-high",
+      "synthesis": {
+        "type": "subtractive with fast envelope",
+        "default_patch": "trap-pluck",
+        "filter_env": {"attack": "5ms", "decay": "300ms", "sustain": 0.2},
+        "unison": 2,
+        "detune": "6 cents"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 6},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 10},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 14}
+      },
+      "effects_defaults": {"reverb": "plate 1.2s", "delay": "stereo 1/4 note"}
+    },
+    {
+      "id": "cowbell",
+      "aliases": ["trap-cowbell", "808-cowbell"],
+      "category": "percussion",
+      "description": "TR-808 cowbell — bright, piercing, short decay. Key identifying sound of phonk and some trap.",
+      "frequency_range": {"low": 1000, "high": 8000},
+      "typical_register": "high-mid",
+      "synthesis": {
+        "type": "FM pair",
+        "default_patch": "808-cowbell",
+        "ratio": "11:1",
+        "decay": "50ms",
+        "modulation_index": 3
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      }
+    },
+    {
+      "id": "timbales",
+      "aliases": ["timbale", "latin-drums"],
+      "category": "percussion",
+      "description": "Latin percussion — shallow single-headed drums with bright, cutting tone. Used in salsa, Latin trap, reggaeton.",
+      "frequency_range": {"low": 200, "high": 8000},
+      "typical_register": "mid-high",
+      "synthesis": {
+        "type": "noise + tuned drum",
+        "default_patch": "latin-set",
+        "materials": "brass shells",
+        "fills": "cascading 32nd notes"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      }
+    },
+    {
+      "id": "bongos",
+      "aliases": ["bongo", "conga"],
+      "category": "percussion",
+      "description": "Hand drums — bongo (small, high-pitched) and conga (large, low-pitched). Afro-Cuban rhythm foundation.",
+      "frequency_range": {"low": 100, "high": 4000},
+      "typical_register": "mid",
+      "synthesis": {
+        "type": "tuned membrane",
+        "default_patch": "latin-hand",
+        "open_slap_ratio": 0.6,
+        "muted_stroke": "heel-tip technique"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      }
+    },
+    {
+      "id": "sampler",
+      "aliases": ["mpc", "sp404", "digitakt"],
+      "category": "production",
+      "description": "Sampler — chops audio into playable slices. The heart of hip-hop and lo-fi production.",
+      "frequency_range": {"low": 20, "high": 22050},
+      "typical_register": "full",
+      "synthesis": {
+        "type": "sample playback + time-stretch",
+        "default_patch": "chopped-soul",
+        "polyphony": 32,
+        "time_stretch": "beat-sync",
+        "pitch_shift": "semitone range ±12"
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8},
+        "preview": {"sample_rate": 44100, "bits": 16},
+        "final": {"sample_rate": 48000, "bits": 24}
+      }
+    },
+    {
+      "id": "accordion",
+      "aliases": ["button-accordion", "piano-accordion"],
+      "category": "wind",
+      "description": "Accordion — free reed instrument with bellows-driven expression. Conjunto, norteño, zydeco, Southern Barrio.",
+      "frequency_range": {"low": 60, "high": 8000},
+      "typical_register": "mid",
+      "synthesis": {
+        "type": "additive reed + bellows model",
+        "default_patch": "norteño",
+        "bellows_pressure": "variable",
+        "reed_wetness": 0.3
+      },
+      "quality_tiers": {
+        "draft": {"sample_rate": 22050, "bits": 8, "polyphony": 3},
+        "preview": {"sample_rate": 44100, "bits": 16, "polyphony": 5},
+        "final": {"sample_rate": 48000, "bits": 24, "polyphony": 8}
+      },
+      "effects_defaults": {"reverb": "hall 1.5s"}
+    }
+  ]
+}

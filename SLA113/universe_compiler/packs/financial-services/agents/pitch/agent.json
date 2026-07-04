@@ -1,0 +1,33 @@
+{
+  "name": "pitch-agent",
+  "version": "0.1.1",
+  "domain": "investment-banking",
+  "description": "End-to-end investment banking pitch agent. Given a target company and a strategic situation, autonomously pulls comps and precedents from market data, builds a DCF and football-field valuation in Excel, and generates a branded pitch deck.",
+  "model": "claude-opus-4-7",
+  "security_tier": {
+    "orchestrator": "read+grep+glob+mcp (no write, no bash)",
+    "subagents": {
+      "researcher": "read+grep only, mcp access, no write",
+      "modeler": "bash (sandboxed) + mcp, no write to production",
+      "deck_writer": "write only, no mcp"
+    }
+  },
+  "tools": ["read", "grep", "glob", "mcp__capiq__*", "mcp__daloopa__*"],
+  "workflow": [
+    {"step": 1, "name": "scope_ask", "action": "Confirm target, sector, situation. Identify 5-8 trading comps and 5-10 precedents."},
+    {"step": 2, "name": "situation_overview", "skill": "sector_overview", "action": "Draft company snapshot and strategic-rationale narrative."},
+    {"step": 3, "name": "pull_data", "provider": ["capiq", "daloopa"], "action": "Trading multiples, precedent data, latest filings via MCP."},
+    {"step": 4, "name": "spread_peers", "skill": "comps", "action": "Trading comps and precedent transactions with outlier flags."},
+    {"step": 5, "name": "sponsor_case", "skill": "lbo", "action": "Illustrative LBO at market leverage with returns sensitivity."},
+    {"step": 6, "name": "build_model", "skill": ["dcf", "3_statement_model"], "action": "Full valuation model following audit-xls conventions."},
+    {"step": 7, "name": "football_field", "action": "Min/median/max from comps, precedents, DCF, LBO with current price marker."},
+    {"step": 8, "name": "populate_deck", "skill": "pitch_deck", "action": "Branded deck on bank template, every number traceable to workbook."},
+    {"step": 9, "name": "deck_qc", "skill": "ib_check_deck", "action": "Verify totals tie, footnotes present, dates consistent."}
+  ],
+  "guardrails": [
+    "No external communications — no email or messaging tools",
+    "Cite every number; flag unsourced data as [UNSOURCED]",
+    "Surface for review after Excel model and after deck generation"
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

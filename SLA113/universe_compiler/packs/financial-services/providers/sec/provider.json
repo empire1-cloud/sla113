@@ -1,0 +1,9 @@
+{
+  "name": "sec",
+  "type": "api",
+  "domain": "filings",
+  "description": "SEC EDGAR — corporate filings, financial statements, prospectuses",
+  "connection": {"type": "edgar_api", "base_url": "https://www.sec.gov/cgi-bin/corpfin", "rate_limit": "10 requests/sec"},
+  "capabilities": ["sec_filings", "financial_statements", "ownership_reports", "prospectuses"],
+  "status": "placeholder"
+}

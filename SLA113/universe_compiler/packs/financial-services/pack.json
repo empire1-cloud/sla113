@@ -1,0 +1,91 @@
+{
+  "name": "financial-services",
+  "label": "Financial Services",
+  "pack_version": "1.0.0",
+  "schema_version": "1.0",
+  "compatibility_version": "0.5.0",
+  "engine_version": ">=0.5.0",
+  "domain": "finance",
+  "product": "ArchiSynapse",
+  "description": "Financial intelligence capability pack — valuation, research, compliance, portfolio, accounting",
+
+  "lifecycle": "active",
+
+  "capabilities": [
+    {"name": "investment_banking_pitch", "description": "End-to-end IB pitch: comps, precedents, DCF/LBO to branded deck", "type": "agent"},
+    {"name": "equity_research",         "description": "Sector primers, earnings analysis, initiating coverage", "type": "agent"},
+    {"name": "portfolio_management",    "description": "Client meeting prep, holdings review, wealth management", "type": "agent"},
+    {"name": "financial_modeling",      "description": "DCF, LBO, 3-statement, comps models in Excel", "type": "skill"},
+    {"name": "valuation",               "description": "Company and asset valuation methodologies", "type": "skill"},
+    {"name": "fund_accounting",         "description": "GL reconciliation, accruals, roll-forwards, NAV tie-out", "type": "workflow"},
+    {"name": "compliance_screening",    "description": "KYC/AML document parsing and rules engine", "type": "agent"},
+    {"name": "market_data",             "description": "Real-time and historical market data via MCP providers", "type": "provider"},
+    {"name": "private_equity",          "description": "Deal sourcing, diligence, IC memos, LP reporting", "type": "workflow"},
+    {"name": "financial_reporting",     "description": "Month-end close, quarterly reporting, variance analysis", "type": "workflow"}
+  ],
+
+  "dependencies": [
+    {"capability": "payments",         "optional": true},
+    {"capability": "analytics",        "optional": true},
+    {"capability": "document_storage", "optional": true}
+  ],
+
+  "revenue_model": {
+    "primary": [
+      "Enterprise SaaS subscriptions",
+      "Per-seat licensing",
+      "Transaction fees",
+      "API usage"
+    ],
+    "white_label": [
+      "White-label licensing for banks and funds",
+      "Private-label advisory platforms",
+      "Rebranded compliance/reporting suites"
+    ]
+  },
+
+  "registry": {
+    "agents": 10,
+    "skills": 50,
+    "providers": 14,
+    "workflows": 10
+  },
+
+  "agents": {
+    "pitch":             {"capability": "investment_banking_pitch", "vertical": "investment-banking"},
+    "market_research":   {"capability": "equity_research",         "vertical": "equity-research"},
+    "earnings_reviewer": {"capability": "equity_research",         "vertical": "equity-research"},
+    "meeting_prep":      {"capability": "portfolio_management",    "vertical": "wealth-management"},
+    "model_builder":     {"capability": "financial_modeling",      "vertical": "financial-analysis"},
+    "gl_reconciler":     {"capability": "fund_accounting",         "vertical": "fund-admin"},
+    "kyc_screener":      {"capability": "compliance_screening",    "vertical": "operations"},
+    "valuation_reviewer":{"capability": "private_equity",          "vertical": "private-equity"},
+    "month_end_closer":  {"capability": "financial_reporting",     "vertical": "fund-admin"},
+    "statement_auditor": {"capability": "fund_accounting",         "vertical": "private-equity"}
+  },
+
+  "providers": {
+    "daloopa":     {"type": "mcp", "capability": "market_data", "domain": "historical-financials", "status": "active"},
+    "morningstar": {"type": "mcp", "capability": "market_data", "domain": "investment-research",   "status": "active"},
+    "spglobal":    {"type": "mcp", "capability": "market_data", "domain": "fundamentals-estimates", "status": "active"},
+    "factset":     {"type": "mcp", "capability": "market_data", "domain": "market-data",           "status": "active"},
+    "moodys":      {"type": "mcp", "capability": "market_data", "domain": "credit-ratings",        "status": "active"},
+    "mtnewswires": {"type": "mcp", "capability": "market_data", "domain": "news-wires",            "status": "active"},
+    "aiera":       {"type": "mcp", "capability": "market_data", "domain": "earnings-transcripts",  "status": "active"},
+    "lseg":        {"type": "mcp", "capability": "market_data", "domain": "fixed-income-analytics","status": "active"},
+    "pitchbook":   {"type": "mcp", "capability": "market_data", "domain": "private-markets",       "status": "active"},
+    "chronograph": {"type": "mcp", "capability": "market_data", "domain": "pe-portfolio",          "status": "active"},
+    "egnyte":      {"type": "mcp", "capability": "document_storage", "domain": "document-management","status": "active"},
+    "box":         {"type": "mcp", "capability": "document_storage", "domain": "content-management","status": "active"},
+    "bloomberg":   {"type": "mcp", "capability": "market_data", "domain": "market-data",           "status": "placeholder"},
+    "sec":         {"type": "api", "capability": "market_data", "domain": "filings",               "status": "placeholder"}
+  },
+
+  "white_label": {
+    "layer": "product",
+    "scope": ["branding", "slide-templates", "report-format", "pricing", "domain"],
+    "excluded_from_core": ["templates", "reference-materials"]
+  },
+
+  "source": "Mapped from Anthropic financial-services reference architecture"
+}

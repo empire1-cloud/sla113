@@ -1,0 +1,9 @@
+{
+  "name": "daloopa",
+  "type": "mcp",
+  "domain": "historical-financials",
+  "description": "Historical financials and SEC filings data extraction",
+  "connection": {"url": "https://mcp.daloopa.com/server/mcp", "auth": "api-key"},
+  "capabilities": ["historical_financials", "sec_filings", "segment_data"],
+  "status": "active"
+}

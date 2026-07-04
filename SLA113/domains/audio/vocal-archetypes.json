@@ -1,0 +1,189 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Vocal archetype definitions — stylistic vocal profiles that encode delivery style, phrasing, effects chain, and cultural reference. Used by TTS and vocal generation workflows.",
+  "archetypes": [
+    {
+      "id": "soulful-romantic",
+      "name": "Soulful Romantic",
+      "description": "Warm, smooth delivery with gentle vibrato and melismatic runs. Breath control and emotional phrasing.",
+      "best_for": ["chicano-soul", "r-and-b", "soul"],
+      "delivery": {
+        "style": "smooth legato",
+        "vibrato": "moderate",
+        "range": "baritone-tenor",
+        "phrasing": "laid-back behind beat",
+        "runs": "pentatonic melismas",
+        "dynamics": "expressive swells"
+      },
+      "effects_chain": {
+        "reverb": "warm hall, 2.5s decay",
+        "delay": "slapback 120ms",
+        "compression": "warm opto 3:1",
+        "eq": "warm low-mid focus",
+        "saturation": "tape emulation light"
+      },
+      "tuning": {
+        "formant_shift": 0,
+        "pitch_correction": "soft",
+        "scale_snap": "pentatonic-minor"
+      }
+    },
+    {
+      "id": "melodic-trap",
+      "name": "Melodic Trap",
+      "description": "Auto-tuned, emotional delivery with rapid vibrato, falsetto hooks, and percussive ad-libs. High-frequency presence.",
+      "best_for": ["trap-soul", "trap", "drill"],
+      "delivery": {
+        "style": "rhythmic melodic",
+        "vibrato": "rapid",
+        "range": "tenor-soprano",
+        "phrasing": "on-beat staccato",
+        "runs": "chromatic slides",
+        "dynamics": "compressed consistent"
+      },
+      "effects_chain": {
+        "reverb": "shimmer plate 1.8s",
+        "delay": "stereo ping-pong 1/4 note",
+        "compression": "FET 6:1 aggressive",
+        "eq": "bright high boost +4dB at 8kHz",
+        "saturation": "none"
+      },
+      "tuning": {
+        "formant_shift": 0,
+        "pitch_correction": "hard",
+        "scale_snap": "natural-minor"
+      }
+    },
+    {
+      "id": "aggressive-drill",
+      "name": "Aggressive Drill",
+      "description": "Hard, percussive delivery with rapid-fire flow, heavy ad-libs, and chest-voice projection. Guttural intensity.",
+      "best_for": ["drill", "phonk", "boom-bap"],
+      "delivery": {
+        "style": "percussive staccato",
+        "vibrato": "none",
+        "range": "bass-baritone",
+        "phrasing": "ahead of beat aggressive",
+        "runs": "none",
+        "dynamics": "consistent hard"
+      },
+      "effects_chain": {
+        "reverb": "small room 0.6s",
+        "delay": "none",
+        "compression": "1176 8:1 crush",
+        "eq": "mid scoop -4dB at 500Hz, boost +3dB at 3kHz",
+        "saturation": "distortion clip"
+      },
+      "tuning": {
+        "formant_shift": -0.3,
+        "pitch_correction": "minimal",
+        "scale_snap": "natural-minor"
+      }
+    },
+    {
+      "id": "latin-trap",
+      "name": "Latin Trap",
+      "description": "Sensual, rhythmic delivery with Spanish phrasing, rapid transitions, and melodic hooks. Swagger-driven.",
+      "best_for": ["latin-trap", "reggaeton"],
+      "delivery": {
+        "style": "rhythmic sensual",
+        "vibrato": "moderate",
+        "range": "baritone-tenor",
+        "phrasing": "syncopated dembow",
+        "runs": "arabesque melismas",
+        "dynamics": "dynamic swells"
+      },
+      "effects_chain": {
+        "reverb": "plate 1.5s",
+        "delay": "slapback 80ms + stereo wide",
+        "compression": "LA-2A 4:1 smooth",
+        "eq": "low-mid cut, high boost",
+        "saturation": "tube light"
+      },
+      "tuning": {
+        "formant_shift": 0,
+        "pitch_correction": "moderate",
+        "scale_snap": "double-harmonic"
+      }
+    },
+    {
+      "id": "storyteller",
+      "name": "Storyteller",
+      "description": "Conversational, narrative delivery with natural dynamics, clear diction, and emotional range. Spoken-word quality.",
+      "best_for": ["southern-barrio", "conscious-hip-hop", "folk"],
+      "delivery": {
+        "style": "conversational legato",
+        "vibrato": "gentle",
+        "range": "baritone",
+        "phrasing": "natural speech rhythm",
+        "runs": "none or minimal",
+        "dynamics": "wide expressive range"
+      },
+      "effects_chain": {
+        "reverb": "hall 1.2s",
+        "delay": "tape echo 150ms",
+        "compression": "opto 2:1 gentle",
+        "eq": "warm, slight presence boost",
+        "saturation": "tape warm"
+      },
+      "tuning": {
+        "formant_shift": 0,
+        "pitch_correction": "minimal",
+        "scale_snap": "none"
+      }
+    },
+    {
+      "id": "chopped-memphis",
+      "name": "Chopped Memphis",
+      "description": "Chopped and screwed vocal samples with pitch drops, stutter effects, and lo-fi texture. Retro phonk style.",
+      "best_for": ["phonk", "memphis-rap"],
+      "delivery": {
+        "style": "chopped-sample stutter",
+        "vibrato": "pitch-modulated",
+        "range": "shifted down",
+        "phrasing": "glitchy fragmented",
+        "runs": "none",
+        "dynamics": "chopped inconsistent"
+      },
+      "effects_chain": {
+        "reverb": "gated 0.8s",
+        "delay": "chopped 1/2 note stutter",
+        "compression": "crush 10:1",
+        "eq": "lo-fi phone filter",
+        "saturation": "bit-crush 12-bit"
+      },
+      "tuning": {
+        "formant_shift": -0.5,
+        "pitch_correction": "none",
+        "scale_snap": "none"
+      }
+    },
+    {
+      "id": "ethereal-female",
+      "name": "Ethereal Female",
+      "description": "Airy, breathy female vocals with wide stereo, layered harmonies, and shimmering reverb tails. Atmospheric.",
+      "best_for": ["ambient", "lo-fi", "trap-soul", "dream-pop"],
+      "delivery": {
+        "style": "airy legato",
+        "vibrato": "gentle slow",
+        "range": "soprano",
+        "phrasing": "floating behind beat",
+        "runs": "pentatonic gentle slides",
+        "dynamics": "soft to medium"
+      },
+      "effects_chain": {
+        "reverb": "cathedral 4s + shimmer",
+        "delay": "stereo 1/2 dotted 500ms",
+        "compression": "opto 2:1 gentle",
+        "eq": "air boost +5dB at 14kHz, low cut 150Hz",
+        "saturation": "tape light"
+      },
+      "tuning": {
+        "formant_shift": 0,
+        "pitch_correction": "soft",
+        "scale_snap": "pentatonic-major"
+      }
+    }
+  ]
+}

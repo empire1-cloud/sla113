@@ -1,0 +1,9 @@
+{
+  "name": "morningstar",
+  "type": "mcp",
+  "domain": "investment-research",
+  "description": "Investment research, fund data, equity analytics",
+  "connection": {"url": "https://mcp.morningstar.com/mcp", "auth": "api-key"},
+  "capabilities": ["fund_data", "equity_research", "sustainability_ratings"],
+  "status": "active"
+}

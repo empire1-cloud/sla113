@@ -1,0 +1,9 @@
+{
+  "name": "bloomberg",
+  "type": "mcp",
+  "domain": "market-data",
+  "description": "Bloomberg Terminal data — real-time pricing, reference data, analytics",
+  "connection": {"status": "placeholder", "notes": "Requires Bloomberg MCP server or BLPAPI integration"},
+  "capabilities": ["real_time_pricing", "reference_data", "analytics", "news"],
+  "status": "placeholder"
+}

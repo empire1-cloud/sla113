@@ -1,0 +1,30 @@
+{
+  "authority": "G-SHIELD",
+  "namespace": "SLA113_SOVEREIGN_ARCADE",
+  "registry_version": "1.0",
+  "assets": {
+    "core": [
+      { "id": "lounge_bg", "path": "public/assets/lounge.png", "baked": true },
+      { "id": "firme_f_emblem", "path": "public/assets/firme_f.png", "baked": true }
+    ],
+    "aztec_myth_cycle": [
+      { "id": "tlaloc_tide", "god": "Tlaloc", "prefix": "TL" },
+      { "id": "quetzal_quest", "god": "Quetzalcoatl", "prefix": "QC" },
+      { "id": "mictlan_maw", "god": "Mictlantecuhtli", "prefix": "MM" },
+      { "id": "huitzil_hunt", "god": "Huitzilopochtli", "prefix": "HH" },
+      { "id": "tezcat_trap", "god": "Tezcatlipoca", "prefix": "TT" },
+      { "id": "xochi_reef", "god": "Xochiquetzal", "prefix": "XR" },
+      { "id": "coyol_moon", "god": "Coyolxauhqui", "prefix": "CM" },
+      { "id": "xiuh_hearth", "god": "Xiuhtecuhtli", "prefix": "XH" },
+      { "id": "ehecatl_wind", "god": "Ehecatl", "prefix": "EW" },
+      { "id": "rabbit_chaos", "god": "CentzonTotochtin", "prefix": "RC" },
+      { "id": "coatlicue_earth", "god": "Coatlicue", "prefix": "CE" },
+      { "id": "tonatiuh_realm", "god": "Tonatiuh", "prefix": "TR" },
+      { "id": "xochi_prince", "god": "Xochipilli", "prefix": "XP" },
+      { "id": "xolotl_shock", "god": "Xolotl", "prefix": "XL" }
+    ],
+    "special_engines": [
+      { "id": "gshield_wof", "type": "wheel_of_fortune", "asset": "gshield_wheel.png" }
+    ]
+  }
+}

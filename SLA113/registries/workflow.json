@@ -1,0 +1,94 @@
+{
+  "version": "1.0",
+  "description": "Reusable workflow DAGs registered with the Execution Engine.",
+  "workflows": [
+    {
+      "id": "full_track_production",
+      "name": "Full Track Production",
+      "description": "End-to-end music track: prompt → blueprint → music → vocals → fx → master → dna → export → publish",
+      "version": "1.0.0",
+      "lifecycle": "development",
+      "owner": "lyrica3",
+      "nodes": [
+        {"id": "blueprint", "capability": "ai", "inputs": {"prompt": "string", "genre": "string", "mood": "object"}, "outputs": {"blueprint": "object"}},
+        {"id": "music", "capability": "audio", "inputs": {"blueprint": "object"}, "outputs": {"instrumental": "bytes"}, "config": {"service_preference": "procedural-instrumental"}},
+        {"id": "vocals", "capability": "audio", "inputs": {"blueprint": "object", "lyrics": "string"}, "outputs": {"vocal_track": "bytes"}, "config": {"service_preference": "openai-tts"}},
+        {"id": "fx", "capability": "audio", "inputs": {"vocal_track": "bytes"}, "outputs": {"processed_vocals": "bytes"}, "config": {"service_preference": "audio-fx-pedalboard"}},
+        {"id": "master", "capability": "audio", "inputs": {"instrumental": "bytes", "processed_vocals": "bytes"}, "outputs": {"mastered": "bytes"}},
+        {"id": "dna", "capability": "dna", "inputs": {"mastered": "bytes", "creator_id": "string"}, "outputs": {"signed_audio": "bytes", "dna_manifest": "object"}},
+        {"id": "render", "capability": "render", "inputs": {"signed_audio": "bytes", "tier": "string"}, "outputs": {"rendered": "bytes", "url": "string"}}
+      ],
+      "edges": [
+        {"from": "blueprint", "to": "music", "map": {"blueprint": "blueprint"}},
+        {"from": "blueprint", "to": "vocals", "map": {"blueprint": "blueprint"}},
+        {"from": "vocals", "to": "fx", "map": {"vocal_track": "vocal_track"}},
+        {"from": "music", "to": "master", "map": {"instrumental": "instrumental"}},
+        {"from": "fx", "to": "master", "map": {"processed_vocals": "processed_vocals"}},
+        {"from": "master", "to": "dna", "map": {"mastered": "mastered"}},
+        {"from": "dna", "to": "render", "map": {"signed_audio": "signed_audio"}}
+      ],
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "instrumental_generation",
+      "name": "Instrumental Generation",
+      "description": "Generate instrumental music from text prompt with mastering and DNA signing",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "owner": "lyrica3",
+      "nodes": [
+        {"id": "generate", "capability": "audio", "inputs": {"prompt": "string", "bpm": "number", "key": "string", "cultural_matrix": "string"}, "outputs": {"audio": "bytes"}, "config": {"service_preference": "procedural-instrumental"}},
+        {"id": "master", "capability": "audio", "inputs": {"audio": "bytes"}, "outputs": {"mastered": "bytes"}, "config": {"service_preference": "soulfire-mastering"}},
+        {"id": "dna", "capability": "dna", "inputs": {"mastered": "bytes", "creator_id": "string"}, "outputs": {"signed_audio": "bytes", "dna_manifest": "object"}},
+        {"id": "render", "capability": "render", "inputs": {"signed_audio": "bytes", "tier": "string"}, "outputs": {"rendered": "bytes", "url": "string"}}
+      ],
+      "edges": [
+        {"from": "generate", "to": "master", "map": {"audio": "audio"}},
+        {"from": "master", "to": "dna", "map": {"mastered": "mastered"}},
+        {"from": "dna", "to": "render", "map": {"signed_audio": "signed_audio"}}
+      ],
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "vocal_generation",
+      "name": "Vocal Generation with TTS",
+      "description": "Generate TTS vocals from lyrics with acid vocal chain processing",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "owner": "lyrica3",
+      "nodes": [
+        {"id": "tts", "capability": "audio", "inputs": {"lyrics": "string", "voice": "string", "archetype": "string"}, "outputs": {"raw_vocals": "bytes"}, "config": {"service_preference": "openai-tts"}},
+        {"id": "fx", "capability": "audio", "inputs": {"raw_vocals": "bytes"}, "outputs": {"processed_vocals": "bytes"}, "config": {"service_preference": "audio-fx-pedalboard"}},
+        {"id": "master", "capability": "audio", "inputs": {"processed_vocals": "bytes"}, "outputs": {"mastered_vocals": "bytes"}, "config": {"service_preference": "soulfire-mastering"}},
+        {"id": "dna", "capability": "dna", "inputs": {"mastered_vocals": "bytes", "creator_id": "string"}, "outputs": {"signed_vocals": "bytes", "dna_manifest": "object"}},
+        {"id": "render", "capability": "render", "inputs": {"signed_vocals": "bytes", "tier": "string"}, "outputs": {"rendered": "bytes", "url": "string"}}
+      ],
+      "edges": [
+        {"from": "tts", "to": "fx", "map": {"raw_vocals": "raw_vocals"}},
+        {"from": "fx", "to": "master", "map": {"processed_vocals": "processed_vocals"}},
+        {"from": "master", "to": "dna", "map": {"mastered_vocals": "mastered_vocals"}},
+        {"from": "dna", "to": "render", "map": {"signed_vocals": "signed_vocals"}}
+      ],
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "investment_banking_pitch",
+      "name": "Investment Banking Pitch",
+      "description": "End-to-end IB pitch: comps → precedents → DCF/LBO → branded deck",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "owner": "archisynapse",
+      "nodes": [
+        {"id": "comps", "capability": "financial_intelligence", "inputs": {"ticker": "string", "sector": "string"}, "outputs": {"comps_table": "object"}, "config": {"agent": "market-research"}},
+        {"id": "valuation", "capability": "financial_intelligence", "inputs": {"ticker": "string", "comps_table": "object"}, "outputs": {"dcf_model": "object", "valuation_range": "object"}, "config": {"agent": "model-builder"}},
+        {"id": "pitch_deck", "capability": "financial_intelligence", "inputs": {"company": "string", "comps_table": "object", "valuation_range": "object"}, "outputs": {"deck": "object"}, "config": {"agent": "pitch"}}
+      ],
+      "edges": [
+        {"from": "comps", "to": "valuation", "map": {"comps_table": "comps_table"}},
+        {"from": "comps", "to": "pitch_deck", "map": {"comps_table": "comps_table"}},
+        {"from": "valuation", "to": "pitch_deck", "map": {"valuation_range": "valuation_range"}}
+      ],
+      "registered_at": "2026-06-19T00:00:00Z"
+    }
+  ]
+}

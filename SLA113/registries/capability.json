@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "description": "Master registry of all platform capabilities. Workflows request capabilities; the Execution Engine selects the best service.",
+  "capabilities": [
+    {
+      "id": "audio",
+      "name": "Audio Generation",
+      "description": "Music, voice, and audio production — generation, processing, mastering, DNA, rendering",
+      "lifecycle": "development",
+      "services": ["vertex-lyria3", "local-musicgen", "procedural-instrumental", "openai-tts", "vertex-chirp3", "voxcpm", "voice-king", "sonic-forge", "audio-fx-pedalboard", "soulfire-mastering", "dna-watermark", "demucs-separation"]
+    },
+    {
+      "id": "ai",
+      "name": "AI / LLM Router",
+      "description": "Multi-model AI routing, planning, reasoning, and generation",
+      "lifecycle": "development",
+      "services": ["hic-ai-router", "vertex-ai", "openai", "nemotron"]
+    },
+    {
+      "id": "identity",
+      "name": "Identity & Auth",
+      "description": "User authentication, authorization, profiles, and session management",
+      "lifecycle": "development",
+      "services": ["auth-jwt", "auth-oauth", "identity-firewall"]
+    },
+    {
+      "id": "payments",
+      "name": "Payments & Billing",
+      "description": "Payment processing, subscriptions, credits, revenue distribution",
+      "lifecycle": "development",
+      "services": ["stripe-checkout", "stripe-billing", "royalty-payout"]
+    },
+    {
+      "id": "storage",
+      "name": "Storage & Assets",
+      "description": "File storage, asset management, CDN serving",
+      "lifecycle": "development",
+      "services": ["local-storage", "gcs-storage"]
+    },
+    {
+      "id": "discovery",
+      "name": "Discovery & Recommendations",
+      "description": "Content discovery, trending, personalized feeds, search",
+      "lifecycle": "scaffold",
+      "services": []
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics & Metrics",
+      "description": "Usage metrics, business KPIs, creator analytics, reporting",
+      "lifecycle": "scaffold",
+      "services": []
+    },
+    {
+      "id": "dna",
+      "name": "DNA / Provenance",
+      "description": "Creator DNA, content fingerprinting, watermarking, birth certificates",
+      "lifecycle": "development",
+      "services": ["dna-watermark", "dna-tagger", "vocal-biometrics"]
+    },
+    {
+      "id": "render",
+      "name": "Audio Rendering",
+      "description": "Audio rendering across quality tiers — Draft, Preview, Final",
+      "lifecycle": "development",
+      "services": ["sonic-forge", "render-engine-draft", "render-engine-preview", "render-engine-final"]
+    }
+  ]
+}

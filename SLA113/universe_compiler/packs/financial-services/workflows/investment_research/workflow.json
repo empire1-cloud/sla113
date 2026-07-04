@@ -1,0 +1,19 @@
+{
+  "name": "investment_research",
+  "description": "End-to-end equity research: sector → company → model → publish",
+  "agents": ["market_research", "earnings_reviewer"],
+  "skills": ["sector_overview", "competitive_analysis", "comps", "earnings_analysis", "model_update", "morning_note"],
+  "providers": ["capiq", "daloopa", "aiera", "factset"],
+  "steps": [
+    {"step": 1, "agent": "market_research", "action": "Sector primer and competitive landscape"},
+    {"step": 2, "agent": "earnings_reviewer", "action": "Company deep-dive, model update, note draft"},
+    {"step": 3, "action": "QC and publish report"},
+    {"step": 4, "action": "Maintain thesis tracker and catalyst calendar"}
+  ],
+  "trigger": "New coverage initiation or earnings event",
+  "quality_gates": [
+    "All numbers cited to provider source",
+    "Model balances check",
+    "Note reviewed before publishing"
+  ]
+}

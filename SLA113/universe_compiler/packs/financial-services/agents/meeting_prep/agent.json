@@ -1,0 +1,15 @@
+{
+  "name": "meeting-prep-agent",
+  "version": "0.1.1",
+  "domain": "wealth-management",
+  "description": "Briefing pack before every client meeting — relationship context, holdings, market backdrop.",
+  "model": "claude-opus-4-7",
+  "tools": ["read", "grep", "glob", "mcp__capiq__*", "mcp__factset__*"],
+  "workflow": [
+    {"step": 1, "name": "profile_client", "skill": "client_review", "action": "CRM data, relationship tenure, contact history."},
+    {"step": 2, "name": "review_holdings", "provider": ["capiq", "factset"], "action": "Current portfolio, performance vs benchmark, concentration."},
+    {"step": 3, "name": "market_context", "skill": "sector_overview", "action": "Recent developments relevant to client holdings."},
+    {"step": 4, "name": "build_briefing", "skill": "client_report", "action": "Generate briefing pack with talking points and materials."}
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

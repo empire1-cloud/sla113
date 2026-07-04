@@ -1,0 +1,15 @@
+{
+  "name": "statement-auditor",
+  "version": "0.1.1",
+  "domain": "private-equity",
+  "description": "Audits pre-generated LP statements before distribution.",
+  "model": "claude-opus-4-7",
+  "tools": ["read", "grep", "glob", "bash"],
+  "workflow": [
+    {"step": 1, "name": "ingest_statements", "action": "Read LP statements and fund-level data."},
+    {"step": 2, "name": "nav_tieout", "skill": "nav_tieout", "action": "Tie out LP-level NAV to fund-level NAV."},
+    {"step": 3, "name": "flag_exceptions", "action": "Flag breaks, missing data, consistency issues."},
+    {"step": 4, "name": "report", "skill": "audit_xls", "action": "Pass/hold recommendation with exception report."}
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

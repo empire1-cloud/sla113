@@ -1,0 +1,14 @@
+{
+  "name": "portfolio_review",
+  "description": "Quarterly portfolio review: valuations, performance, LP reporting",
+  "agents": ["valuation_reviewer", "statement_auditor"],
+  "skills": ["portfolio_monitoring", "returns_analysis", "nav_tieout", "ic_memo"],
+  "providers": ["chronograph", "capiq"],
+  "steps": [
+    {"step": 1, "agent": "valuation_reviewer", "action": "Ingest GP packages, update valuations"},
+    {"step": 2, "agent": "valuation_reviewer", "action": "Calculate portfolio returns and MOIC/IRR"},
+    {"step": 3, "agent": "statement_auditor", "action": "Audit LP statements and NAV tie-out"},
+    {"step": 4, "action": "Generate LP reporting pack"}
+  ],
+  "trigger": "Quarter-end reporting cycle"
+}

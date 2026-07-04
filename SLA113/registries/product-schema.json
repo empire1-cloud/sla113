@@ -1,0 +1,22 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/product.json",
+  "title": "Product",
+  "description": "A product is a specific offering within a universe.",
+  "type": "object",
+  "required": ["id", "name", "universe", "description", "lifecycle"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique product identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "universe": {"type": "string", "description": "Parent universe id"},
+    "description": {"type": "string"},
+    "lifecycle": {"type": "string", "enum": ["scaffold", "development", "active", "deprecated"]},
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities this product consumes",
+      "items": {"type": "string"}
+    },
+    "domain": {"type": "string", "description": "Product-specific domain if applicable"},
+    "repo": {"type": "string", "description": "Repository path"},
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}

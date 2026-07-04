@@ -1,0 +1,9 @@
+{
+  "name": "mtnewswires",
+  "type": "mcp",
+  "domain": "news-wires",
+  "description": "Real-time financial news wires and market-moving events",
+  "connection": {"url": "https://vast-mcp.blueskyapi.com/mtnewswires", "auth": "api-key"},
+  "capabilities": ["real_time_news", "market_moving_events", "regulatory_news"],
+  "status": "active"
+}

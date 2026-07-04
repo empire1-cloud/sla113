@@ -1,0 +1,59 @@
+identity_layer:
+  emotional_physics: true
+  cold_palette_bias: true
+  chrome_realism: true
+  hybrid_rendering_philosophy: Shady/BP
+  grounded_narrative_tone: true
+  cinematic_lighting_rules: true
+
+canon_5:
+  IdentityForge:
+    purpose: "Define brand identity rules."
+    rules: ["Enforce identity layer.", "Regulate emotional tones."]
+    constraints: ["No deviations from emotional physics."]
+    regulates_outputs: ["Characters, Narratives."]
+  ColorSystem:
+    purpose: "Maintain consistent palette across assets."
+    rules: ["Regulate palette."]
+    constraints: ["Only use approved shades."]
+    regulates_outputs: ["Worlds, Environments."]
+  MythicBinder:
+    purpose: "Ensure mythological accuracy."
+    rules: ["Validate cultural and emotional overlays."]
+    constraints: ["Authenticity."]
+    regulates_outputs: ["Dialogue."]
+  StreetNarrativeEngine:
+    purpose: "Generate canon-compliant stories."
+    rules: ["Inject grounded tones."]
+    constraints: ["Avoid unrealistic elements."]
+    regulates_outputs: ["Missions."]
+  AtmosphereEngine:
+    purpose: "Create rich atmospheric effects."
+    rules: ["Regulate atmosphere."]
+    constraints: ["No color leakage."]
+    regulates_outputs: ["Filters, Story Packs."]
+
+universal_15:
+  worlds:
+    generates: "Environmental assets"
+    obeys: "ColorSystem"
+    interacts_with: "Story arcs"
+  missions:
+    generates: "Tenant missions and gameplay arcs"
+    obeys: "StreetNarrativeEngine"
+    interacts_with: "Characters, Worlds"
+  dialogue:
+    generates: "Character interaction scripts"
+    obeys: "IdentityForge"
+    interacts_with: "Missions"
+  events:
+    generates: "Scripted storytelling beats"
+    obeys: "MythicBinder, AtmosphereEngine"
+    interacts_with: "Story packs, Universality systems"
+pipeline_mapping:
+  characters:
+    regulated_by: IdentityForge, ColorSystem
+  environments:
+    regulated_by: AtmosphereEngine, ColorSystem
+
+...

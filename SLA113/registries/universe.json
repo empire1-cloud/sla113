@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "description": "Master registry of all universes (independent businesses) operating on the SLA113 platform.",
+  "universes": [
+    {
+      "id": "lyrica3",
+      "name": "Lyrica 3",
+      "domain": "lyrica3.com",
+      "mission": "Creator-owned AI music ecosystem",
+      "products": ["sonance-pro", "soulfire", "sl-universal"],
+      "capabilities": ["audio", "ai", "identity", "payments", "discovery"],
+      "lifecycle": "active",
+      "repo": "/home/shiestybizz113/projects/Lyrica3-pro",
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "southern-lifestyle",
+      "name": "Southern Lifestyle",
+      "domain": "southernlifestyle.org",
+      "mission": "Gaming and entertainment company",
+      "products": ["gaming-arcade", "community-experiences"],
+      "capabilities": ["ai", "identity", "payments", "analytics"],
+      "lifecycle": "development",
+      "repo": "/home/shiestybizz113/projects/sla113",
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "cultura-vibes",
+      "name": "Cultura Vibes",
+      "domain": null,
+      "mission": "Creative engineering and vibe coding platform",
+      "products": ["forge", "soulfire-dna", "community-tools"],
+      "capabilities": ["ai", "identity", "storage", "discovery"],
+      "lifecycle": "scaffold",
+      "repo": "/home/shiestybizz113/projects/the-cultura-vibe-forge-",
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "archisynapse",
+      "name": "ArchiSynapse",
+      "domain": null,
+      "mission": "Creator financial infrastructure",
+      "products": ["dna-ownership", "micro-royalties", "rights-management", "creator-ledger", "financial-intelligence"],
+      "capabilities": ["payments", "identity", "analytics", "ai"],
+      "lifecycle": "scaffold",
+      "repo": "/home/shiestybizz113/projects/Archisynapse-",
+      "registered_at": "2026-06-19T00:00:00Z"
+    },
+    {
+      "id": "empire1",
+      "name": "Empire 1",
+      "domain": "empire1.cloud",
+      "mission": "Public ecosystem brand, investor portal, and developer platform",
+      "products": ["brand-portal", "ecosystem-explorer", "investor-portal", "documentation", "developer-portal"],
+      "capabilities": [],
+      "lifecycle": "active",
+      "repo": "/home/shiestybizz113/projects/Empire-1",
+      "registered_at": "2026-06-19T00:00:00Z"
+    }
+  ]
+}

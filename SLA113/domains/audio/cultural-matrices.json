@@ -1,0 +1,126 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Cultural matrices — complete sonic identity definitions that encode a culture's musical DNA. A matrix maps genre, scale, progression, tone, instruments, and vocal style into a single coherent creative profile.",
+  "matrices": [
+    {
+      "id": "chicano-soul",
+      "name": "Chicano Soul",
+      "description": "Brown-eyed soul from East LA — romantic, smooth, nostalgic. Warm Rhodes, tight rimshots, melodic bass, and lush strings.",
+      "roots": ["Mexican-American", "1970s East LA", "R&B"],
+      "genre": "chicano-soul",
+      "defaults": {
+        "scale": "natural-minor",
+        "key": "Am",
+        "bpm": 92,
+        "tone": "warm",
+        "progression": "i-vi-iv-v",
+        "vocal_archetype": "soulful-romantic"
+      },
+      "instrument_palette": ["electric-piano", "acoustic-guitar", "bass", "drums", "saxophone", "hammond-organ", "strings"],
+      "dna_profile": "d59a1f3c8e2b7a04"
+    },
+    {
+      "id": "trap-soul",
+      "name": "Trap Soul",
+      "description": "Emotional trap — dark minor keys, triplet hi-hat rolls, heavy 808s, ambient pads, vulnerable vocals.",
+      "roots": ["Southern hip-hop", "Atlanta", "melodic trap"],
+      "genre": "trap-soul",
+      "defaults": {
+        "scale": "harmonic-minor",
+        "key": "C#m",
+        "bpm": 140,
+        "tone": "dark",
+        "progression": "i-iii-vii-vi",
+        "vocal_archetype": "melodic-trap"
+      },
+      "instrument_palette": ["808-bass", "drums", "piano", "synth-pad", "hi-hat"],
+      "dna_profile": "b4e91a7d3f6c2085"
+    },
+    {
+      "id": "drill",
+      "name": "Drill",
+      "description": "UK/NY drill — slide 808s, syncopated kicks, sharp snares, dark minor melodies, aggressive energy.",
+      "roots": ["Chicago", "UK grime", "Brooklyn"],
+      "genre": "drill",
+      "defaults": {
+        "scale": "phrygian",
+        "key": "Dm",
+        "bpm": 140,
+        "tone": "aggressive",
+        "progression": "i-bvii-bvi-bvii",
+        "vocal_archetype": "aggressive-drill"
+      },
+      "instrument_palette": ["808-bass", "drums", "synth", "piano"],
+      "dna_profile": "f72d8e4a1c5b6039"
+    },
+    {
+      "id": "latin-trap",
+      "name": "Latin Trap",
+      "description": "Latin trap / reggaeton — dem bow rhythm, heavy 808s, timbale fills, bongo accents, Spanish guitar flourishes.",
+      "roots": ["Puerto Rico", "Latin America", "Caribbean"],
+      "genre": "latin-trap",
+      "defaults": {
+        "scale": "double-harmonic",
+        "key": "Am",
+        "bpm": 150,
+        "tone": "bright",
+        "progression": "i-VII-VI-VII",
+        "vocal_archetype": "latin-trap"
+      },
+      "instrument_palette": ["808-bass", "drums", "synth", "timbales", "bongos", "guitar"],
+      "dna_profile": "3a8d6f1e9c2b7054"
+    },
+    {
+      "id": "lo-fi-chill",
+      "name": "Lo-fi Chill",
+      "description": "Chillhop / study beats — dusted jazz harmonies, vinyl crackle, swung boom-bap drums, warm sub-bass, relaxed vibe.",
+      "roots": ["Japanese jazz", "90s boom bap", "internet culture"],
+      "genre": "lo-fi-hip-hop",
+      "defaults": {
+        "scale": "dorian",
+        "key": "G",
+        "bpm": 78,
+        "tone": "warm",
+        "progression": "ii-v-i",
+        "vocal_archetype": "none"
+      },
+      "instrument_palette": ["sampler", "rhodes", "nylon-guitar", "drums", "bass", "strings"],
+      "dna_profile": "e6b2a9d4f1c80357"
+    },
+    {
+      "id": "southern-barrio",
+      "name": "Southern Barrio",
+      "description": "Chicano Southern fusion — clean arpeggios, Spanish-influenced runs, Wurlitzer, storytelling, slow-rolling head-nod groove.",
+      "roots": ["Chicano", "Southern US", "barrio culture"],
+      "genre": "southern-barrio",
+      "defaults": {
+        "scale": "mixolydian",
+        "key": "Em",
+        "bpm": 97,
+        "tone": "warm",
+        "progression": "i-VII-VI-VII",
+        "vocal_archetype": "storyteller"
+      },
+      "instrument_palette": ["acoustic-guitar", "bass", "drums", "electric-piano", "accordion"],
+      "dna_profile": "1c7f3a5d9e2b8064"
+    },
+    {
+      "id": "phonk-dark",
+      "name": "Phonk Dark",
+      "description": "Drift phonk — cowbell-driven, distorted 808, aggressive kicks, chopped Memphis vocals, twangy guitar, high energy.",
+      "roots": ["Memphis hip-hop 90s", "Eastern European car culture"],
+      "genre": "phonk",
+      "defaults": {
+        "scale": "phrygian",
+        "key": "D",
+        "bpm": 160,
+        "tone": "aggressive",
+        "progression": "i-bvii-bvi-bvii",
+        "vocal_archetype": "chopped-memphis"
+      },
+      "instrument_palette": ["808-bass", "drums", "cowbell", "guitar", "sampler"],
+      "dna_profile": "9d4e2b7a1f3c6085"
+    }
+  ]
+}
