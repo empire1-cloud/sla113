@@ -1,0 +1,16 @@
+{
+  "name": "month-end-closer",
+  "version": "0.1.1",
+  "domain": "fund-admin",
+  "description": "Accruals, roll-forwards, variance commentary — month-end close.",
+  "model": "claude-opus-4-7",
+  "tools": ["read", "grep", "glob", "bash"],
+  "workflow": [
+    {"step": 1, "name": "trial_balance", "action": "Import trial balance and prior-period data."},
+    {"step": 2, "name": "accruals", "skill": "accrual_schedule", "action": "Calculate and post accrual entries."},
+    {"step": 3, "name": "roll_forwards", "skill": "roll_forward", "action": "Build balance sheet roll-forward schedules."},
+    {"step": 4, "name": "variance", "skill": "variance_commentary", "action": "Analyze and comment on period-over-period variances."},
+    {"step": 5, "name": "close_package", "skill": "audit_xls", "action": "Assemble close package for review and sign-off."}
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

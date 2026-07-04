@@ -1,0 +1,19 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/agent.json",
+  "title": "Agent",
+  "description": "An orchestrated agent that HIC can discover and invoke.",
+  "type": "object",
+  "required": ["id", "name", "description", "capability", "provider"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique agent identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "description": {"type": "string"},
+    "capability": {"type": "string", "description": "Primary capability this agent serves"},
+    "provider": {"type": "string", "description": "Service provider (LLM, local model, etc.)"},
+    "model": {"type": "string", "description": "Model identifier if applicable"},
+    "lifecycle": {"type": "string", "enum": ["scaffold", "development", "active", "deprecated"]},
+    "tools": {"type": "array", "items": {"type": "string"}},
+    "workflow": {"type": "string", "description": "Registered workflow ID this agent runs"},
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}

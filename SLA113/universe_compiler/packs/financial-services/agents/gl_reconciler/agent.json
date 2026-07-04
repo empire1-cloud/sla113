@@ -1,0 +1,15 @@
+{
+  "name": "gl-reconciler",
+  "version": "0.1.1",
+  "domain": "fund-admin",
+  "description": "Finds breaks between GL and subledger, traces root cause, routes for sign-off.",
+  "model": "claude-opus-4-7",
+  "tools": ["read", "grep", "glob", "bash"],
+  "workflow": [
+    {"step": 1, "name": "ingest", "action": "Import GL trial balance and subledger transactions."},
+    {"step": 2, "name": "reconcile", "skill": "gl_recon", "action": "Match transactions, flag breaks by type."},
+    {"step": 3, "name": "trace", "skill": "break_trace", "action": "Root-cause analysis on each break."},
+    {"step": 4, "name": "report", "skill": "audit_xls", "action": "Exception report with resolution routing."}
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

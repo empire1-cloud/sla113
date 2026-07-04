@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SLA113_CORE_STAGE</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #111111;
+            --border: #222222;
+            --text: #ffffff;
+            --dim: #666666;
+            --highlight: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: default; }
+        body { background: var(--bg); color: var(--text); font-family: ui-monospace, monospace; font-size: 11px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Top Control: OS Builder Selection */
+        .os-builder-bar {
+            height: 45px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        select { background: #000; color: #fff; border: 1px solid var(--border); padding: 4px 8px; font-family: inherit; font-size: 10px; }
+
+        /* Main Workspace */
+        .workspace { flex: 1; display: grid; grid-template-columns: 300px 1fr 300px; overflow: hidden; }
+
+        .side-panel { background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+        .side-panel.right { border-right: none; border-left: 1px solid var(--border); }
+
+        .panel-head { padding: 10px 15px; background: #1a1a1a; border-bottom: 1px solid var(--border); font-weight: bold; text-transform: uppercase; color: var(--dim); }
+
+        /* Sprite Cutter Area */
+        .cutter-stage { position: relative; background: radial-gradient(circle, #111 1px, transparent 1px); background-size: 20px 20px; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        .cutter-canvas { border: 1px dashed #444; position: relative; }
+        .hitbox-overlay { position: absolute; border: 1px solid red; background: rgba(255,0,0,0.1); pointer-events: none; }
+
+        /* Asset Lists */
+        .asset-row { padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .asset-row:hover { background: #161616; }
+        .asset-row.active { border-left: 2px solid var(--highlight); background: #1a1a1a; }
+
+        /* Audio Controls */
+        .audio-item { padding: 10px 15px; border-bottom: 1px solid var(--border); }
+        .audio-wave { height: 30px; background: #000; margin-top: 5px; border: 1px solid #222; position: relative; overflow: hidden; }
+        .wave-fill { height: 100%; background: #444; width: 45%; } /* Visual Placeholder */
+
+        /* Footer */
+        footer { height: 50px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .btn { padding: 6px 16px; background: #fff; color: #000; border: none; font-weight: bold; text-transform: uppercase; font-family: inherit; font-size: 10px; }
+        .btn-alt { background: transparent; color: #fff; border: 1px solid var(--border); margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="os-builder-bar">
+    <div class="label">OS_ENGINE:</div>
+    <select id="engine-select" onchange="switchEngine()">
+        <option value="fish_shooting">ARCADE_FISH_CORE</option>
+        <option value="slot_math">SLOT_RPG_PROGRESSION</option>
+        <option value="frontline">FRONTLINE_STRIKE</option>
+    </select>
+    <div style="flex:1"></div>
+    <div class="header-status">PARITY: VERIFIED</div>
+</div>
+
+<div class="workspace">
+    <aside class="side-panel">
+        <div class="panel-head">Visual Assets (Module A)</div>
+        <div id="visual-list">
+            <div class="asset-row active">
+                <span>fish_boss_01.png</span>
+                <button class="btn" style="padding:2px 6px">CUT</button>
+            </div>
+            <div class="asset-row"><span>g_shield_gold.png</span><button class="btn-alt" style="padding:2px 6px">CUT</button></div>
+        </div>
+    </aside>
+
+    <section class="cutter-stage">
+        <div class="cutter-canvas" id="canvas-root">
+            <img src="/assets/fish_boss_01.png" style="max-width: 500px;" id="main-asset" onerror="this.src='https://placehold.co/500x500/050505/ffffff?text=fish_boss_01.png'">
+            <div class="hitbox-overlay" style="top:20%; left:20%; width:60%; height:60%;"></div>
+        </div>
+    </section>
+
+    <aside class="side-panel right">
+        <div class="panel-head">Audio Acids (Module S)</div>
+        <div id="audio-list">
+            <div class="audio-item">
+                <div style="display:flex; justify-content:space-between">
+                    <span>hit_impact_01.wav</span>
+                    <span style="color:var(--dim)">PLAY</span>
+                </div>
+                <div class="audio-wave"><div class="wave-fill"></div></div>
+            </div>
+            <div class="audio-item">
+                <div style="display:flex; justify-content:space-between">
+                    <span>boss_spawn_deep.mp3</span>
+                    <span style="color:var(--dim)">PLAY</span>
+                </div>
+                <div class="audio-wave"></div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<footer>
+    <div class="stats">
+        DATA: <span id="asset-data">X: 120, Y: 45, W: 300, H: 300</span>
+    </div>
+    <div class="controls">
+        <button class="btn btn-alt" onclick="location.reload()">Reset Studio</button>
+        <button class="btn" onclick="saveConfig()">Save Production Manifest</button>
+    </div>
+</footer>
+
+<script>
+    function saveConfig() {
+        const config = {
+            engine: document.getElementById('engine-select').value,
+            asset: 'fish_boss_01.png',
+            hitbox: { x: 120, y: 45, w: 300, h: 300 },
+            sounds: ['hit_impact_01.wav']
+        };
+        console.log("SLA113_MANIFEST_GEN:", config);
+        alert("PRODUCTION MANIFEST SAVED TO CLI");
+    }
+
+    function switchEngine() {
+        const engine = document.getElementById('engine-select').value;
+        console.log("SWITCHING CORE TO:", engine);
+        // Logic to swap asset lists based on engine would go here
+    }
+</script>
+
+</body>
+</html>

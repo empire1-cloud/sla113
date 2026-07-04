@@ -1,0 +1,58 @@
+{
+  "name": "lyrica-3-soulfire",
+  "label": "Lyrica 3 Soulfire",
+  "pack_version": "0.1.0",
+  "schema_version": "1.0",
+  "compatibility_version": "0.5.0",
+  "engine_version": ">=0.5.0",
+  "domain": "music",
+  "product": "Lyrica 3 / Southern Lifestyle",
+  "description": "AI music creation capability pack — songwriting, composition, production, creator identity, rights management",
+
+  "lifecycle": "scaffold",
+
+  "capabilities": [
+    {"name": "music_generation",      "description": "AI music creation and production pipeline", "type": "workflow"},
+    {"name": "songwriting",           "description": "Lyrics, melody, arrangement composition", "type": "skill"},
+    {"name": "audio_production",      "description": "Mixing, mastering, stem separation", "type": "skill"},
+    {"name": "creator_identity",      "description": "Creator DNA, provenance, soulfire synapse", "type": "agent"},
+    {"name": "rights_management",     "description": "Royalty ledger, IP tracking, licensing", "type": "skill"},
+    {"name": "visual_identity",       "description": "VICS — album art, brand kits, visual assets", "type": "skill"},
+    {"name": "revenue_routing",       "description": "Money Pipeline — payments, royalty distribution", "type": "workflow"}
+  ],
+
+  "dependencies": [
+    {"capability": "payments",         "optional": false},
+    {"capability": "analytics",        "optional": true},
+    {"capability": "creator-identity", "optional": true}
+  ],
+
+  "revenue_model": {
+    "primary": [
+      "AI music creation subscriptions",
+      "Royalty sharing",
+      "Creator tool licenses",
+      "Pro tier subscriptions"
+    ],
+    "white_label": [
+      "White-label music AI for labels and studios",
+      "Branded creator platforms",
+      "Private production pipelines"
+    ]
+  },
+
+  "registry": {
+    "agents": 0,
+    "skills": 0,
+    "providers": 0,
+    "workflows": 0
+  },
+
+  "white_label": {
+    "layer": "product",
+    "scope": ["branding", "audio-templates", "ui", "pricing", "domain"],
+    "excluded_from_core": ["templates", "reference-materials"]
+  },
+
+  "source": "Mapped from Lyrica3/ and southern-lifestyle/ projects"
+}

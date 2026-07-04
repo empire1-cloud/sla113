@@ -1,0 +1,243 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Music genre definitions — BPM ranges, keys, moods, cultural roots, instrument palettes. Used by the Execution Engine to parameterize audio generation workflows.",
+  "genres": [
+    {
+      "id": "chicano-soul",
+      "name": "Chicano Soul",
+      "aliases": ["brown-eyed soul", "Latin soul"],
+      "bpm_range": {"min": 75, "max": 105, "default": 92},
+      "common_keys": ["Am", "Dm", "G", "C", "F"],
+      "moods": ["romantic", "melancholic", "smooth", "nostalgic", "passionate"],
+      "cultural_roots": ["Mexican-American", "East LA", "1970s R&B"],
+      "characteristics": {
+        "groove": "slow-roll hip-syncopated",
+        "bass": "warm finger-style melodic runs",
+        "drums": "tight rim-shot backbeat, brush snares",
+        "keys": "Wurlitzer, Rhodes, Hammond B3",
+        "horns": "smooth saxophone, mellow trumpet lines",
+        "guitar": "clean arpeggios, tremolo picking",
+        "strings": "lush pad arrangements"
+      },
+      "typical_instruments": ["electric-piano", "acoustic-guitar", "bass", "drums", "saxophone", "hammond-organ", "strings"],
+      "subgenres": ["gansta-soul", "lowrider-soul", "oldies-soul"],
+      "producers": ["Bobby Marin", "Eddie Palmieri", "The Mixtures"]
+    },
+    {
+      "id": "trap-soul",
+      "name": "Trap Soul",
+      "aliases": ["emotional trap", "R&B trap"],
+      "bpm_range": {"min": 120, "max": 160, "default": 140},
+      "common_keys": ["Fm", "C#m", "G#m", "D#m", "Bbm"],
+      "moods": ["dark", "sensual", "vulnerable", "aggressive", "introspective"],
+      "cultural_roots": ["Southern hip-hop", "Atlanta", "memphis"],
+      "characteristics": {
+        "groove": "triplet hi-hat rolls, heavy 808 kicks",
+        "bass": "808 sub-bass slides, modulated sine waves",
+        "drums": "trap hi-hat rolls, claps, rimshots, sparse snares",
+        "keys": "dark minor piano, ambient pads",
+        "synth": "detuned saw waves, plucks",
+        "guitar": "muted strums, ambient swells"
+      },
+      "typical_instruments": ["808-bass", "drums", "piano", "synth-pad", "hi-hat"],
+      "subgenres": ["dark-trap", "melodic-trap", "ambient-trap"],
+      "producers": ["Metro Boomin", "Wheezy", "Tainy"]
+    },
+    {
+      "id": "drill",
+      "name": "Drill",
+      "aliases": ["UK drill", "Chicago drill", "Brooklyn drill"],
+      "bpm_range": {"min": 130, "max": 150, "default": 140},
+      "common_keys": ["Dm", "Fm", "Gm", "Cm", "Am"],
+      "moods": ["aggressive", "menacing", "energetic", "dark", "raw"],
+      "cultural_roots": ["Chicago", "UK grime", "Brooklyn"],
+      "characteristics": {
+        "groove": "slide 808s, syncopated kicks, sparse hi-hats",
+        "bass": "808 slides, long decay, sub-bass focus",
+        "drums": "sharp snares, rapid hi-hats, heavy kicks",
+        "keys": "minor melodies, dark pads",
+        "guitar": "aggressive stabs"
+      },
+      "typical_instruments": ["808-bass", "drums", "synth", "piano"],
+      "subgenres": ["UK-drill", "NY-drill", "chicago-drill"],
+      "producers": ["808Melo", "Axl Beats", "KayCyy"]
+    },
+    {
+      "id": "latin-trap",
+      "name": "Latin Trap",
+      "aliases": ["trap latino", "reggeaton oscuro"],
+      "bpm_range": {"min": 130, "max": 170, "default": 150},
+      "common_keys": ["Am", "Dm", "Em", "Bm", "Gm"],
+      "moods": ["energetic", "sensual", "aggressive", "party", "dark"],
+      "cultural_roots": ["Puerto Rico", "Latin America", "Caribbean"],
+      "characteristics": {
+        "groove": "dem bow rhythm, syncopated claves",
+        "bass": "heavy 808 with Latin percussion interplay",
+        "drums": "timbale fills, bongo accents, trap hi-hats",
+        "keys": "minor melodies, synth plucks",
+        "brass": "occasional horn stabs"
+      },
+      "typical_instruments": ["808-bass", "drums", "synth", "timbales", "bongos"],
+      "subgenres": ["reggeaton", "dembow", "latin-hip-hop"],
+      "producers": ["Tainy", "Mauricio Basurto", "Sky Rompiendo"]
+    },
+    {
+      "id": "lo-fi-hip-hop",
+      "name": "Lo-fi Hip Hop",
+      "aliases": ["chillhop", "study beats"],
+      "bpm_range": {"min": 60, "max": 90, "default": 78},
+      "common_keys": ["G", "D", "A", "Em", "Bm"],
+      "moods": ["chill", "nostalgic", "relaxed", "warm", "melancholic"],
+      "cultural_roots": ["Japanese jazz", "90s boom bap", "internet culture"],
+      "characteristics": {
+        "groove": "laid-back, swung, vinyl crackle",
+        "bass": "warm sub-bass, simple root-note patterns",
+        "drums": "sampled boom-bap, vinyl noise, sidechained",
+        "keys": "dusted jazz piano, Rhodes",
+        "guitar": "clean finger-picked, nylon-string",
+        "effects": "low-fidelity, tape saturation, bit-crush"
+      },
+      "typical_instruments": ["sampler", "rhodes", "nylon-guitar", "drums", "bass", "strings"],
+      "subgenres": ["jazz-hop", "vaporwave", "chill-step"],
+      "producers": ["J Dilla", "Nujabes", "Tomppabeats"]
+    },
+    {
+      "id": "r-and-b",
+      "name": "R&B",
+      "aliases": ["rhythm and blues", "contemporary R&B"],
+      "bpm_range": {"min": 60, "max": 100, "default": 82},
+      "common_keys": ["C", "G", "F", "Am", "Dm"],
+      "moods": ["sensual", "romantic", "smooth", "emotional", "groovy"],
+      "cultural_roots": ["African American", "gospel", "soul", "funk"],
+      "characteristics": {
+        "groove": "swung 16ths, pocket-based",
+        "bass": "melodic, flowing, syncopated",
+        "drums": "tight snares, crisp hi-hats, rimshots",
+        "keys": "Rhodes, Wurlitzer, gospel organ",
+        "guitar": "clean chords, wah-wah, arpeggios",
+        "vocals": "melismatic runs, ad-libs, harmonies"
+      },
+      "typical_instruments": ["rhodes", "bass", "drums", "acoustic-guitar", "strings", "synth-pad"],
+      "subgenres": ["neo-soul", "alternative-rnb", "quiet-storm"],
+      "producers": ["Timbaland", "The-Dream", "Darkchild"]
+    },
+    {
+      "id": "soul",
+      "name": "Soul",
+      "aliases": ["classic soul", "Motown", "Stax"],
+      "bpm_range": {"min": 70, "max": 120, "default": 95},
+      "common_keys": ["C", "F", "G", "Bb", "Eb"],
+      "moods": ["passionate", "joyful", "heartfelt", "uplifting", "melancholic"],
+      "cultural_roots": ["African American", "gospel", "blues", "1960s"],
+      "characteristics": {
+        "groove": "syncopated, pocket-driven",
+        "bass": "melodic lines, walking patterns",
+        "drums": "backbeat snare, Motown fills",
+        "keys": "Hammond B3, gospel piano, Rhodes",
+        "horns": "Stax-style horn section punches",
+        "guitar": "chicken-scratch, muted funk strums"
+      },
+      "typical_instruments": ["hammond-organ", "bass", "drums", "horns", "piano", "guitar"],
+      "subgenres": ["northern-soul", "southern-soul", "philly-soul", "neo-soul"],
+      "producers": ["Quincy Jones", "Curtis Mayfield", "Isaac Hayes"]
+    },
+    {
+      "id": "phonk",
+      "name": "Phonk",
+      "aliases": ["drift phonk", "memphis phonk"],
+      "bpm_range": {"min": 130, "max": 180, "default": 160},
+      "common_keys": ["D", "G", "A", "Em", "Bm"],
+      "moods": ["aggressive", "dark", "energetic", "raw", "menacing"],
+      "cultural_roots": ["Memphis hip-hop 90s", "cowboy culture", "eastern europe"],
+      "characteristics": {
+        "groove": "cowbell-driven, hard kicks, rolling bass",
+        "bass": "distorted 808, aggressive slides",
+        "drums": "heavy kicks, trap hats, cowbell accents",
+        "vocals": "chopped Memphis vocal samples",
+        "guitar": "twangy distorted, slide guitar"
+      },
+      "typical_instruments": ["808-bass", "drums", "cowbell", "guitar", "sampler"],
+      "subgenres": ["drift-phonk", "memphis-phonk", "brazilian-phonk"],
+      "producers": ["DJ Smokey", "Soudiere", "KSLV"]
+    },
+    {
+      "id": "ambient",
+      "name": "Ambient",
+      "aliases": ["ambient music", "atmospheric"],
+      "bpm_range": {"min": 40, "max": 80, "default": 60},
+      "common_keys": ["C", "D", "F", "G", "A"],
+      "moods": ["ethereal", "peaceful", "contemplative", "spacious", "meditative"],
+      "cultural_roots": ["1970s experimental", "Brian Eno", "new age"],
+      "characteristics": {
+        "groove": "non-rhythmic, floating",
+        "bass": "deep sub-bass drones",
+        "drums": "minimal to none, sparse percussion",
+        "keys": "sustained pads, slow evolutions",
+        "synth": "textural, granular, field recordings",
+        "effects": "heavy reverb, delay, modulation"
+      },
+      "typical_instruments": ["synth-pad", "field-recordings", "piano", "strings", "granular"],
+      "subgenres": ["dark-ambient", "drone", "ambient-techno"],
+      "producers": ["Brian Eno", "Harold Budd", "Aphex Twin"]
+    },
+    {
+      "id": "house",
+      "name": "House",
+      "aliases": ["four-on-the-floor", "house music"],
+      "bpm_range": {"min": 115, "max": 135, "default": 126},
+      "common_keys": ["Cm", "Fm", "Gm", "Am", "D#m"],
+      "moods": ["energetic", "uplifting", "groovy", "euphoric", "funky"],
+      "cultural_roots": ["Chicago", "Detroit", "New York", "1980s"],
+      "characteristics": {
+        "groove": "four-on-the-floor kick, off-beat hi-hat",
+        "bass": "deep, syncopated, filtered",
+        "drums": "kick on every beat, claps on 2/4",
+        "keys": "funky chord stabs, Rhodes",
+        "synth": "filtered sweeps, arpeggios"
+      },
+      "typical_instruments": ["drums", "bass", "synth", "rhodes", "hi-hat"],
+      "subgenres": ["deep-house", "tech-house", "progressive-house", "garage-house"],
+      "producers": ["Frankie Knuckles", "Larry Heard", "Daft Punk"]
+    },
+    {
+      "id": "boom-bap",
+      "name": "Boom Bap",
+      "aliases": ["east coast hip-hop", "golden era"],
+      "bpm_range": {"min": 85, "max": 100, "default": 93},
+      "common_keys": ["Dm", "Em", "Gm", "Am", "Cm"],
+      "moods": ["raw", "lyrical", "hard", "street", "soulful"],
+      "cultural_roots": ["East Coast hip-hop", "NYC", "1980s-90s"],
+      "characteristics": {
+        "groove": "hard kick-snare pattern, swung hi-hats",
+        "bass": "sampled bass loops, sub-bass accents",
+        "drums": "punchy kicks, crisp snares, rimshots",
+        "keys": "sampled jazz/soul chops",
+        "guitar": "sampled funk guitar loops"
+      },
+      "typical_instruments": ["sampler", "drums", "bass", "piano", "guitar"],
+      "subgenres": ["hardcore-hip-hop", "jazz-rap", "conscious-hip-hop"],
+      "producers": ["DJ Premier", "RZA", "Pete Rock"]
+    },
+    {
+      "id": "southern-barrio",
+      "name": "Southern Barrio",
+      "aliases": ["southern barrio fusion"],
+      "bpm_range": {"min": 85, "max": 110, "default": 97},
+      "common_keys": ["Em", "Am", "Dm", "G", "C"],
+      "moods": ["proud", "contemplative", "gritty", "nostalgic", "hopeful"],
+      "cultural_roots": ["Chicano", "Southern US", "barrio culture"],
+      "characteristics": {
+        "groove": "slow-rolling, head-nod",
+        "bass": "warm, melodic, guitar interplay",
+        "drums": "laid-back, rim-click snares",
+        "guitar": "clean arpeggios, Spanish-influenced runs",
+        "keys": "Wurlitzer, organ pads",
+        "vocals": "spoken word, storytelling"
+      },
+      "typical_instruments": ["acoustic-guitar", "bass", "drums", "electric-piano", "accordion"],
+      "subgenres": ["texas-country-soul", "chicano-rap", "la-fusion"],
+      "producers": ["Kid Frost", "Lil Rob", "Cypress Hill"]
+    }
+  ]
+}

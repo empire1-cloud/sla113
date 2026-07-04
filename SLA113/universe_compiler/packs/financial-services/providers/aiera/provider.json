@@ -1,0 +1,9 @@
+{
+  "name": "aiera",
+  "type": "mcp",
+  "domain": "earnings-transcripts",
+  "description": "Earnings call transcripts, event transcript analysis, AI-generated summaries",
+  "connection": {"url": "https://mcp-pub.aiera.com", "auth": "api-key"},
+  "capabilities": ["earnings_transcripts", "event_analysis", "transcript_search", "ai_summaries"],
+  "status": "active"
+}

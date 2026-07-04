@@ -1,0 +1,62 @@
+# ============================================
+# Systemd Service for Hybrid Intelligence Backend
+# ============================================
+# Location: /etc/systemd/system/hybrid-intelligence.service
+#
+# After placing this file, run:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable hybrid-intelligence
+#   sudo systemctl start hybrid-intelligence
+
+[Unit]
+Description=Hybrid Intelligence Core - FastAPI Backend
+Documentation=https://github.com/yourusername/hybrid-intelligence
+After=network.target mongodb.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/hybrid-intelligence/backend
+
+# Environment
+Environment="PATH=/var/www/hybrid-intelligence/venv/bin:/usr/local/bin:/usr/bin"
+EnvironmentFile=/var/www/hybrid-intelligence/backend/.env
+
+# Start command with Gunicorn + Uvicorn workers
+ExecStart=/var/www/hybrid-intelligence/venv/bin/gunicorn server:app \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:8001 \
+    --timeout 120 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 50 \
+    --access-logfile /var/log/hybrid-intelligence/access.log \
+    --error-logfile /var/log/hybrid-intelligence/error.log \
+    --capture-output
+
+# Restart policy
+Restart=always
+RestartSec=5
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/var/www/hybrid-intelligence /var/log/hybrid-intelligence
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

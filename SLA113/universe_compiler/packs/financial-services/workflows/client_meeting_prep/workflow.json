@@ -1,0 +1,14 @@
+{
+  "name": "client_meeting_prep",
+  "description": "Pre-meeting briefing pack: client profile, holdings, market context",
+  "agents": ["meeting_prep"],
+  "skills": ["client_review", "client_report", "investment_proposal"],
+  "providers": ["capiq", "factset"],
+  "steps": [
+    {"step": 1, "action": "Client profile and relationship history"},
+    {"step": 2, "action": "Holdings review and performance analysis"},
+    {"step": 3, "action": "Market context relevant to client"},
+    {"step": 4, "action": "Generate briefing pack"}
+  ],
+  "trigger": "Scheduled client meeting"
+}

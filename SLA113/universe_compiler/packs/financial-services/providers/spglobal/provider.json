@@ -1,0 +1,9 @@
+{
+  "name": "spglobal",
+  "type": "mcp",
+  "domain": "fundamentals-estimates",
+  "description": "S&P Capital IQ — company fundamentals, estimates, transactions, supply chain",
+  "connection": {"url": "https://kfinance.kensho.com/integrations/mcp", "auth": "api-key"},
+  "capabilities": ["company_fundamentals", "estimates", "transactions", "supply_chain", "tear_sheets"],
+  "status": "active"
+}

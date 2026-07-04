@@ -1,0 +1,16 @@
+{
+  "name": "model-builder",
+  "version": "0.1.1",
+  "domain": "financial-analysis",
+  "description": "DCF, LBO, 3-statement, comps — live in Excel from scratch.",
+  "model": "claude-opus-4-7",
+  "tools": ["read", "grep", "glob", "bash", "mcp__capiq__*", "mcp__daloopa__*"],
+  "workflow": [
+    {"step": 1, "name": "pull_data", "provider": ["capiq", "daloopa"], "action": "Historical financials, filings, estimates."},
+    {"step": 2, "name": "pick_model", "action": "Determine model type: DCF, LBO, 3-statement, or comps."},
+    {"step": 3, "name": "build", "skill": ["dcf", "lbo", "3_statement_model", "comps"], "action": "Construct model with openpyxl following audit-xls conventions."},
+    {"step": 4, "name": "audit", "skill": "audit_xls", "action": "Balance checks, formula consistency, hardcode detection."},
+    {"step": 5, "name": "validate", "action": "Run validation scripts, sanity-check outputs."}
+  ],
+  "source": "Anthropic financial-services reference architecture"
+}

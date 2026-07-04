@@ -1,0 +1,23 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/service.json",
+  "title": "Service",
+  "description": "A concrete implementation of a capability. Capabilities abstract what; services concrete how.",
+  "type": "object",
+  "required": ["id", "name", "capability", "provider_type", "lifecycle"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique service identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "capability": {"type": "string", "description": "Capability this service implements"},
+    "provider_type": {
+      "type": "string",
+      "enum": ["cloud_api", "local_model", "local_dsp", "mcp", "cached", "fallback"],
+      "description": "Type of provider"
+    },
+    "lifecycle": {"type": "string", "enum": ["scaffold", "development", "active", "deprecated", "placeholder"]},
+    "priority": {"type": "integer", "description": "Selection priority (lower = tried first)"},
+    "cost_per_call": {"type": "number", "description": "Estimated cost per invocation"},
+    "latency_ms": {"type": "integer", "description": "Estimated latency"},
+    "config": {"type": "object", "description": "Provider-specific configuration"},
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "build_id": "SLA113-D9078EBE",
+    "game_type": "Arcade Classic",
+    "category": "arcade",
+    "prompt": "Sovereign game OS: Arcade Classic",
+    "palette": {
+      "primary": "#050505",
+      "accent": "#D4AF37",
+      "highlight": "#00C8FF"
+    },
+    "render_mode": "fast",
+    "status": "queued",
+    "created_at": "2026-03-14T02:24:04.740555"
+  }
+]

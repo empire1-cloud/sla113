@@ -1,0 +1,183 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Mastering presets per genre. EQ curves, compression, limiting, and normalization targets used by the Soulfire Mastering engine and audio rendering pipeline.",
+  "presets": [
+    {
+      "id": "chicano-soul-master",
+      "name": "Chicano Soul",
+      "genres": ["chicano-soul", "soul", "r-and-b"],
+      "target": {"lufs": -14, "true_peak": -1.5, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "highpass 30Hz gentle slope",
+        "low": "boost +2dB shelf 80Hz",
+        "low_mid": "cut -1.5dB 250Hz",
+        "mid": "cut -1dB 800Hz",
+        "high_mid": "boost +2dB 3kHz",
+        "high": "gentle shelf -2dB 10kHz"
+      },
+      "compression": {
+        "type": "opto",
+        "ratio": 2.5,
+        "threshold": -18,
+        "attack": 10,
+        "release": 150,
+        "makeup": 3
+      },
+      "limiter": {"ceiling": -1.5, "release": "automatic"},
+      "stereo_enhancement": {"width": "120%", "mid_side_eq": "side boost +1.5dB 5kHz"},
+      "dither": "triangular"
+    },
+    {
+      "id": "trap-master",
+      "name": "Trap / Drill",
+      "genres": ["trap-soul", "drill", "trap", "phonk", "latin-trap"],
+      "target": {"lufs": -9, "true_peak": -1.0, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "boost +4dB 40Hz",
+        "low": "boost +2dB 80Hz",
+        "low_mid": "cut -3dB 300Hz",
+        "mid": "cut -2dB 500Hz",
+        "high_mid": "boost +3dB 3kHz",
+        "high": "boost +2dB shelf 8kHz"
+      },
+      "compression": {
+        "type": "FET",
+        "ratio": 6,
+        "threshold": -22,
+        "attack": 1,
+        "release": 80,
+        "makeup": 5
+      },
+      "limiter": {"ceiling": -1.0, "release": "medium"},
+      "stereo_enhancement": {"width": "130%", "mid_side_eq": "side boost +2dB 10kHz"},
+      "dither": "none"
+    },
+    {
+      "id": "lo-fi-master",
+      "name": "Lo-fi / Chill",
+      "genres": ["lo-fi-hip-hop", "ambient"],
+      "target": {"lufs": -16, "true_peak": -2.0, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "highpass 50Hz",
+        "low": "boost +1dB 80Hz",
+        "low_mid": "none",
+        "mid": "cut -1dB 1kHz",
+        "high_mid": "cut -2dB 4kHz",
+        "high": "shelf -4dB 8kHz"
+      },
+      "compression": {
+        "type": "opto",
+        "ratio": 1.8,
+        "threshold": -16,
+        "attack": 20,
+        "release": 200,
+        "makeup": 2
+      },
+      "limiter": {"ceiling": -2.0, "release": "automatic"},
+      "stereo_enhancement": {"width": "110%"},
+      "dither": "triangular",
+      "additional": "vinyl crackle -24dB, tape saturation"
+    },
+    {
+      "id": "latin-trap-master",
+      "name": "Latin Trap",
+      "genres": ["latin-trap"],
+      "target": {"lufs": -10, "true_peak": -1.5, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "boost +3dB 50Hz",
+        "low": "boost +2dB 100Hz",
+        "low_mid": "cut -2dB 250Hz",
+        "mid": "cut -1dB 700Hz",
+        "high_mid": "boost +2.5dB 3.5kHz",
+        "high": "boost +3dB shelf 8kHz"
+      },
+      "compression": {
+        "type": "FET",
+        "ratio": 4,
+        "threshold": -20,
+        "attack": 3,
+        "release": 120,
+        "makeup": 4
+      },
+      "limiter": {"ceiling": -1.5, "release": "medium"},
+      "stereo_enhancement": {"width": "125%"},
+      "dither": "none"
+    },
+    {
+      "id": "southern-barrio-master",
+      "name": "Southern Barrio",
+      "genres": ["southern-barrio"],
+      "target": {"lufs": -13, "true_peak": -1.5, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "highpass 40Hz",
+        "low": "boost +1.5dB 80Hz",
+        "low_mid": "cut -1dB 300Hz",
+        "mid": "boost +1dB 800Hz",
+        "high_mid": "boost +1.5dB 3kHz",
+        "high": "shelf -1dB 10kHz"
+      },
+      "compression": {
+        "type": "opto",
+        "ratio": 2.2,
+        "threshold": -17,
+        "attack": 15,
+        "release": 180,
+        "makeup": 2.5
+      },
+      "limiter": {"ceiling": -1.5, "release": "automatic"},
+      "stereo_enhancement": {"width": "115%"},
+      "dither": "triangular"
+    },
+    {
+      "id": "soul-master",
+      "name": "Classic Soul",
+      "genres": ["soul", "r-and-b"],
+      "target": {"lufs": -14, "true_peak": -1.5, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "highpass 35Hz",
+        "low": "boost +2.5dB 80Hz",
+        "low_mid": "cut -1dB 200Hz",
+        "mid": "cut -1.5dB 500Hz",
+        "high_mid": "boost +2dB 2.5kHz",
+        "high": "shelf -1.5dB 10kHz"
+      },
+      "compression": {
+        "type": "opto",
+        "ratio": 3,
+        "threshold": -16,
+        "attack": 10,
+        "release": 100,
+        "makeup": 3
+      },
+      "limiter": {"ceiling": -1.5, "release": "automatic"},
+      "stereo_enhancement": {"width": "120%"},
+      "dither": "triangular"
+    },
+    {
+      "id": "house-master",
+      "name": "House / Dance",
+      "genres": ["house"],
+      "target": {"lufs": -10, "true_peak": -1.0, "bit_depth": 16, "sample_rate": 44100},
+      "eq": {
+        "sub_low": "boost +3dB 40Hz",
+        "low": "boost +2dB 100Hz",
+        "low_mid": "cut -2dB 400Hz",
+        "mid": "cut -1dB 800Hz",
+        "high_mid": "boost +2dB 3kHz",
+        "high": "boost +3dB shelf 10kHz"
+      },
+      "compression": {
+        "type": "FET",
+        "ratio": 4,
+        "threshold": -18,
+        "attack": 2,
+        "release": 60,
+        "makeup": 4
+      },
+      "limiter": {"ceiling": -1.0, "release": "fast"},
+      "stereo_enhancement": {"width": "140%"},
+      "dither": "none"
+    }
+  ]
+}

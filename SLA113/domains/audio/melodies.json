@@ -1,0 +1,115 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Scale, mode, and melodic pattern definitions. Used by the Execution Engine to parametrize harmonic content for procedural generation.",
+  "scales": [
+    {
+      "id": "natural-minor",
+      "name": "Natural Minor",
+      "aliases": ["Aeolian mode"],
+      "intervals": ["1", "2", "b3", "4", "5", "b6", "b7"],
+      "pattern": "W-H-W-W-H-W-W",
+      "moods": ["sad", "melancholic", "dark", "serious"],
+      "best_for": ["trap-soul", "chicano-soul", "drill", "r-and-b"],
+      "common_keys": ["Am", "Dm", "Em", "Gm", "Cm", "Fm", "Bm"]
+    },
+    {
+      "id": "major",
+      "name": "Major",
+      "aliases": ["Ionian mode"],
+      "intervals": ["1", "2", "3", "4", "5", "6", "7"],
+      "pattern": "W-W-H-W-W-W-H",
+      "moods": ["happy", "bright", "uplifting", "joyful"],
+      "best_for": ["soul", "house", "pop", "r-and-b"],
+      "common_keys": ["C", "G", "D", "A", "F", "Bb", "Eb"]
+    },
+    {
+      "id": "harmonic-minor",
+      "name": "Harmonic Minor",
+      "aliases": ["Arabic minor", "Hijaz"],
+      "intervals": ["1", "2", "b3", "4", "5", "b6", "7"],
+      "pattern": "W-H-W-W-H-WH-H",
+      "moods": ["exotic", "dark", "mysterious", "eastern"],
+      "best_for": ["latin-trap", "southern-barrio", "flamenco-fusion"],
+      "common_keys": ["Am", "Em", "Dm", "Bm"]
+    },
+    {
+      "id": "dorian",
+      "name": "Dorian Mode",
+      "intervals": ["1", "2", "b3", "4", "5", "6", "b7"],
+      "pattern": "W-H-W-W-W-H-W",
+      "moods": ["jazzy", "soulful", "minor-but-uppbeat", "groovy"],
+      "best_for": ["r-and-b", "soul", "jazz-hop", "chicano-soul"],
+      "common_keys": ["Dm", "Em", "Gm", "Am"]
+    },
+    {
+      "id": "mixolydian",
+      "name": "Mixolydian Mode",
+      "intervals": ["1", "2", "3", "4", "5", "6", "b7"],
+      "pattern": "W-W-H-W-W-H-W",
+      "moods": ["bluesy", "rocky", "funky", "happy-but-gritty"],
+      "best_for": ["soul", "funk", "southern-barrio", "phunk"],
+      "common_keys": ["G", "D", "A", "C"]
+    },
+    {
+      "id": "phrygian",
+      "name": "Phrygian Mode",
+      "aliases": ["Spanish scale"],
+      "intervals": ["1", "b2", "b3", "4", "5", "b6", "b7"],
+      "pattern": "H-W-W-W-H-W-W",
+      "moods": ["dark", "Spanish", "aggressive", "exotic"],
+      "best_for": ["drill", "latin-trap", "phonk"],
+      "common_keys": ["Em", "Am", "Dm", "Gm"]
+    },
+    {
+      "id": "blues",
+      "name": "Blues Scale",
+      "intervals": ["1", "b3", "4", "b5", "5", "b7"],
+      "pattern": "WH-W-H-H-WH-W",
+      "moods": ["blue", "gritty", "expressive", "raw"],
+      "best_for": ["blues", "soul", "rock", "phunk"],
+      "common_keys": ["A", "E", "D", "G"]
+    },
+    {
+      "id": "pentatonic-minor",
+      "name": "Pentatonic Minor",
+      "intervals": ["1", "b3", "4", "5", "b7"],
+      "pattern": "WH-W-WH-WH",
+      "moods": ["versatile", "safe", "bluesy", "melodic"],
+      "best_for": ["trap", "lo-fi", "hip-hop", "r-and-b", "chicano-soul"],
+      "common_keys": ["Am", "Dm", "Em", "Cm", "Gm"]
+    },
+    {
+      "id": "pentatonic-major",
+      "name": "Pentatonic Major",
+      "intervals": ["1", "2", "3", "5", "6"],
+      "pattern": "W-W-WH-W-WH",
+      "moods": ["happy", "folk", "bright", "simple"],
+      "best_for": ["soul", "house", "pop", "ambient"],
+      "common_keys": ["C", "G", "D", "F", "A"]
+    },
+    {
+      "id": "double-harmonic",
+      "name": "Double Harmonic",
+      "aliases": ["Byzantine scale", "Arabic scale"],
+      "intervals": ["1", "b2", "3", "4", "5", "b6", "7"],
+      "pattern": "H-WH-H-W-H-WH-H",
+      "moods": ["middle-eastern", "exotic", "dramatic", "intense"],
+      "best_for": ["latin-trap", "southern-barrio", "world-fusion"],
+      "common_keys": ["C", "G", "D", "A"]
+    }
+  ],
+  "chord_progressions": [
+    {"id": "i-iv-v", "name": "Minor Standard", "chords": ["i", "iv", "v"], "best_for": ["trap-soul", "drill", "r-and-b"]},
+    {"id": "ii-v-i", "name": "Jazz Turnaround", "chords": ["ii", "V", "i"], "best_for": ["soul", "jazz-hop", "r-and-b"]},
+    {"id": "i-vi-iv-v", "name": "Minor Doo-Wop", "chords": ["i", "VI", "iv", "v"], "best_for": ["chicano-soul", "lo-fi", "r-and-b"]},
+    {"id": "i-iii-vii-vi", "name": "Dark Trap", "chords": ["i", "III", "VII", "VI"], "best_for": ["trap", "drill", "phonk"]},
+    {"id": "i-iv-vii-vi", "name": "Neo-Soul", "chords": ["i", "iv", "VII", "VI"], "best_for": ["r-and-b", "neo-soul", "chicano-soul"]},
+    {"id": "i-bvii-bvi-bvii", "name": "Phonk", "chords": ["i", "bVII", "bVI", "bVII"], "best_for": ["phonk", "drill"]},
+    {"id": "i-vi-iii-vii", "name": "Minor Pop", "chords": ["i", "VI", "III", "VII"], "best_for": ["trap-soul", "pop", "r-and-b"]},
+    {"id": "I-vi-IV-V", "name": "Major Doo-Wop", "chords": ["I", "vi", "IV", "V"], "best_for": ["soul", "pop", "chicano-soul"]},
+    {"id": "I-V-vi-IV", "name": "Pop Standard", "chords": ["I", "V", "vi", "IV"], "best_for": ["pop", "house", "r-and-b"]},
+    {"id": "i-VII-VI-VII", "name": "Latin Trap", "chords": ["i", "VII", "VI", "VII"], "best_for": ["latin-trap", "reggaeton"]},
+    {"id": "II-V-I", "name": "Major Jazz", "chords": ["II", "V", "I"], "best_for": ["jazz-hop", "soul", "r-and-b"]}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "egnyte",
+  "type": "mcp",
+  "domain": "document-management",
+  "description": "Enterprise document management and file sharing",
+  "connection": {"url": "https://mcp-server.egnyte.com/mcp", "auth": "oauth2"},
+  "capabilities": ["document_storage", "file_sharing", "dms_integration"],
+  "status": "active"
+}

@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "description": "Master registry of all products across all universes.",
+  "products": [
+    {"id": "sonance-pro", "name": "Sonance Pro", "universe": "lyrica3", "description": "Professional AI music creation studio", "lifecycle": "active", "capabilities": ["audio", "ai"], "repo": "/home/shiestybizz113/projects/Lyrica3-pro/backend"},
+    {"id": "soulfire", "name": "Soulfire", "universe": "lyrica3", "description": "AI music DNA and mastering pipeline", "lifecycle": "active", "capabilities": ["audio", "ai", "dna"], "repo": "/home/shiestybizz113/projects/Lyrica3-pro/backend"},
+    {"id": "sl-universal", "name": "SL Universal", "universe": "lyrica3", "description": "Consumer streaming radio, remix economy, creator payouts", "lifecycle": "development", "capabilities": ["audio", "identity", "discovery", "payments"], "domain": "sluniversal.lyrica3.com", "repo": "shiestybizz113-cell/sl-universal"},
+    {"id": "gaming-arcade", "name": "Gaming Arcade", "universe": "southern-lifestyle", "description": "Player-facing game portal with fish shooter, slots, and competitive games", "lifecycle": "development", "capabilities": ["ai", "identity", "payments"], "domain": "arcade.southernlifestyle.org", "repo": "/home/shiestybizz113/projects/sla113/frontend"},
+    {"id": "community-experiences", "name": "Community Experiences", "universe": "southern-lifestyle", "description": "Multiplayer game lobbies, competitive events, community features", "lifecycle": "scaffold", "capabilities": ["ai", "identity", "analytics"], "repo": "/home/shiestybizz113/projects/sla113/backend"},
+    {"id": "forge", "name": "Forge", "universe": "cultura-vibes", "description": "Creative engineering and vibe coding workspace", "lifecycle": "scaffold", "capabilities": ["ai", "storage"], "repo": "/home/shiestybizz113/projects/the-cultura-vibe-forge-"},
+    {"id": "soulfire-dna", "name": "Soulfire DNA", "universe": "cultura-vibes", "description": "DNA-based creative identity and provenance", "lifecycle": "scaffold", "capabilities": ["ai", "dna", "identity"]},
+    {"id": "community-tools", "name": "Community Tools", "universe": "cultura-vibes", "description": "Creator community management and publishing", "lifecycle": "scaffold", "capabilities": ["identity", "discovery", "storage"]},
+    {"id": "dna-ownership", "name": "DNA Ownership", "universe": "archisynapse", "description": "Creator DNA registry and provenance tracking", "lifecycle": "scaffold", "capabilities": ["dna", "identity", "payments"]},
+    {"id": "micro-royalties", "name": "Micro-Royalties", "universe": "archisynapse", "description": "Automated micro-royalty distribution pipeline", "lifecycle": "scaffold", "capabilities": ["payments", "analytics"]},
+    {"id": "rights-management", "name": "Rights Management", "universe": "archisynapse", "description": "IP rights registry, licensing, and enforcement", "lifecycle": "scaffold", "capabilities": ["identity", "payments", "analytics"]},
+    {"id": "creator-ledger", "name": "Creator Ledger", "universe": "archisynapse", "description": "Financial ledger for creator earnings and transactions", "lifecycle": "scaffold", "capabilities": ["payments", "analytics"]},
+    {"id": "financial-intelligence", "name": "Financial Intelligence", "universe": "archisynapse", "description": "AI-powered financial analysis and advisory", "lifecycle": "scaffold", "capabilities": ["ai", "analytics"], "repo": "/home/shiestybizz113/projects/sla113/SLA113/universe_compiler/packs/financial-services"},
+    {"id": "brand-portal", "name": "Brand Portal", "universe": "empire1", "description": "Public landing page and ecosystem brand identity", "lifecycle": "active", "domain": "empire1.cloud", "repo": "/home/shiestybizz113/projects/Empire-1/frontend"},
+    {"id": "ecosystem-explorer", "name": "Ecosystem Explorer", "universe": "empire1", "description": "Directory of all universes and products", "lifecycle": "scaffold"},
+    {"id": "investor-portal", "name": "Investor Portal", "universe": "empire1", "description": "Investor relations, metrics, and updates", "lifecycle": "scaffold"},
+    {"id": "documentation", "name": "Documentation", "universe": "empire1", "description": "Platform documentation and developer guides", "lifecycle": "scaffold"},
+    {"id": "developer-portal", "name": "Developer Portal", "universe": "empire1", "description": "API docs, SDKs, and developer onboarding", "lifecycle": "scaffold"}
+  ]
+}

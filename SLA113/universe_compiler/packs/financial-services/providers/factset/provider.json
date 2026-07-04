@@ -1,0 +1,9 @@
+{
+  "name": "factset",
+  "type": "mcp",
+  "domain": "market-data",
+  "description": "Real-time and historical market data, consensus estimates",
+  "connection": {"url": "https://mcp.factset.com/mcp", "auth": "api-key"},
+  "capabilities": ["market_data", "consensus_estimates", "portfolio_analytics", "risk_metrics"],
+  "status": "active"
+}

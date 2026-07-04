@@ -1,0 +1,2 @@
+// Vertex AI Asset Generation Prompt: Boss Staff
+"Generate a highly detailed 3D model of an Aztec-style ceremonial staff. The staff should feature a polished chrome 'F' at the top, surrounded by realistic gold rose petals. Additional details include glowing gold nectar dripping delicately from the roses—conveying luxury and 'Latin Active' energy. High-resolution textures and light reflections are required."

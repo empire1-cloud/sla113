@@ -1,0 +1,15 @@
+{
+  "name": "month_end_close",
+  "description": "Month-end close cycle: trial balance → accruals → roll-forwards → close package",
+  "agents": ["month_end_closer", "gl_reconciler"],
+  "skills": ["gl_recon", "break_trace", "accrual_schedule", "roll_forward", "variance_commentary", "audit_xls"],
+  "steps": [
+    {"step": 1, "agent": "gl_reconciler", "action": "Import and reconcile GL to subledgers"},
+    {"step": 2, "agent": "gl_reconciler", "action": "Trace and resolve breaks"},
+    {"step": 3, "agent": "month_end_closer", "action": "Calculate and post accruals"},
+    {"step": 4, "agent": "month_end_closer", "action": "Build roll-forward schedules"},
+    {"step": 5, "agent": "month_end_closer", "action": "Variance analysis and commentary"},
+    {"step": 6, "action": "Assemble and deliver close package"}
+  ],
+  "trigger": "Month-end close schedule"
+}

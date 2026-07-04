@@ -1,0 +1,56 @@
+{
+  "name": "cultura-vibes",
+  "label": "Cultura Vibes",
+  "pack_version": "0.1.0",
+  "schema_version": "1.0",
+  "compatibility_version": "0.5.0",
+  "engine_version": ">=0.5.0",
+  "domain": "creator",
+  "product": "Cultura Vibes / Southern Lifestyle",
+  "description": "Creator platform capability pack — campaign builder, brand kits, creator identity, audience analytics",
+
+  "lifecycle": "scaffold",
+
+  "capabilities": [
+    {"name": "creator_campaigns",     "description": "Multi-channel campaign orchestration", "type": "workflow"},
+    {"name": "brand_kits",            "description": "Visual identity, templates, brand assets", "type": "skill"},
+    {"name": "creator_profiles",      "description": "Creator identity, portfolio, audience analytics", "type": "agent"},
+    {"name": "community_management",  "description": "Community tools, engagement, moderation", "type": "skill"},
+    {"name": "content_scheduling",    "description": "Cross-platform content calendar and publishing", "type": "skill"}
+  ],
+
+  "dependencies": [
+    {"capability": "payments",         "optional": false},
+    {"capability": "analytics",        "optional": false},
+    {"capability": "creator-identity", "optional": true}
+  ],
+
+  "revenue_model": {
+    "primary": [
+      "Creator platform subscriptions",
+      "Campaign fees",
+      "Marketplace commissions",
+      "Premium features"
+    ],
+    "white_label": [
+      "White-label creator platform for enterprises",
+      "Branded campaign builders",
+      "Private-label influencer tools"
+    ]
+  },
+
+  "registry": {
+    "agents": 0,
+    "skills": 0,
+    "providers": 0,
+    "workflows": 0
+  },
+
+  "white_label": {
+    "layer": "product",
+    "scope": ["branding", "campaign-templates", "ui", "pricing", "domain"],
+    "excluded_from_core": ["templates", "brand-assets"]
+  },
+
+  "source": "Mapped from cultura-vibe-forge/ and southern-lifestyle/ projects"
+}
