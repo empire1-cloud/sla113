@@ -67,6 +67,20 @@ from .auth import (
     AuthResponse,
 )
 
+from .soulfire import (
+    SoulfirePayload,
+    SoulfirePayloadLegacy,
+    TrackMetadata,
+    DOPEAudioBlueprint,
+    RhythmGroove,
+    TextureDSP,
+    MasterBusDSP,
+    MIDISequence,
+    LyricLine,
+    EmotionalTag,
+    convert_legacy_to_v2,
+)
+
 __all__ = [
     # User
     "UserCreate",
@@ -128,4 +142,17 @@ __all__ = [
     "TokenRefresh",
     "TokenResponse",
     "AuthResponse",
+    
+    # Soulfire
+    "SoulfirePayload",
+    "SoulfirePayloadLegacy",
+    "TrackMetadata",
+    "DOPEAudioBlueprint",
+    "RhythmGroove",
+    "TextureDSP",
+    "MasterBusDSP",
+    "MIDISequence",
+    "LyricLine",
+    "EmotionalTag",
+    "convert_legacy_to_v2",
 ]

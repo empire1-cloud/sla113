@@ -41,7 +41,7 @@ _terminal_sessions = {}
 _universe_registry = {}
 
 
-def register_universe(uid: str, name: str, description: str, prefix: str, engine: str = "internal", product: str = None, status: str = "online"):
+def register_universe(uid: str, name: str, description: str, prefix: str, engine: str = "internal", product: str = None, status: str = "online", domain: str = None):
     """Register a universe into the SLA113 sovereign registry."""
     _universe_registry[uid] = {
         "id": uid,
@@ -50,16 +50,19 @@ def register_universe(uid: str, name: str, description: str, prefix: str, engine
         "prefix": prefix,
         "engine": engine,
         "product": product,
+        "domain": domain,
         "status": status,
         "registered_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
-# Auto-register known universes
-register_universe("sla113", "SLA113 Core", "Sovereign Operator OS — Game Studio Platform", "/api/sla113", engine="fastapi+mongodb", product="SLA113 Operator OS")
-register_universe("empire1", "Empire 1", "Hybrid Intelligence Core — 19 AI Engines", "/api/empire1", engine="emergent-llm", product="Hybrid Intelligence SaaS")
-register_universe("southern", "Southern Lifestyle", "SouthernLifestyle Game OS", "/api/southern", engine="internal", product="Southern Game OS")
-register_universe("soulfire", "Soulfire Ecosystem", "ASW + El Coro + Sentinel + SL Universal", "/api/soulfire", engine="vertex-ai", product="Lyrica 3 Pro — AI Music Creation")
+# ─── Tee Architecture — Auto-register all universes ───
+register_universe("sla113", "SLA113 Core", "Sovereign Operator OS — Admin Console, Universe Registry, Engine Dashboard, Factory + Foundry, Compliance, Real-time Orchestration", "/api/sla113", engine="fastapi+mongodb", product="SLA113 Operator OS", domain="sla113.southernlifestyle.org")
+register_universe("empire1", "Empire 1", "Creator SaaS Dashboard — Onboarding, Universe Selection, Account Management, Billing, Studio Tools", "/api/empire1", engine="emergent-llm", product="Hybrid Intelligence SaaS", domain="empire1.cloud")
+register_universe("southern", "Southern Lifestyle", "Brand Root & Identity — Corporate Identity, Compliance, Admin Identity, Brand Gateway", "/api/southern", engine="internal", product="SouthernLifestyle Universe", domain="southernlifestyle.org")
+register_universe("lyrica3", "Lyrica 3", "Music Universe — AI Music Creation, Duet Engine, Emotional Grammar, Vocal Logic, Creator-owned Music Workflows", "/api/lyrica3", engine="vertex-ai", product="Lyrica 3 Pro — AI Music Creation", domain="lyrica3.com")
+register_universe("universal", "SL Universal", "Universe Portal — Universe Registry, Cross-universe Identity, Multi-universe Routing, Parent-Child Handoff", "/api/universal", engine="internal", product="Universal Layer — Meta-Router", domain="sluniversal.lyrica3.com")
+register_universe("arcade", "Arcade Universe", "Player-facing Game Portal — Game Previews, Real-time Dashboards, Fish Shooter + Slots, Frontline UI", "/api/arcade", engine="pixi+phaser", product="Arcade Universe — Interactive Game Layer", domain="arcade.southernlifestyle.org")
 
 
 @router.get("/universes")
@@ -83,9 +86,9 @@ async def get_universe(universe_id: str):
 
 
 @router.post("/universes/register")
-async def register_universe_endpoint(uid: str, name: str, description: str, prefix: str, engine: str = "internal", product: str = None):
+async def register_universe_endpoint(uid: str, name: str, description: str, prefix: str, engine: str = "internal", product: str = None, domain: str = None):
     """Dynamically register a new universe at runtime."""
-    register_universe(uid, name, description, prefix, engine, product)
+    register_universe(uid, name, description, prefix, engine, product, domain=domain)
     return {"registered": True, "universe": _universe_registry[uid]}
 
 
@@ -1478,6 +1481,7 @@ async def compile_build(build_id: str):
         )
 
         # Auto-inject registered sprites into game config (newest first) — BEFORE HTML render
+        # Write a genre-specific game.js engine using template library
         sprite_cursor = sprite_registry_collection().find({}, {"_id": 0}).sort("created_at", -1)
         all_sprites = await sprite_cursor.to_list(200)
         sprite_map = {}
@@ -1531,11 +1535,10 @@ async def compile_build(build_id: str):
                 "base_bet": lobby_cfg.get("base_bet", 0.10),
             }
 
-        # Generate the HTML5/PixiJS game shell (now with loader_url + lobby in game_config)
+        # Generate the HTML5/PixiJS game shell (after config enrichment so lobby/loader are available)
         category = GAME_TYPES.get(game_type, {}).get("category", "arcade")
         is_casino = category == "casino"
         game_desc = GAME_TYPES.get(game_type, {}).get("description", "Game")
-
         html_content = _generate_html5_shell(game_name, game_type, game_desc, game_config, asset_manifest, is_casino)
 
         with open(os.path.join(build_dir, "index.html"), "w") as f:
@@ -2320,6 +2323,8 @@ async def proxy_sprite(url: str):
     from fastapi.responses import Response
     if not url.startswith("https://"):
         raise HTTPException(status_code=400, detail="Only HTTPS URLs allowed")
+    if "customer-assets" not in url and "emergentagent" not in url:
+        raise HTTPException(status_code=403, detail="Domain not allowed")
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.get(url)

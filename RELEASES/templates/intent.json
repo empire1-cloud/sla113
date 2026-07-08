@@ -1,0 +1,13 @@
+{
+  "release_id": "{{RELEASE_ID}}",
+  "status": "pending",
+  "created_utc": "{{ISO8601_UTC}}",
+  "universe": "{{UNIVERSE}}",
+  "owner": "{{OWNER}}",
+  "title": "{{TITLE}}",
+  "description": "{{DESCRIPTION}}",
+  "tracks": [],
+  "render_spec_ref": "render_spec.json",
+  "checksum_manifest_ref": "checksum_manifest.json",
+  "release_receipt_ref": "release_receipt.json"
+}

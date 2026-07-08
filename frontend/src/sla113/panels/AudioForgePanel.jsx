@@ -31,7 +31,7 @@ const AudioForgePanel = ({ API, audioAssets, setAudioAssets, fetchData }) => {
       });
       setAudioAssets(prev => [res.data, ...prev]);
       setSelectedAudioAsset(res.data);
-    } catch { /* audio gen failed */ }
+    } catch (e) { console.error("Audio gen failed:", e); }
     setAudioGenerating(false);
   };
 
@@ -108,7 +108,7 @@ const AudioForgePanel = ({ API, audioAssets, setAudioAssets, fetchData }) => {
             </div>
             <div className="bg-black/80 border border-zinc-800 p-4 h-32 flex items-end gap-px">
               {(selectedAudioAsset.waveform_preview || []).map((v, i) => (
-                <div key={`wv-${i}`} className="flex-1 bg-[#D4AF37]/70 transition-all hover:bg-[#D4AF37]" style={{ height: `${v * 100}%` }} />
+                <div key={i} className="flex-1 bg-[#D4AF37]/70 transition-all hover:bg-[#D4AF37]" style={{ height: `${v * 100}%` }} />
               ))}
             </div>
             <div className="flex gap-2">
@@ -163,7 +163,7 @@ const AudioForgePanel = ({ API, audioAssets, setAudioAssets, fetchData }) => {
                     <div className="bg-black/50 border border-zinc-800 p-3">
                       <div className="text-[7px] text-zinc-600 uppercase tracking-widest mb-2">EQ Bands</div>
                       {selectedAudioAsset.ai_dsp_enhancement.eq_bands.map((band, i) => (
-                        <div key={`eq-${band.freq_hz}`} className="flex justify-between text-[9px] text-zinc-400">
+                        <div key={i} className="flex justify-between text-[9px] text-zinc-400">
                           <span>{band.freq_hz}Hz</span>
                           <span className={band.gain_db >= 0 ? 'text-[#D4AF37]' : 'text-red-400'}>{band.gain_db > 0 ? '+' : ''}{band.gain_db}dB</span>
                         </div>

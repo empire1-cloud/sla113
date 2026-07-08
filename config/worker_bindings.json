@@ -1,0 +1,6 @@
+{
+  "LEDGER_WORKER": {
+    "module_path": "LYRICA3.soulfire_engine.royalty_ledger.RoyaltyLedger",
+    "capabilities": ["VICS", "DNA_TAGGER", "LEDGER_COMMIT"]
+  }
+}

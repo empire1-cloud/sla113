@@ -4,6 +4,5 @@ motor
 pydantic
 pydantic-settings
 python-dotenv
-emergentintegrations
 litellm
 Pillow

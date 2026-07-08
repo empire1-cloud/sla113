@@ -864,6 +864,7 @@ export default function SLA113Page() {
                       'vertex-ai': { border: 'border-amber-500/40', bg: 'bg-amber-500/5', text: 'text-amber-400', dot: 'bg-amber-500', glow: 'shadow-[0_0_20px_rgba(245,158,11,0.08)]' },
                       'internal': { border: 'border-zinc-600/40', bg: 'bg-zinc-800/30', text: 'text-zinc-400', dot: 'bg-zinc-500', glow: '' },
                       'cocos2d': { border: 'border-emerald-500/40', bg: 'bg-emerald-500/5', text: 'text-emerald-400', dot: 'bg-emerald-500', glow: 'shadow-[0_0_20px_rgba(16,185,129,0.08)]' },
+                      'pixi+phaser': { border: 'border-rose-500/40', bg: 'bg-rose-500/5', text: 'text-rose-400', dot: 'bg-rose-500', glow: 'shadow-[0_0_20px_rgba(244,63,94,0.08)]' },
                     };
                     const ec = engineColors[u.engine] || engineColors['internal'];
                     const isExpanded = expandedUniverse === u.id;
@@ -899,6 +900,12 @@ export default function SLA113Page() {
                             <div className="bg-black/50 border border-zinc-800 p-3">
                               <span className="text-[8px] text-zinc-600 uppercase tracking-widest block mb-1">Product</span>
                               <span className={`text-xs font-bold ${ec.text}`}>{u.product}</span>
+                            </div>
+                          )}
+                          {u.domain && (
+                            <div className="bg-black/50 border border-zinc-800 p-3">
+                              <span className="text-[8px] text-zinc-600 uppercase tracking-widest block mb-1">Domain</span>
+                              <a href={`https://${u.domain}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className={`text-xs font-bold ${ec.text} hover:underline`}>{u.domain}</a>
                             </div>
                           )}
                           <div className="flex gap-3">

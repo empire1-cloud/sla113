@@ -1,161 +1,151 @@
 #!/bin/bash
 # ============================================
-# Hybrid Intelligence Core - Deployment Script
+# Empire1 Ecosystem — Cloud Run Deployment
 # ============================================
-# Run this script after setup-server.sh and cloning the repo
-# Usage: bash deploy.sh
+# Deploys SLA113 backend API + frontend to Google Cloud Run
 #
-# This script will:
-# 1. Install backend dependencies
-# 2. Build frontend
-# 3. Configure NGINX
-# 4. Set up systemd service
-# 5. Start the application
+# Prerequisites:
+#   - gcloud CLI authenticated (gcloud auth login)
+#   - GCP project set (gcloud config set project YOUR_PROJECT)
+#   - Artifact Registry repo created
+#   - MongoDB Atlas connection string ready
+#
+# Usage: bash deployment/deploy.sh
 # ============================================
 
-set -e  # Exit on error
+set -e
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-APP_DIR="/var/www/hybrid-intelligence"
-DOMAIN="yourdomain.com"  # CHANGE THIS
+# ─── Configuration ───
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+REGION="us-central1"
+REPO="empire1"
+
+# Service names
+BACKEND_SERVICE="sla113-api"
+FRONTEND_SERVICE="sla113-frontend"
+
+# Domains (Tee Architecture)
+BACKEND_DOMAIN="sla113.southernlifestyle.org"
+FRONTEND_DOMAIN="sla113.southernlifestyle.org"
+
+# Image tags
+BACKEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${BACKEND_SERVICE}"
+FRONTEND_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${FRONTEND_SERVICE}"
 
 echo -e "${GREEN}============================================${NC}"
-echo -e "${GREEN}Hybrid Intelligence Core - Deployment${NC}"
+echo -e "${GREEN}Empire1 Ecosystem — Cloud Run Deploy${NC}"
 echo -e "${GREEN}============================================${NC}"
+echo -e "${BLUE}Project: ${PROJECT_ID}${NC}"
+echo -e "${BLUE}Region:  ${REGION}${NC}"
 echo ""
 
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then
-    echo -e "${RED}Please run as root (sudo bash deploy.sh)${NC}"
+# ─── Preflight checks ───
+if [ -z "$PROJECT_ID" ]; then
+    echo -e "${RED}ERROR: No GCP project set. Run: gcloud config set project YOUR_PROJECT${NC}"
     exit 1
 fi
 
-# ==================== CHECK .ENV ====================
-echo -e "${YELLOW}[1/7] Checking environment files...${NC}"
-
-if [ ! -f "$APP_DIR/backend/.env" ]; then
-    echo -e "${RED}ERROR: Backend .env file not found!${NC}"
-    echo "Please copy .env.production.template to $APP_DIR/backend/.env and configure it"
+if [ -z "$MONGO_URL" ]; then
+    echo -e "${RED}ERROR: MONGO_URL not set. Export it before running this script.${NC}"
+    echo "  export MONGO_URL='mongodb+srv://...'"
     exit 1
 fi
 
-if [ ! -f "$APP_DIR/frontend/.env" ]; then
-    echo -e "${RED}ERROR: Frontend .env file not found!${NC}"
-    echo "Please create $APP_DIR/frontend/.env with REACT_APP_BACKEND_URL"
-    exit 1
+if [ -z "$DB_NAME" ]; then
+    export DB_NAME="hybrid_intelligence"
 fi
 
-echo -e "${GREEN}✓ Environment files found${NC}"
+# ─── Ensure Artifact Registry repo exists ───
+echo -e "${YELLOW}[1/6] Ensuring Artifact Registry repo...${NC}"
+gcloud artifacts repositories describe "$REPO" --location="$REGION" 2>/dev/null || \
+    gcloud artifacts repositories create "$REPO" --repository-format=docker --location="$REGION" --description="Empire1 container images"
+echo -e "${GREEN}✓ Artifact Registry ready${NC}"
 
-# ==================== BACKEND SETUP ====================
-echo -e "${YELLOW}[2/7] Installing backend dependencies...${NC}"
-cd "$APP_DIR/backend"
+# ─── Configure Docker auth ───
+echo -e "${YELLOW}[2/6] Configuring Docker auth...${NC}"
+gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+echo -e "${GREEN}✓ Docker auth configured${NC}"
 
-# Activate virtual environment
-source "$APP_DIR/venv/bin/activate"
+# ─── Build & push backend ───
+echo -e "${YELLOW}[3/6] Building backend image...${NC}"
+docker build -t "${BACKEND_IMAGE}:latest" -f Dockerfile .
+docker push "${BACKEND_IMAGE}:latest"
+echo -e "${GREEN}✓ Backend image pushed${NC}"
 
-# Install dependencies
-pip install -r requirements.txt
+# ─── Build & push frontend ───
+echo -e "${YELLOW}[4/6] Building frontend image...${NC}"
+docker build -t "${FRONTEND_IMAGE}:latest" \
+    --build-arg REACT_APP_BACKEND_URL="https://${BACKEND_DOMAIN}" \
+    -f frontend/Dockerfile frontend/
+docker push "${FRONTEND_IMAGE}:latest"
+echo -e "${GREEN}✓ Frontend image pushed${NC}"
 
-# Install emergentintegrations
-pip install emergentintegrations --extra-index-url https://d33sy5i8bnduwe.cloudfront.net/simple/
+# ─── Deploy backend to Cloud Run ───
+echo -e "${YELLOW}[5/6] Deploying backend to Cloud Run...${NC}"
+gcloud run deploy "$BACKEND_SERVICE" \
+    --image "${BACKEND_IMAGE}:latest" \
+    --region "$REGION" \
+    --platform managed \
+    --allow-unauthenticated \
+    --port 8080 \
+    --memory 1Gi \
+    --cpu 1 \
+    --min-instances 0 \
+    --max-instances 10 \
+    --concurrency 80 \
+    --timeout 300 \
+    --set-env-vars "MONGO_URL=${MONGO_URL},DB_NAME=${DB_NAME},CORS_ORIGINS=https://${FRONTEND_DOMAIN}" \
+    --set-env-vars "JWT_SECRET_KEY=${JWT_SECRET_KEY:-$(openssl rand -hex 32)}" \
+    ${EMERGENT_LLM_KEY:+--set-env-vars "EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY}"} \
+    ${GEMINI_API_KEY:+--set-env-vars "GEMINI_API_KEY=${GEMINI_API_KEY}"} \
+    ${STRIPE_SECRET_KEY:+--set-env-vars "STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}"} \
+    ${RESEND_API_KEY:+--set-env-vars "RESEND_API_KEY=${RESEND_API_KEY}"}
 
-echo -e "${GREEN}✓ Backend dependencies installed${NC}"
+BACKEND_URL=$(gcloud run services describe "$BACKEND_SERVICE" --region "$REGION" --format 'value(status.url)')
+echo -e "${GREEN}✓ Backend deployed: ${BACKEND_URL}${NC}"
 
-# ==================== FRONTEND BUILD ====================
-echo -e "${YELLOW}[3/7] Building frontend...${NC}"
-cd "$APP_DIR/frontend"
+# ─── Deploy frontend to Cloud Run ───
+echo -e "${YELLOW}[6/6] Deploying frontend to Cloud Run...${NC}"
+gcloud run deploy "$FRONTEND_SERVICE" \
+    --image "${FRONTEND_IMAGE}:latest" \
+    --region "$REGION" \
+    --platform managed \
+    --allow-unauthenticated \
+    --port 8080 \
+    --memory 256Mi \
+    --cpu 1 \
+    --min-instances 0 \
+    --max-instances 5 \
+    --concurrency 200
 
-# Install dependencies
-yarn install --frozen-lockfile
+FRONTEND_URL=$(gcloud run services describe "$FRONTEND_SERVICE" --region "$REGION" --format 'value(status.url)')
+echo -e "${GREEN}✓ Frontend deployed: ${FRONTEND_URL}${NC}"
 
-# Build production bundle
-yarn build
-
-echo -e "${GREEN}✓ Frontend built successfully${NC}"
-
-# ==================== NGINX CONFIGURATION ====================
-echo -e "${YELLOW}[4/7] Configuring NGINX...${NC}"
-
-# Copy nginx config
-cp "$APP_DIR/deployment/nginx.conf" /etc/nginx/sites-available/hybrid-intelligence
-
-# Update domain in config
-sed -i "s/yourdomain.com/$DOMAIN/g" /etc/nginx/sites-available/hybrid-intelligence
-
-# Enable site
-ln -sf /etc/nginx/sites-available/hybrid-intelligence /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
-
-# Test nginx config
-nginx -t
-
-# Reload nginx
-systemctl reload nginx
-
-echo -e "${GREEN}✓ NGINX configured${NC}"
-
-# ==================== SYSTEMD SERVICE ====================
-echo -e "${YELLOW}[5/7] Setting up systemd service...${NC}"
-
-# Copy service file
-cp "$APP_DIR/deployment/hybrid-intelligence.service" /etc/systemd/system/
-
-# Reload systemd
-systemctl daemon-reload
-
-# Enable service
-systemctl enable hybrid-intelligence
-
-echo -e "${GREEN}✓ Systemd service configured${NC}"
-
-# ==================== SET PERMISSIONS ====================
-echo -e "${YELLOW}[6/7] Setting permissions...${NC}"
-
-chown -R www-data:www-data "$APP_DIR"
-chown -R www-data:www-data /var/log/hybrid-intelligence
-chmod 600 "$APP_DIR/backend/.env"
-chmod 600 "$APP_DIR/frontend/.env"
-
-echo -e "${GREEN}✓ Permissions set${NC}"
-
-# ==================== START APPLICATION ====================
-echo -e "${YELLOW}[7/7] Starting application...${NC}"
-
-systemctl restart hybrid-intelligence
-sleep 3
-
-# Check if service is running
-if systemctl is-active --quiet hybrid-intelligence; then
-    echo -e "${GREEN}✓ Application started successfully${NC}"
-else
-    echo -e "${RED}✗ Application failed to start${NC}"
-    echo "Check logs: journalctl -u hybrid-intelligence -f"
-    exit 1
-fi
-
-# ==================== SUMMARY ====================
+# ─── Summary ───
 echo ""
 echo -e "${GREEN}============================================${NC}"
 echo -e "${GREEN}Deployment Complete!${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
-echo -e "${BLUE}Application Status:${NC}"
-systemctl status hybrid-intelligence --no-pager | head -10
+echo -e "${BLUE}Backend:  ${BACKEND_URL}${NC}"
+echo -e "${BLUE}Frontend: ${FRONTEND_URL}${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo "  1. Point your domain DNS to this server's IP"
-echo "  2. Set up SSL: sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN"
-echo "  3. Test the application: curl -I https://$DOMAIN"
+echo "  1. Map custom domains:"
+echo "     gcloud run domain-mappings create --service ${BACKEND_SERVICE} --domain ${BACKEND_DOMAIN} --region ${REGION}"
+echo "     gcloud run domain-mappings create --service ${FRONTEND_SERVICE} --domain ${FRONTEND_DOMAIN} --region ${REGION}"
+echo "  2. Update DNS CNAME records to point to ghs.googlehosted.com"
+echo "  3. Verify: curl https://${BACKEND_DOMAIN}/api/health"
 echo ""
-echo -e "${YELLOW}Useful commands:${NC}"
-echo "  - View logs: journalctl -u hybrid-intelligence -f"
-echo "  - Restart: sudo systemctl restart hybrid-intelligence"
-echo "  - Status: sudo systemctl status hybrid-intelligence"
+echo -e "${YELLOW}TEE ARCHITECTURE — Domain Map:${NC}"
+echo "  sla113-api           → sla113.southernlifestyle.org"
+echo "  empire1-api           → empire1.cloud              (future)"
+echo "  lyrica3-api           → lyrica3.com                (future)"
+echo "  arcade-frontend       → arcade.southernlifestyle.org (future)"
 echo ""

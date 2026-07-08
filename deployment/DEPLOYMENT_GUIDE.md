@@ -1,384 +1,234 @@
-# ============================================
-# HYBRID INTELLIGENCE CORE
-# Production Deployment Guide
-# ============================================
+# Empire1 Ecosystem — Cloud Run Deployment Guide
 
-## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Server Setup](#server-setup)
-3. [MongoDB Atlas Setup](#mongodb-atlas-setup)
-4. [External Services Setup](#external-services-setup)
-5. [Application Deployment](#application-deployment)
-6. [SSL Certificate Setup](#ssl-certificate-setup)
-7. [DNS Configuration](#dns-configuration)
-8. [Post-Deployment Verification](#post-deployment-verification)
-9. [Maintenance Commands](#maintenance-commands)
-10. [Troubleshooting](#troubleshooting)
+## Tee Architecture — Domain Map
+
+| Domain | Universe | Cloud Run Service |
+|--------|----------|-------------------|
+| `sla113.southernlifestyle.org` | SLA113 (Core OS) | `sla113-api` + `sla113-frontend` |
+| `empire1.cloud` | E1 (Creator SaaS) | `empire1-api` (future) |
+| `lyrica3.com` | L3 (Music Universe) | `lyrica3-api` (future) |
+| `sluniversal.lyrica3.com` | UL (Meta-Router) | `universal-router` (future) |
+| `arcade.southernlifestyle.org` | AR (Game Portal) | `arcade-frontend` (future) |
+| `southernlifestyle.org` | SL (Brand Root) | static / DNS |
 
 ---
 
 ## Prerequisites
 
-### Server Requirements
-- **OS**: Ubuntu 22.04 LTS
-- **RAM**: Minimum 2GB (4GB recommended)
-- **CPU**: 2 vCPUs minimum
-- **Storage**: 20GB SSD minimum
-- **Provider**: IONOS, DigitalOcean, AWS, etc.
+- **Google Cloud** project with billing enabled
+- **gcloud CLI** installed and authenticated (`gcloud auth login`)
+- **Docker** installed locally (for building images)
+- **MongoDB Atlas** cluster with connection string
+- **Domain DNS** access for `southernlifestyle.org` subdomains
 
-### Domain
-- A registered domain name (e.g., yourdomain.com)
-- Access to DNS management
-
-### Accounts Needed
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (free tier available)
-- [Stripe](https://stripe.com) (for payments)
-- [Resend](https://resend.com) (for emails)
-- [Google Cloud Console](https://console.cloud.google.com) (for OAuth)
-- [GitHub Developer Settings](https://github.com/settings/developers) (for OAuth)
-
----
-
-## Server Setup
-
-### 1. SSH into your IONOS VPS
+### GCP APIs to Enable
 ```bash
-ssh root@YOUR_SERVER_IP
-```
-
-### 2. Create deploy user (recommended)
-```bash
-adduser deploy
-usermod -aG sudo deploy
-su - deploy
-```
-
-### 3. Run the setup script
-```bash
-# Download and run setup
-curl -O https://raw.githubusercontent.com/yourusername/hybrid-intelligence/main/deployment/setup-server.sh
-sudo bash setup-server.sh
-```
-
-This installs:
-- Python 3.11
-- Node.js 20 LTS
-- NGINX
-- Certbot
-- UFW Firewall
-- Fail2Ban
-
----
-
-## MongoDB Atlas Setup
-
-### 1. Create a Cluster
-1. Go to [MongoDB Atlas](https://cloud.mongodb.com)
-2. Create a new project: "Hybrid Intelligence"
-3. Create a cluster (M0 free tier is fine to start)
-4. Select your preferred region (close to your VPS)
-
-### 2. Create Database User
-1. Go to **Database Access**
-2. Add new database user
-3. Username: `hybrid_app`
-4. Password: Generate a strong password (save it!)
-5. Privileges: `readWriteAnyDatabase`
-
-### 3. Configure Network Access
-1. Go to **Network Access**
-2. Add IP Address
-3. Add your VPS IP address
-4. Or add `0.0.0.0/0` for access from anywhere (less secure)
-
-### 4. Get Connection String
-1. Go to **Clusters** → **Connect**
-2. Choose "Connect your application"
-3. Copy the connection string:
-```
-mongodb+srv://hybrid_app:PASSWORD@cluster0.xxxxx.mongodb.net/hybrid_intelligence?retryWrites=true&w=majority
+gcloud services enable \
+    run.googleapis.com \
+    artifactregistry.googleapis.com \
+    cloudbuild.googleapis.com
 ```
 
 ---
 
-## External Services Setup
+## Quick Deploy
 
-### Stripe (Payments)
-1. Create account at [stripe.com](https://stripe.com)
-2. Go to **Developers** → **API Keys**
-3. Copy:
-   - `STRIPE_SECRET_KEY`: sk_live_...
-   - `STRIPE_PUBLISHABLE_KEY`: pk_live_...
-4. Set up webhook:
-   - URL: `https://yourdomain.com/api/billing/webhook`
-   - Events: `checkout.session.completed`, `customer.subscription.*`
-   - Copy `STRIPE_WEBHOOK_SECRET`
-5. Create Products/Prices:
-   - Pro Plan: Copy `price_id`
-   - Enterprise Plan: Copy `price_id`
-
-### Resend (Email)
-1. Create account at [resend.com](https://resend.com)
-2. Verify your domain
-3. Go to **API Keys** → Create API key
-4. Copy `RESEND_API_KEY`: re_...
-
-### Google OAuth
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create new project or select existing
-3. Go to **APIs & Services** → **Credentials**
-4. Create **OAuth 2.0 Client ID**
-   - Type: Web application
-   - Authorized redirect URIs: `https://yourdomain.com/api/auth/oauth/google/callback`
-5. Copy:
-   - `GOOGLE_CLIENT_ID`
-   - `GOOGLE_CLIENT_SECRET`
-
-### GitHub OAuth
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Create **New OAuth App**
-   - Homepage URL: `https://yourdomain.com`
-   - Callback URL: `https://yourdomain.com/api/auth/oauth/github/callback`
-3. Copy:
-   - `GITHUB_CLIENT_ID`
-   - `GITHUB_CLIENT_SECRET`
-
----
-
-## Application Deployment
-
-### 1. Clone the Repository
 ```bash
-cd /var/www/hybrid-intelligence
-sudo git clone https://github.com/yourusername/hybrid-intelligence.git .
-```
+# Set your GCP project
+gcloud config set project YOUR_PROJECT_ID
 
-### 2. Configure Environment Variables
+# Export required env vars
+export MONGO_URL="mongodb+srv://user:pass@cluster.mongodb.net/hybrid_intelligence?retryWrites=true&w=majority"
+export DB_NAME="hybrid_intelligence"
 
-**Backend (.env)**
-```bash
-sudo cp deployment/.env.production.template backend/.env
-sudo nano backend/.env
-```
+# Optional API keys
+export EMERGENT_LLM_KEY="your-key"
+export GEMINI_API_KEY="your-key"
+export STRIPE_SECRET_KEY="sk_live_..."
 
-Fill in all values from the services you set up above.
-
-**Frontend (.env)**
-```bash
-sudo cp deployment/.env.frontend.template frontend/.env
-sudo nano frontend/.env
-```
-
-Update `REACT_APP_BACKEND_URL` to your domain.
-
-### 3. Update Domain in Deployment Scripts
-```bash
-# Edit deploy.sh and change DOMAIN variable
-sudo nano deployment/deploy.sh
-# Change: DOMAIN="yourdomain.com" to your actual domain
-```
-
-### 4. Run Deployment
-```bash
-sudo bash deployment/deploy.sh
+# Deploy
+bash deployment/deploy.sh
 ```
 
 ---
 
-## SSL Certificate Setup
+## Step-by-Step
 
-### 1. Ensure DNS is pointing to your server
+### 1. Create Artifact Registry
+
 ```bash
-dig +short yourdomain.com
-# Should return your server IP
+gcloud artifacts repositories create empire1 \
+    --repository-format=docker \
+    --location=us-central1 \
+    --description="Empire1 container images"
 ```
 
-### 2. Run Certbot
+### 2. Build & Push Backend Image
+
 ```bash
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+# From repo root
+gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+docker build -t us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest -f Dockerfile .
+docker push us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest
 ```
 
-### 3. Verify Auto-Renewal
+### 3. Deploy Backend to Cloud Run
+
 ```bash
-sudo certbot renew --dry-run
+gcloud run deploy sla113-api \
+    --image us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest \
+    --region us-central1 \
+    --platform managed \
+    --allow-unauthenticated \
+    --port 8080 \
+    --memory 1Gi \
+    --set-env-vars "MONGO_URL=...,DB_NAME=hybrid_intelligence"
+```
+
+### 4. Build & Push Frontend Image
+
+```bash
+docker build -t us-central1-docker.pkg.dev/PROJECT/empire1/sla113-frontend:latest \
+    --build-arg REACT_APP_BACKEND_URL=https://sla113.southernlifestyle.org \
+    -f frontend/Dockerfile frontend/
+docker push us-central1-docker.pkg.dev/PROJECT/empire1/sla113-frontend:latest
+```
+
+### 5. Deploy Frontend to Cloud Run
+
+```bash
+gcloud run deploy sla113-frontend \
+    --image us-central1-docker.pkg.dev/PROJECT/empire1/sla113-frontend:latest \
+    --region us-central1 \
+    --platform managed \
+    --allow-unauthenticated \
+    --port 8080 \
+    --memory 256Mi
+```
+
+### 6. Map Custom Domains
+
+```bash
+# Backend API
+gcloud run domain-mappings create \
+    --service sla113-api \
+    --domain sla113.southernlifestyle.org \
+    --region us-central1
+
+# Get the DNS target
+gcloud run domain-mappings describe \
+    --domain sla113.southernlifestyle.org \
+    --region us-central1
+```
+
+Then add a CNAME record in your DNS:
+```
+sla113.southernlifestyle.org  →  ghs.googlehosted.com
+```
+
+Cloud Run auto-provisions SSL certificates once DNS propagates.
+
+---
+
+## Environment Variables
+
+### Required
+| Variable | Description |
+|----------|-------------|
+| `MONGO_URL` | MongoDB Atlas connection string |
+| `DB_NAME` | Database name (default: `hybrid_intelligence`) |
+
+### Auto-generated
+| Variable | Description |
+|----------|-------------|
+| `JWT_SECRET_KEY` | Generated if not provided |
+| `CORS_ORIGINS` | Set by deploy script to frontend domain |
+
+### Optional
+| Variable | Description |
+|----------|-------------|
+| `EMERGENT_LLM_KEY` | Powers AI engines (strategy, analysis, terminal) |
+| `GEMINI_API_KEY` | Vision Smith image generation |
+| `STRIPE_SECRET_KEY` | Subscription billing |
+| `RESEND_API_KEY` | Transactional email |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth |
+
+### Setting Secrets via Cloud Run
+
+```bash
+# Using --set-env-vars (simple)
+gcloud run services update sla113-api --region us-central1 \
+    --set-env-vars "STRIPE_SECRET_KEY=sk_live_..."
+
+# Using Secret Manager (recommended for production)
+echo -n "sk_live_..." | gcloud secrets create STRIPE_SECRET_KEY --data-file=-
+gcloud run services update sla113-api --region us-central1 \
+    --set-secrets "STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest"
 ```
 
 ---
 
-## DNS Configuration
+## OAuth Callback URLs
 
-### A Records
-| Type | Name | Value | TTL |
-|------|------|-------|-----|
-| A | @ | YOUR_SERVER_IP | 300 |
-| A | www | YOUR_SERVER_IP | 300 |
+When setting up OAuth providers, use these callback URLs:
 
-### MX Records (if using Resend for sending)
-Follow Resend's domain verification instructions.
+- **Google**: `https://sla113.southernlifestyle.org/api/auth/oauth/google/callback`
+- **GitHub**: `https://sla113.southernlifestyle.org/api/auth/oauth/github/callback`
+- **Stripe Webhook**: `https://sla113.southernlifestyle.org/api/billing/webhook`
 
 ---
 
-## Post-Deployment Verification
+## Verification
 
-### 1. Check Service Status
 ```bash
-sudo systemctl status hybrid-intelligence
-sudo systemctl status nginx
-```
+# Health check
+curl https://sla113.southernlifestyle.org/api/health
 
-### 2. Test API Health
-```bash
-curl https://yourdomain.com/api/system/health
-# Expected: {"status":"healthy","version":"2.1.0",...}
-```
+# Universe registry (should show 6 universes)
+curl https://sla113.southernlifestyle.org/api/sla113/universes
 
-### 3. Test Frontend
-Open `https://yourdomain.com` in browser
-
-### 4. Test Authentication
-1. Go to signup page
-2. Create an account
-3. Log in
-4. Verify team creation
-
-### 5. Check Logs
-```bash
-# Application logs
-sudo journalctl -u hybrid-intelligence -f
-
-# NGINX logs
-sudo tail -f /var/log/nginx/hybrid-intelligence.access.log
-sudo tail -f /var/log/nginx/hybrid-intelligence.error.log
+# Game types (should show 29)
+curl https://sla113.southernlifestyle.org/api/sla113/game-types | python3 -c "import sys,json; print(json.load(sys.stdin)['total_types'])"
 ```
 
 ---
 
-## Maintenance Commands
+## Monitoring
 
-### Restart Application
 ```bash
-sudo systemctl restart hybrid-intelligence
-```
+# View logs
+gcloud run services logs read sla113-api --region us-central1 --limit 50
 
-### View Logs
-```bash
-# Real-time logs
-sudo journalctl -u hybrid-intelligence -f
+# View metrics
+gcloud run services describe sla113-api --region us-central1
 
-# Last 100 lines
-sudo journalctl -u hybrid-intelligence -n 100
-```
-
-### Update Application
-```bash
-cd /var/www/hybrid-intelligence
-
-# Pull latest code
-sudo git pull origin main
-
-# Install any new backend dependencies
-source venv/bin/activate
-pip install -r backend/requirements.txt
-
-# Rebuild frontend
-cd frontend
-yarn install
-yarn build
-
-# Restart service
-sudo systemctl restart hybrid-intelligence
-```
-
-### Backup Database
-```bash
-# MongoDB Atlas handles backups automatically
-# For manual backup, use mongodump
-mongodump --uri="mongodb+srv://..." --out=/backup/$(date +%Y%m%d)
-```
-
-### Monitor Resources
-```bash
-htop
-df -h
-free -m
+# List revisions
+gcloud run revisions list --service sla113-api --region us-central1
 ```
 
 ---
 
-## Troubleshooting
+## Updating
 
-### Application Won't Start
 ```bash
-# Check logs
-sudo journalctl -u hybrid-intelligence -n 50
+# Rebuild and push new image
+docker build -t us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest -f Dockerfile .
+docker push us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest
 
-# Common issues:
-# - Missing .env file
-# - Invalid MongoDB connection string
-# - Port 8001 already in use
-```
-
-### NGINX 502 Bad Gateway
-```bash
-# Check if backend is running
-sudo systemctl status hybrid-intelligence
-
-# Check if port 8001 is listening
-sudo netstat -tlnp | grep 8001
-
-# Check NGINX error log
-sudo tail -f /var/log/nginx/hybrid-intelligence.error.log
-```
-
-### SSL Certificate Issues
-```bash
-# Renew certificate
-sudo certbot renew
-
-# Check certificate status
-sudo certbot certificates
-```
-
-### MongoDB Connection Issues
-```bash
-# Test connection
-python3 -c "from pymongo import MongoClient; c = MongoClient('YOUR_MONGO_URL'); print(c.server_info())"
-
-# Check if IP is whitelisted in Atlas
-```
-
-### Permission Denied
-```bash
-# Fix ownership
-sudo chown -R www-data:www-data /var/www/hybrid-intelligence
-sudo chown -R www-data:www-data /var/log/hybrid-intelligence
+# Cloud Run auto-deploys latest image, or force:
+gcloud run deploy sla113-api \
+    --image us-central1-docker.pkg.dev/PROJECT/empire1/sla113-api:latest \
+    --region us-central1
 ```
 
 ---
 
-## Security Checklist
+## Future Services (Tee Architecture Expansion)
 
-- [ ] SSH key authentication enabled
-- [ ] Password authentication disabled
-- [ ] UFW firewall enabled
-- [ ] Fail2Ban configured
-- [ ] SSL certificate installed
-- [ ] HSTS enabled
-- [ ] Secure .env file permissions (600)
-- [ ] MongoDB IP whitelist configured
-- [ ] Strong JWT secrets generated
-- [ ] Rate limiting enabled in NGINX
-
----
-
-## Support
-
-For issues, check:
-1. Application logs: `journalctl -u hybrid-intelligence`
-2. NGINX logs: `/var/log/nginx/hybrid-intelligence.error.log`
-3. MongoDB Atlas logs in the web console
-
----
-
-*Last updated: 2026-02-09*
-*Version: 2.1.0*
+| Service | Domain | Notes |
+|---------|--------|-------|
+| `empire1-api` | `empire1.cloud` | Creator SaaS backend |
+| `lyrica3-api` | `lyrica3.com` | Music/emotional engine backend |
+| `arcade-frontend` | `arcade.southernlifestyle.org` | Player game portal |
+| `universal-router` | `sluniversal.lyrica3.com` | Cross-universe routing |

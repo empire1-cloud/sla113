@@ -1,170 +1,57 @@
-# ============================================
-# HYBRID INTELLIGENCE CORE
-# Pre-Launch Checklist
-# ============================================
+# Empire1 Ecosystem — Cloud Run Launch Checklist
 
-## Before You Start
+## GCP Setup
+- [ ] GCP project created with billing enabled
+- [ ] `gcloud` CLI authenticated (`gcloud auth login`)
+- [ ] APIs enabled: Cloud Run, Artifact Registry, Cloud Build
+- [ ] Artifact Registry repo created (`empire1`)
 
-### Domain & DNS
-- [ ] Domain registered and accessible
-- [ ] A record pointing to VPS IP
-- [ ] www subdomain configured
+## MongoDB Atlas
+- [ ] Cluster created
+- [ ] Database user created
+- [ ] Network access: allow `0.0.0.0/0` (Cloud Run has dynamic IPs)
+- [ ] Connection string ready
+
+## DNS (Tee Architecture)
+| Domain | Record | Value | Status |
+|--------|--------|-------|--------|
+| `sla113.southernlifestyle.org` | CNAME | `ghs.googlehosted.com` | [ ] |
+| `arcade.southernlifestyle.org` | CNAME | `ghs.googlehosted.com` | [ ] (future) |
+| `empire1.cloud` | CNAME | `ghs.googlehosted.com` | [ ] (future) |
+| `sluniversal.lyrica3.com` | CNAME | `ghs.googlehosted.com` | [ ] (future) |
+
 - [ ] DNS propagation complete (check: https://dnschecker.org)
 
-### Server Access
-- [ ] VPS provisioned (IONOS or other)
-- [ ] SSH access working
-- [ ] Root or sudo access available
+## Deploy
+- [ ] `MONGO_URL` exported
+- [ ] `DB_NAME` exported
+- [ ] `bash deployment/deploy.sh` completed
+- [ ] Backend Cloud Run service running
+- [ ] Frontend Cloud Run service running
+- [ ] Custom domain mapped (`gcloud run domain-mappings create`)
+- [ ] SSL certificate auto-provisioned by Cloud Run
 
----
+## Verification
+- [ ] `curl https://sla113.southernlifestyle.org/api/health` returns healthy
+- [ ] `curl https://sla113.southernlifestyle.org/api/sla113/universes` shows 6 universes
+- [ ] `curl https://sla113.southernlifestyle.org/api/sla113/game-types` shows 29 types
+- [ ] Frontend loads at `https://sla113.southernlifestyle.org`
+- [ ] SLA113 admin dashboard loads at `https://sla113.southernlifestyle.org/sla113`
 
-## External Services Setup
-
-### MongoDB Atlas
-- [ ] Account created
-- [ ] Cluster created (M0 free tier or higher)
-- [ ] Database user created
-- [ ] Network access configured (VPS IP whitelisted)
-- [ ] Connection string copied
-
-### Stripe (Optional - for billing)
-- [ ] Account created
-- [ ] Secret key copied
-- [ ] Webhook endpoint created
-- [ ] Webhook secret copied
-- [ ] Products/Prices created
-
-### Resend (Optional - for email)
-- [ ] Account created
-- [ ] Domain verified
-- [ ] API key created
-
-### Google OAuth (Optional)
-- [ ] Project created in Google Cloud
-- [ ] OAuth credentials created
-- [ ] Redirect URI configured
-
-### GitHub OAuth (Optional)
-- [ ] OAuth app created
-- [ ] Callback URL configured
-
----
-
-## Server Setup
-
-### Run Setup Script
-- [ ] `setup-server.sh` executed successfully
-- [ ] Python 3.11 installed
-- [ ] Node.js 20 installed
-- [ ] NGINX installed
-- [ ] Certbot installed
-- [ ] Firewall enabled
-
-### Application Files
-- [ ] Repository cloned to `/var/www/hybrid-intelligence`
-- [ ] Backend `.env` configured
-- [ ] Frontend `.env` configured
-- [ ] Permissions set correctly
-
----
-
-## Deployment
-
-### Deploy Application
-- [ ] `deploy.sh` executed successfully
-- [ ] Backend dependencies installed
-- [ ] Frontend built
-- [ ] NGINX configured
-- [ ] Systemd service created
-- [ ] Application running
-
-### SSL Certificate
-- [ ] Certbot completed successfully
-- [ ] HTTPS accessible
-- [ ] Auto-renewal configured
-
----
-
-## Post-Deployment Verification
-
-### API Health
-- [ ] `curl https://yourdomain.com/api/system/health` returns OK
-- [ ] `curl https://yourdomain.com/api/system/status` shows services
-
-### Authentication
+## Auth
 - [ ] Signup works
 - [ ] Login works
-- [ ] Password reset works (if email configured)
-- [ ] OAuth works (if configured)
+- [ ] Google OAuth configured (optional)
+- [ ] GitHub OAuth configured (optional)
 
-### Core Features
-- [ ] Dashboard loads
-- [ ] Team creation works
-- [ ] Team switching works
-- [ ] Profile page works
-- [ ] Team settings work
-
-### Admin Features (if applicable)
-- [ ] Admin overview accessible
-- [ ] System stats display
-
----
-
-## Security Final Check
-
-- [ ] .env files have 600 permissions
-- [ ] No secrets in git repository
-- [ ] SSL/TLS working (check: https://ssllabs.com/ssltest)
-- [ ] HSTS header present
-- [ ] Rate limiting active
-- [ ] Fail2Ban running
-
----
+## Optional Services
+- [ ] `EMERGENT_LLM_KEY` set (AI engines)
+- [ ] `GEMINI_API_KEY` set (Vision Smith)
+- [ ] `STRIPE_SECRET_KEY` set (billing)
+- [ ] `RESEND_API_KEY` set (email)
+- [ ] Stripe webhook URL: `https://sla113.southernlifestyle.org/api/billing/webhook`
 
 ## Go Live
-
-- [ ] All checks above passed
-- [ ] Monitoring set up (optional but recommended)
-- [ ] Backup strategy in place
-- [ ] Team notified
-- [ ] **LAUNCHED!** 🚀
-
----
-
-## Quick Reference
-
-### Useful Commands
-```bash
-# Check application status
-sudo systemctl status hybrid-intelligence
-
-# View real-time logs
-sudo journalctl -u hybrid-intelligence -f
-
-# Restart application
-sudo systemctl restart hybrid-intelligence
-
-# Check NGINX
-sudo nginx -t
-sudo systemctl reload nginx
-
-# Check SSL
-sudo certbot certificates
-```
-
-### Important Paths
-```
-Application:  /var/www/hybrid-intelligence
-Backend:      /var/www/hybrid-intelligence/backend
-Frontend:     /var/www/hybrid-intelligence/frontend/build
-Logs:         /var/log/hybrid-intelligence
-NGINX config: /etc/nginx/sites-available/hybrid-intelligence
-Service:      /etc/systemd/system/hybrid-intelligence.service
-```
-
-### Support URLs
-- MongoDB Atlas: https://cloud.mongodb.com
-- Stripe Dashboard: https://dashboard.stripe.com
-- Resend Dashboard: https://resend.com
-- SSL Check: https://ssllabs.com/ssltest
-- DNS Check: https://dnschecker.org
+- [ ] All checks passed
+- [ ] Monitoring configured (`gcloud run services logs read`)
+- [ ] **LAUNCHED** 🚀

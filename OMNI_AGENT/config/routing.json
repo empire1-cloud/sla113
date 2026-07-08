@@ -1,0 +1,134 @@
+{
+  "config_version": "1.0",
+  "last_updated": "2026-05-13T00:00:00Z",
+  "provider": "omni_routing_config",
+
+  "task_type_routing": {
+    "creative": {
+      "description": "Song, vibe, lyrics, blueprint",
+      "route": ["interpreter", "architect", "lyrica_worker", "evaluator", "chronicler"],
+      "engines_used": ["CCNA", "EPD", "S2", "Nemotron_Prosody"]
+    },
+    "technical_audio": {
+      "description": "Prosody, stems, mixing",
+      "route": ["interpreter", "architect", "nemotron_flow_engine", "evaluator", "chronicler"],
+      "engines_used": ["Nemotron_Timing", "Nemotron_Prosody", "Nemotron_Combinator"]
+    },
+    "ownership": {
+      "description": "Identity, consent, ledger",
+      "route": ["interpreter", "ledger_worker", "evaluator", "chronicler"],
+      "engines_used": ["VICS", "RoyaltyLedger"]
+    },
+    "cross_universe": {
+      "description": "SGV Souldie x Corrido blend, etc.",
+      "route": ["interpreter", "diplomat", "lyrica_worker", "s2", "evaluator"],
+      "engines_used": ["CCNA", "S2", "EPD"]
+    }
+  },
+
+  "module_level_routing": {
+    "epd_needed": {
+      "route_to": "lyrica_worker.epd",
+      "condition": "emotional_expression_required"
+    },
+    "groove_needed": {
+      "route_to": "lyrica_worker.s2",
+      "condition": "bpm_or_swing_specified"
+    },
+    "cultural_grounding_needed": {
+      "route_to": "lyrica_worker.ccna",
+      "condition": "sgv_chicano_cultural_context"
+    },
+    "timing_grid_needed": {
+      "route_to": "nemotron_flow.prosody",
+      "condition": "lyric_timing_required"
+    },
+    "stems_mixing_needed": {
+      "route_to": "nemotron_flow.combinator",
+      "condition": "audio_export_required"
+    },
+    "dna_tags_needed": {
+      "route_to": "ledger_worker.vics",
+      "condition": "ownership_or_consent_required"
+    }
+  },
+
+  "black_box_rules": {
+    "no_internal_engine_names_in_output": true,
+    "alias_map": {
+      "S2": "Serendipity Synthesizer",
+      "CCNA": "Cultural Muse",
+      "EPD": "Emotion Engine",
+      "Nemotron": "Flow Conductor",
+      "Combinator": "Mastering Alchemist",
+      "VICS": "Identity Guardian",
+      "RoyaltyLedger": "Empire 1 Ledger",
+      "Demucs": "Stem Weaver",
+      "PFA": "Voice Sculptor",
+      "MMA": "Pulse Architect"
+    },
+    "cross_universe_requires_diplomat": true,
+    "leak_prevention": "route_via_chronicler_for_safe_summarization"
+  },
+
+  "persona_assignments": {
+    "interpreter": {
+      "persona_file": "OMNI_AGENT/personas/interpreter.md",
+      "active": true
+    },
+    "architect": {
+      "persona_file": "OMNI_AGENT/personas/architect.md",
+      "active": true
+    },
+    "executor": {
+      "persona_file": "OMNI_AGENT/personas/executor.md",
+      "active": true
+    },
+    "evaluator": {
+      "persona_file": "OMNI_AGENT/personas/evaluator.md",
+      "active": true
+    },
+    "diplomat": {
+      "persona_file": "OMNI_AGENT/personas/diplomat.md",
+      "active": true
+    },
+    "chronicler": {
+      "persona_file": "OMNI_AGENT/personas/chronicler.md",
+      "active": true
+    },
+    "operator": {
+      "persona_file": "OMNI_AGENT/personas/operator.md",
+      "active": true
+    }
+  },
+
+  "worker_bindings": {
+    "OMNI_AGENT": {
+      "path": "OMNI_AGENT/",
+      "capabilities": ["task_routing", "persona_loading", "pipeline_orchestration"]
+    },
+    "LYRICA_WORKER": {
+      "path": "LYRICA3/",
+      "sub_modules": {
+        "epd": "LYRICA3/epd/",
+        "s2": "LYRICA3/s2/",
+        "ccna": "LYRICA3/ccna/",
+        "blueprint": "LYRICA3/api/",
+        "soulfire": "LYRICA3/soulfire_engine/"
+      },
+      "capabilities": ["emotional_intelligence", "cultural_intelligence", "sonic_intelligence", "blueprint_generation"]
+    },
+    "LEDGER_WORKER": {
+      "module_path": "LYRICA3.soulfire_engine.royalty_ledger.RoyaltyLedger",
+      "capabilities": ["VICS", "DNA_TAGGER", "LEDGER_COMMIT"]
+    },
+    "NEMOTRON_FLOW": {
+      "module_path": "services.nemotron.nemotron_flow.NemotronFlowEngine",
+      "capabilities": ["TIMING", "PROSODY", "STEM_ORCHESTRATION", "COMBINATOR"]
+    },
+    "CCNA_ENGINE": {
+      "module_path": "services.cultural.ccna_engine.CCNAEngine",
+      "capabilities": ["CULTURAL_ANALYSIS", "ETHICAL_GRADIENT", "NARRATIVE_ARCHETYPES"]
+    }
+  }
+}
