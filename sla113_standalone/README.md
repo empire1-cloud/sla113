@@ -117,6 +117,21 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - **Gemini 3 Pro API** — Powers Vision Smith image generation (direct, no proxy)
 - **Vertex AI** — Will power Audio Forge / Lyrica 3 Pro (placeholder)
 
+## White-label / Standalone Usage
+
+SLA113 is designed to run both as a sovereign standalone operator OS and as an integrated route inside the main hybrid app.
+
+- Use `sla113_standalone/` when you want a fully isolated, white-label deployment.
+- The standalone project includes its own backend at `sla113_standalone/backend` and a separate frontend project at `sla113_standalone/frontend`.
+- Your existing internal SLA113 feature in the main repo remains intact and can continue to run at `/sla113/*` inside `frontend/src/sla113`.
+- For white-label export, run `./sla113_standalone/split_repo.sh` to copy the standalone backend, frontend, and deployment files into a clean new repo.
+- After export:
+  1. edit `backend/.env` in the exported repo,
+  2. use `docker-compose up --build` for the standalone service,
+  3. or use `cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload`.
+
+This means you can keep your current SLA113 integration in the main app while also building/deploying a separate white-label SLA113 experience.
+
 ## Environment Variables
 
 | Variable | Required | Used By |

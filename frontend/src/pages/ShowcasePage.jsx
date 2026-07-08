@@ -272,10 +272,10 @@ export default function ShowcasePage() {
           <button onClick={runDemo} disabled={demoBusy || !demoLobby} className="group inline-flex items-center gap-3 px-7 py-4 bg-gradient-to-r from-[#3b82ff] to-[#1a4dd4] text-black font-black uppercase tracking-[3px] text-xs disabled:opacity-50 hover:scale-[1.03] transition-all shadow-[0_0_40px_rgba(212,175,55,0.4)]" data-testid="showcase-run-demo">
             {demoBusy ? <><Activity size={14} className="animate-pulse"/> Compiling Live…</> : <><Rocket size={14}/> See The DNA Run Live<ArrowRight size={14} className="group-hover:translate-x-1 transition-transform"/></>}
           </button>
-          <a href="#tiers" className="inline-flex items-center gap-2 px-6 py-4 border border-[#ff2d9266] text-[#ff2d92] hover:bg-[#ff2d9212] uppercase tracking-[3px] text-xs font-bold transition-all" data-testid="showcase-tiers-link">
+          <a href="#tiers" onClick={() => trackCta('tiers_hero')} className="inline-flex items-center gap-2 px-6 py-4 border border-[#ff2d9266] text-[#ff2d92] hover:bg-[#ff2d9212] uppercase tracking-[3px] text-xs font-bold transition-all" data-testid="showcase-tiers-link">
             <Crown size={13}/> View Tiers
           </a>
-          <a href="/sla113" className="inline-flex items-center gap-2 px-6 py-4 border border-zinc-700 text-zinc-300 hover:border-zinc-400 hover:text-white uppercase tracking-[3px] text-xs font-bold transition-all" data-testid="showcase-admin-link">
+          <a href="/sla113" onClick={() => trackCta('sla113_console')} className="inline-flex items-center gap-2 px-6 py-4 border border-zinc-700 text-zinc-300 hover:border-zinc-400 hover:text-white uppercase tracking-[3px] text-xs font-bold transition-all" data-testid="showcase-admin-link">
             <Cpu size={13}/> SLA113 Console
           </a>
         </div>
@@ -353,7 +353,7 @@ export default function ShowcasePage() {
           <p className="text-zinc-500 text-sm md:text-base mt-3 max-w-2xl mx-auto">Every universe runs on the same Emergent DNA framework. Five live proofs that the architecture scales across domains.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {PILLARS.map(p => <PillarCard key={p.id} p={p}/>)}
+          {pillars.map(p => <PillarCard key={p.id} p={p}/>)}
         </div>
       </section>
 
