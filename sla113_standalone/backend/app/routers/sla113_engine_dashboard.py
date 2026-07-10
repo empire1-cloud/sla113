@@ -8,7 +8,7 @@ import logging
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from app.core.database import get_database
-from app.core.sla113_constants import GAME_TYPES
+from app.models.schemas_game_types import GAME_TYPES
 from app.models.schemas import VisionGenerateRequest, LogicGenerateRequest, ComposeRequest, TerminalRequest
 from app.services.vision_engine import generate_vision_assets
 from app.services.logic_engine import generate_logic
@@ -115,7 +115,7 @@ PLATFORM STATE:
 {platform_context}
 
 CAPABILITIES:
-- Full knowledge of all 16 game types: casino (fish shooter, slots, crash, cards) and AAA (open world/GTA, tactical FPS/COD, fighting/MK, fantasy RPG, survival horror, platformer, puzzle, tower defense, runner, battle royale, racing, sports)
+- Full knowledge of all 29 game types across arcade, casino, rpg, racing, and hybrid categories
 - Advise on RTP calculations, game math, asset generation strategy, architecture decisions
 - Track all active projects and their generation status
 

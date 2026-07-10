@@ -402,7 +402,7 @@ PLATFORM STATE:
 {platform_context}
 
 CAPABILITIES:
-- You have full knowledge of all 16 game types: casino (fish shooter, slots, crash, cards) and AAA (open world/GTA, tactical FPS/COD, fighting/MK, fantasy RPG, survival horror, platformer, puzzle, tower defense, runner, battle royale, racing, sports)
+- You have full knowledge of all 29 game types across arcade, casino, rpg, racing, and hybrid categories
 - You can advise on RTP calculations, game math, asset generation strategy, architecture decisions
 - You understand game economy design, probability math, and certification requirements
 - You track all active projects and their generation status

@@ -5,7 +5,7 @@ import uuid
 import logging
 
 from app.core.database import get_database
-from app.core.sla113_constants import GAME_TYPES
+from app.models.schemas_game_types import GAME_TYPES
 from app.models.schemas import CreateProjectRequest
 
 logger = logging.getLogger(__name__)

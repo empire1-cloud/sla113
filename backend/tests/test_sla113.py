@@ -43,27 +43,27 @@ def authenticated_client(api_client, auth_token):
 
 
 class TestSLA113GameTypes:
-    """Test game types endpoint - now includes 16 types with AAA games"""
+    """Test game types endpoint - 29 types across arcade, casino, rpg, racing, hybrid"""
     
-    def test_get_game_types_returns_16_types(self, api_client):
-        """GET /api/sla113/game-types should return 16 supported game types including AAA"""
+    def test_get_game_types_returns_29_types(self, api_client):
+        """GET /api/sla113/game-types should return 29 supported game types"""
         response = api_client.get(f"{API_URL}/game-types")
         assert response.status_code == 200
         
         data = response.json()
         assert "game_types" in data
         game_types = data["game_types"]
-        assert len(game_types) >= 16, f"Expected at least 16 game types, got {len(game_types)}"
+        assert len(game_types) >= 29, f"Expected at least 29 game types, got {len(game_types)}"
         
-        # Verify expected game types exist (including AAA types)
         expected_types = [
-            # Casino/Arcade
-            "fish_shooter", "slot_machine", "crash_game", "card_game",
-            # AAA types
-            "open_world", "tactical_fps", "fighting_game", "fantasy_rpg",
-            # Other types
-            "platformer", "puzzle", "tower_defense", "runner", 
-            "battle_royale", "racing", "survival_horror", "sports"
+            "arcade_classic", "fish_shooting", "battle_royale", "tactical_fps",
+            "cod_warfare", "platformer", "fighting", "puzzle", "adventure", "open_world",
+            "slot_machine", "video_poker", "casino_suite", "pachinko", "lottery",
+            "bingo", "sportsbook", "card_games",
+            "open_world_rpg", "dungeon_crawler", "fantasy_rpg", "cyberpunk",
+            "horror", "southern_barrio", "sandbox",
+            "racing_sim",
+            "hybrid_mix", "generic_game_asset", "custom_partner",
         ]
         for gt in expected_types:
             assert gt in game_types, f"Missing game type: {gt}"
@@ -71,29 +71,35 @@ class TestSLA113GameTypes:
             assert "description" in game_types[gt]
             assert "category" in game_types[gt]
     
-    def test_aaa_game_types_have_correct_category(self, api_client):
-        """Verify AAA game types have 'aaa' category"""
+    def test_game_types_have_correct_categories(self, api_client):
+        """Verify game types have expected categories"""
         response = api_client.get(f"{API_URL}/game-types")
         assert response.status_code == 200
         
         game_types = response.json()["game_types"]
-        aaa_types = ["open_world", "tactical_fps", "fighting_game", "fantasy_rpg", "survival_horror"]
-        for gt in aaa_types:
-            assert game_types[gt]["category"] == "aaa", f"{gt} should have 'aaa' category"
+        arcade_types = ["arcade_classic", "fish_shooting", "open_world", "fighting", "tactical_fps"]
+        casino_types = ["slot_machine", "video_poker", "card_games", "pachinko"]
+        rpg_types = ["fantasy_rpg", "open_world_rpg", "cyberpunk", "horror"]
+        for gt in arcade_types:
+            assert game_types[gt]["category"] == "arcade", f"{gt} should have 'arcade' category"
+        for gt in casino_types:
+            assert game_types[gt]["category"] == "casino", f"{gt} should have 'casino' category"
+        for gt in rpg_types:
+            assert game_types[gt]["category"] == "rpg", f"{gt} should have 'rpg' category"
 
 
 class TestSLA113Stats:
     """Test stats endpoint"""
     
     def test_get_stats_returns_valid_structure(self, api_client):
-        """GET /api/sla113/stats should return stats object with 16 game types"""
+        """GET /api/sla113/stats should return stats object with 29 game types"""
         response = api_client.get(f"{API_URL}/stats")
         assert response.status_code == 200
         
         data = response.json()
         assert "total_projects" in data
         assert "supported_game_types" in data
-        assert data["supported_game_types"] >= 16, f"Expected at least 16 game types, got {data['supported_game_types']}"
+        assert data["supported_game_types"] >= 29, f"Expected at least 29 game types, got {data['supported_game_types']}"
         assert "engines" in data
         assert set(data["engines"]) == {"vision", "logic", "composer"}
         assert "version" in data
