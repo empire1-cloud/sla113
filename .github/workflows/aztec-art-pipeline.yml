@@ -1,0 +1,41 @@
+name: Aztec Art Pipeline
+
+on:
+  pull_request:
+    paths:
+      - "firekirin-engine/art_pipeline/**"
+      - ".github/workflows/aztec-art-pipeline.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "firekirin-engine/art_pipeline/**"
+      - ".github/workflows/aztec-art-pipeline.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r firekirin-engine/art_pipeline/requirements.txt
+      - name: Compile Python
+        run: python -m py_compile firekirin-engine/art_pipeline/*.py
+      - name: Validate JSON contracts
+        run: |
+          python -m json.tool firekirin-engine/art_pipeline/aztec_roster.json >/dev/null
+          python -m json.tool firekirin-engine/art_pipeline/aztec_static_assets.json >/dev/null
+      - name: Validate dry-run paths
+        run: |
+          python firekirin-engine/art_pipeline/generate_sprites.py --validate-only
+          python firekirin-engine/art_pipeline/generate_static_art.py --dry-run
+      - name: Run unit tests
+        run: python -m unittest discover -s firekirin-engine/art_pipeline/tests -v
