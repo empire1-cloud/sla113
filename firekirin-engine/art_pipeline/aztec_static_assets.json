@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "collection": "Aztec Abyss Cabinet Skin",
+  "style_bible": "Original premium Aztec-inspired fantasy arcade game art for Empire-1. Jade, obsidian, turquoise, aged gold, volcanic red, deep ocean cyan. Bold readable shapes, luxurious cabinet-game finish, no copied logos, no text, no watermarks.",
+  "assets": [
+    {
+      "id": "aztec_abyss_background",
+      "category": "background",
+      "size": "1536x1024",
+      "background": "opaque",
+      "prompt": "Wide underwater temple arena at night, enormous stepped pyramid ruins, broken sun-disc gate, jade statues, volcanic vents, drifting particles, shafts of cyan light, deep layered parallax composition, clear darker center playfield and richer detail near edges, no creatures, no interface."
+    },
+    {
+      "id": "sun_cannon",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down ornate player cannon shaped like a rotating golden sun disc with jade mechanical rings, centered barrel pointing straight upward, symmetrical game-ready turret, isolated."
+    },
+    {
+      "id": "jade_laser",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down sleek jade and turquoise laser turret with obsidian housing, glowing crystal emitter pointing straight upward, symmetrical game-ready cannon, isolated."
+    },
+    {
+      "id": "serpent_chain",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down mechanical feathered-serpent chain-lightning turret, emerald coils around a gold barrel, cyan energy nodes, barrel pointing straight upward, symmetrical, isolated."
+    },
+    {
+      "id": "obsidian_bomb",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down heavy obsidian bomb cannon with volcanic-red cracks, jade locking ring, broad launcher barrel pointing straight upward, symmetrical game-ready turret, isolated."
+    },
+    {
+      "id": "sun_auto",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down rapid-fire twin-barrel sun cannon, gold and turquoise clockwork, rotating jade ammunition halo, both barrels pointing straight upward, symmetrical, isolated."
+    },
+    {
+      "id": "quetzal_railgun",
+      "category": "weapon",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Top-down elite railgun with a long obsidian barrel, layered emerald quetzal-feather fins, magenta-cyan energy core, barrel pointing straight upward, symmetrical, isolated."
+    },
+    {
+      "id": "hud_jade_panel",
+      "category": "ui",
+      "size": "1536x1024",
+      "background": "transparent",
+      "prompt": "Wide empty carved jade-and-obsidian HUD panel frame, aged gold step-fret border, subtle turquoise glow, clean transparent center for text, symmetrical horizontal game interface element, isolated."
+    },
+    {
+      "id": "jackpot_sun_disc",
+      "category": "ui",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Circular jackpot meter frame shaped like an ornate golden sun calendar, jade gemstone segments, empty transparent center, four subtle tier sockets, front-facing, isolated."
+    },
+    {
+      "id": "boss_banner",
+      "category": "ui",
+      "size": "1536x1024",
+      "background": "transparent",
+      "prompt": "Wide dramatic boss-name banner frame, black obsidian slab with jaguar claws, emerald feathers and aged gold step-fret trim, empty transparent text center, isolated."
+    },
+    {
+      "id": "lock_reticle",
+      "category": "ui",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Circular target-lock reticle made from four jade corner glyphs and a thin golden sun ring, transparent center, crisp arcade UI icon, no text, isolated."
+    },
+    {
+      "id": "jade_net_vfx",
+      "category": "vfx",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Expanded circular energy net made of glowing jade geometric lines and tiny gold glyph nodes, front-facing impact effect, transparent center and background, isolated."
+    },
+    {
+      "id": "obsidian_burst_vfx",
+      "category": "vfx",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Radial explosion of sharp obsidian shards, volcanic-red energy core and gold sparks, centered arcade impact effect, isolated on transparent background."
+    },
+    {
+      "id": "feather_shockwave_vfx",
+      "category": "vfx",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prompt": "Circular turquoise shockwave with emerald quetzal feathers and gold glyph particles spiraling outward, centered boss effect, isolated on transparent background."
+    },
+    {
+      "id": "glyph_trail_vfx",
+      "category": "vfx",
+      "size": "1536x1024",
+      "background": "transparent",
+      "prompt": "Long horizontal projectile trail of glowing turquoise step-fret glyphs, gold sparks and faint jade mist, traveling left to right, isolated on transparent background."
+    }
+  ]
+}
