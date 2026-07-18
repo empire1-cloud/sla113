@@ -1,0 +1,12 @@
+VALIDATE ONLY (NO API CALLS)
+
+bash firekirin-engine/art_pipeline/build_art_pipeline.sh
+
+FIRST HERO CREATURE
+
+python3 firekirin-engine/art_pipeline/generate_sprites.py --creature ocelotl_jaguar_shark
+python3 firekirin-engine/art_pipeline/pack_sprite_sheet.py ocelotl_jaguar_shark --install-dir backend/static/sprites
+
+FULL BUILD (USES API CREDITS)
+
+bash firekirin-engine/art_pipeline/build_art_pipeline.sh --generate

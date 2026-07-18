@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "collection": "Aztec Abyss Founding Roster",
+  "style_bible": "Original premium arcade fish-shooter sprite art. Strong readable silhouette, side profile facing right, bold clean linework, rich cel-shaded material rendering, controlled highlights, consistent proportions across every frame, isolated subject, transparent background, no water, no scenery, no text, no logos unless explicitly requested.",
+  "aggregate_sheet": {
+    "engine_key": "aztec_fish_species_v2",
+    "filename": "aztec_fish_species_v2.png",
+    "frame_size": 256,
+    "columns": 6,
+    "preferred_states": ["swim", "idle"]
+  },
+  "creatures": [
+    {
+      "id": "xochitl_piranha",
+      "name": "Xochitl Piranha",
+      "role": "tiny",
+      "engine_animation": "blue_school",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 256,
+      "base_prompt": "A fierce little jade-and-turquoise piranha with flower-petal fin shapes, tiny gold step-fret markings, bright cyan eyes, compact fast silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, slight tail sway", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, tail bent left", "loop": true, "frame_rate": 10},
+        {"state": "swim", "desc": "swim cycle, body straight at mid-stroke", "loop": true, "frame_rate": 10},
+        {"state": "swim", "desc": "swim cycle, tail bent right", "loop": true, "frame_rate": 10},
+        {"state": "attack", "desc": "quick bite lunge, mouth open", "loop": false, "frame_rate": 12},
+        {"state": "hurt", "desc": "brief hit flinch", "loop": false, "frame_rate": 12},
+        {"state": "capture", "desc": "caught reaction, fins flared", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "defeated tumble", "loop": false, "frame_rate": 10},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "tonatiuh_tetra",
+      "name": "Tonatiuh Sun-Disc Tetra",
+      "role": "tiny",
+      "engine_animation": "gold_pair",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 256,
+      "base_prompt": "A small radiant gold tetra with a circular sun-disc flank plate, amber fins, turquoise edge accents, jewel-like eyes, elegant fast silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, fins shimmering", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, tail bent left", "loop": true, "frame_rate": 10},
+        {"state": "swim", "desc": "swim cycle, body straight at mid-stroke", "loop": true, "frame_rate": 10},
+        {"state": "swim", "desc": "swim cycle, tail bent right", "loop": true, "frame_rate": 10},
+        {"state": "attack", "desc": "sun-flash dash forward", "loop": false, "frame_rate": 12},
+        {"state": "hurt", "desc": "brief hit flinch, light dimmed", "loop": false, "frame_rate": 12},
+        {"state": "capture", "desc": "caught reaction, fins spread", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "defeated tumble", "loop": false, "frame_rate": 10},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "tezcatl_snapper",
+      "name": "Tezcatl Obsidian Snapper",
+      "role": "small",
+      "engine_animation": "gold_school",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 256,
+      "base_prompt": "An obsidian-black reef snapper with polished volcanic-glass scales, crimson seams, gold jaw armor and turquoise eye markings, sharp angular silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, gills moving", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, tail bent left", "loop": true, "frame_rate": 9},
+        {"state": "swim", "desc": "swim cycle, body straight at mid-stroke", "loop": true, "frame_rate": 9},
+        {"state": "swim", "desc": "swim cycle, tail bent right", "loop": true, "frame_rate": 9},
+        {"state": "attack", "desc": "heavy bite, jaw armor opened", "loop": false, "frame_rate": 11},
+        {"state": "hurt", "desc": "brief hit flinch with red seam flash", "loop": false, "frame_rate": 12},
+        {"state": "capture", "desc": "caught reaction, body twisting", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated roll", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "chalchiuhtlicue_ray",
+      "name": "Chalchiuhtlicue Turquoise Ray",
+      "role": "medium",
+      "engine_animation": "blue_school_dense",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 320,
+      "base_prompt": "A broad turquoise manta ray with jade mosaic armor, flowing aqua ribbon fins, gold step-fret border markings and a long elegant tail, regal readable silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "neutral glide, wingtips gently fluttering", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "wing downstroke", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "wings level at mid-stroke", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "wing upstroke", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "tail-whip strike", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "brief hit recoil, wings folding", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, wings spread wide", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated spiral", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "aztlan_turtle",
+      "name": "Aztlan Temple Turtle",
+      "role": "medium",
+      "engine_animation": "gold_school_dense",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 320,
+      "base_prompt": "A massive sea turtle with an ancient stepped-temple shell, mossy jade stone plates, warm gold glyph seams, turquoise eyes and sturdy flippers.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, slow flipper movement", "loop": true, "frame_rate": 5},
+        {"state": "swim", "desc": "front flippers pushing downward", "loop": true, "frame_rate": 7},
+        {"state": "swim", "desc": "flippers level at mid-stroke", "loop": true, "frame_rate": 7},
+        {"state": "swim", "desc": "front flippers lifting upward", "loop": true, "frame_rate": 7},
+        {"state": "attack", "desc": "shell-first shoulder charge", "loop": false, "frame_rate": 9},
+        {"state": "hurt", "desc": "brief recoil into shell", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "caught reaction, flippers spread", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeated slow roll", "loop": false, "frame_rate": 8},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 7}
+      ]
+    },
+    {
+      "id": "xolotl_eel",
+      "name": "Xolotl Spirit Eel",
+      "role": "medium",
+      "engine_animation": "cyan_serpent",
+      "aggregate": true,
+      "logo_mode": "inworld",
+      "frame_size": 320,
+      "base_prompt": "A long black-and-violet spirit eel with axolotl-like external gills, glowing cyan bones beneath translucent markings, gold labyrinth glyphs integrated along the body.",
+      "frames": [
+        {"state": "idle", "desc": "neutral serpentine hover", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "body wave curved upward", "loop": true, "frame_rate": 9},
+        {"state": "swim", "desc": "body straightening at mid-wave", "loop": true, "frame_rate": 9},
+        {"state": "swim", "desc": "body wave curved downward", "loop": true, "frame_rate": 9},
+        {"state": "attack", "desc": "electric spirit-bite lunge", "loop": false, "frame_rate": 11},
+        {"state": "hurt", "desc": "brief hit recoil with cyan pulse", "loop": false, "frame_rate": 11},
+        {"state": "capture", "desc": "caught reaction, body coiling", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated unraveling coil", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "ocelotl_jaguar_shark",
+      "name": "Ocelotl Jaguar Shark",
+      "role": "large",
+      "engine_animation": "cursed_black",
+      "aggregate": true,
+      "logo_mode": "inworld",
+      "frame_size": 384,
+      "base_prompt": "A muscular predatory shark with black jaguar rosettes over burnished gold skin, obsidian dorsal armor, turquoise eyes, integrated glowing gold step-fret markings and an intimidating premium silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "predatory hover, tail slowly sweeping", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "power swim, tail bent left", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "power swim, body straight at mid-stroke", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "power swim, tail bent right", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "violent jaw-open lunge", "loop": false, "frame_rate": 11},
+        {"state": "hurt", "desc": "brief armored hit recoil", "loop": false, "frame_rate": 11},
+        {"state": "capture", "desc": "caught reaction, body thrashing", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated sideways roll", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "cipactli_reef_beast",
+      "name": "Cipactli Reef Beast",
+      "role": "large",
+      "engine_animation": "cursed_school",
+      "aggregate": true,
+      "logo_mode": "inworld",
+      "frame_size": 384,
+      "base_prompt": "A fantasy crocodilian reef monster with armored basalt scales, multiple fin ridges, jade teeth, ember-red fissures and gold stepped glyph markings built into the armor, huge ancient silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "heavy neutral hover, armored fins moving", "loop": true, "frame_rate": 5},
+        {"state": "swim", "desc": "heavy swim, tail sweeping left", "loop": true, "frame_rate": 7},
+        {"state": "swim", "desc": "heavy swim, body straight", "loop": true, "frame_rate": 7},
+        {"state": "swim", "desc": "heavy swim, tail sweeping right", "loop": true, "frame_rate": 7},
+        {"state": "attack", "desc": "massive armored bite", "loop": false, "frame_rate": 9},
+        {"state": "hurt", "desc": "brief hit recoil with fissures glowing", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, fins flared", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeated rolling thrash", "loop": false, "frame_rate": 8},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 7}
+      ]
+    },
+    {
+      "id": "quetzal_ray",
+      "name": "Quetzal Feather Ray",
+      "role": "large",
+      "engine_animation": "cyan_serpent_alt",
+      "aggregate": true,
+      "logo_mode": "inworld",
+      "frame_size": 384,
+      "base_prompt": "A majestic ray whose wing edges resemble layered emerald and turquoise quetzal feathers, luminous gold chest glyph, long ribbon tail and ceremonial jewel accents, elegant mythical silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "regal glide, feather edges softly rippling", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "wing downstroke with feathers compressed", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "wings level at mid-stroke", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "wing upstroke with feathers spread", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "feather-blade tail strike", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "brief recoil, feathers folding", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, feathers fully spread", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated spiral", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "relic_puffer",
+      "name": "Golden Relic Puffer",
+      "role": "rare",
+      "engine_animation": "treasure_fish",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 320,
+      "base_prompt": "A round treasure puffer fish made of polished gold plates, jade gemstone spikes, tiny coin charms and a sun-disc belly, joyful rare jackpot-creature silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, body gently bobbing", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, fins back and body compressed", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, body round at mid-stroke", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, fins forward", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "spikes flare outward with gold flash", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "brief deflation hit reaction", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, coins scattering", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated wobble", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "golden_axolotl",
+      "name": "Golden Xolotl Axolotl",
+      "role": "rare",
+      "engine_animation": "golden_puffer",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 320,
+      "base_prompt": "A luminous golden axolotl spirit with ornate turquoise external gills, small jade crown plate, round friendly face and bright jackpot-creature presence.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, gills waving", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, tail curved left", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, body straight", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, tail curved right", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "spirit pulse released from gills", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "brief startled recoil", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, gills fully spread", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated gentle tumble", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "silver_codex_fish",
+      "name": "Silver Codex Fish",
+      "role": "rare",
+      "engine_animation": "silver_school",
+      "aggregate": true,
+      "logo_mode": "overlay",
+      "frame_size": 320,
+      "base_prompt": "A sleek silver ceremonial fish with engraved codex-like scale panels, turquoise ink glyphs, gold fin tips and a mysterious ancient-record aesthetic.",
+      "frames": [
+        {"state": "idle", "desc": "neutral hover, engraved scales glinting", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "swim cycle, tail bent left", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, body straight", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "swim cycle, tail bent right", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "glyph-panel flash dash", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "brief recoil with glyph flicker", "loop": false, "frame_rate": 10},
+        {"state": "capture", "desc": "caught reaction, fins spread", "loop": false, "frame_rate": 9},
+        {"state": "capture", "desc": "defeated roll", "loop": false, "frame_rate": 9},
+        {"state": "defeat", "desc": "final still sinking pose", "loop": false, "frame_rate": 8}
+      ]
+    },
+    {
+      "id": "quetzalcoatl_leviathan",
+      "name": "Quetzalcoatl Leviathan",
+      "role": "boss",
+      "engine_key": "quetzalcoatl_leviathan",
+      "aggregate": false,
+      "logo_mode": "inworld",
+      "frame_size": 512,
+      "base_prompt": "An original colossal feathered sea-serpent boss with emerald scales, layered turquoise-and-gold feather fins, horned ceremonial head, luminous stepped-square spiral chest glyph and monumental arcade-boss silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "regal hovering coil, feathers undulating", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "serpentine body wave curved upward", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "serpentine body wave straightening", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "serpentine body wave curved downward", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "jaws open, feather fins flared, lunging", "loop": false, "frame_rate": 10},
+        {"state": "attack", "desc": "tail and feather-blade follow-through", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "armored recoil with glyph flicker", "loop": false, "frame_rate": 11},
+        {"state": "roar", "desc": "head raised in full ceremonial roar", "loop": false, "frame_rate": 9},
+        {"state": "ultimate", "desc": "sun-and-feather storm power pose", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeat sequence, violent full-body coil", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeat sequence, feathers drooping and coil loosening", "loop": false, "frame_rate": 8},
+        {"state": "defeat", "desc": "final defeated sinking pose", "loop": false, "frame_rate": 7}
+      ]
+    },
+    {
+      "id": "obsidian_jaguar_colossus",
+      "name": "Obsidian Jaguar Colossus",
+      "role": "boss",
+      "engine_key": "obsidian_jaguar_colossus",
+      "aggregate": false,
+      "logo_mode": "inworld",
+      "frame_size": 512,
+      "base_prompt": "An original colossal jaguar-headed abyssal shark boss, obsidian armor plates, glowing crimson cracks, burnished gold rosettes, turquoise eyes, integrated Empire stepped-glyph on the chest, monumental aggressive silhouette.",
+      "frames": [
+        {"state": "idle", "desc": "predatory hover, armor pulsing", "loop": true, "frame_rate": 6},
+        {"state": "swim", "desc": "power swim, tail left", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "power swim, body straight", "loop": true, "frame_rate": 8},
+        {"state": "swim", "desc": "power swim, tail right", "loop": true, "frame_rate": 8},
+        {"state": "attack", "desc": "jaguar-jaw armored charge", "loop": false, "frame_rate": 10},
+        {"state": "attack", "desc": "obsidian claw-fin slash follow-through", "loop": false, "frame_rate": 10},
+        {"state": "hurt", "desc": "heavy recoil with cracks flaring", "loop": false, "frame_rate": 11},
+        {"state": "roar", "desc": "full jaguar roar, armor fins spread", "loop": false, "frame_rate": 9},
+        {"state": "ultimate", "desc": "void-shockwave power pose", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeat sequence, violent roll", "loop": false, "frame_rate": 8},
+        {"state": "capture", "desc": "defeat sequence, armor dimming", "loop": false, "frame_rate": 8},
+        {"state": "defeat", "desc": "final defeated sinking pose", "loop": false, "frame_rate": 7}
+      ]
+    }
+  ]
+}
