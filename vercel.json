@@ -2,9 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": null,
-  "installCommand": "cd frontend && yarn install --frozen-lockfile --ignore-engines",
-  "buildCommand": "cd frontend && yarn build",
-  "outputDirectory": "frontend/build",
+  "installCommand": "yarn install --frozen-lockfile --ignore-engines",
+  "buildCommand": "yarn build",
+  "outputDirectory": "build",
   "env": {
     "GENERATE_SOURCEMAP": "false",
     "INLINE_RUNTIME_CHUNK": "false",
