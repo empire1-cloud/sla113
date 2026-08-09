@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": null,
+  "installCommand": "yarn install --frozen-lockfile --ignore-engines",
+  "buildCommand": "yarn build",
+  "outputDirectory": "build",
+  "env": {
+    "GENERATE_SOURCEMAP": "false",
+    "INLINE_RUNTIME_CHUNK": "false",
+    "DISABLE_ESLINT_PLUGIN": "true",
+    "TSC_COMPILE_ON_ERROR": "true",
+    "REACT_APP_BACKEND_URL": "https://sla113-backend-339698334666.us-central1.run.app"
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
