@@ -1480,19 +1480,13 @@ async def compile_build(build_id: str):
             {"$set": {"progress": 70}, "$push": {"logs": f"[{now}] Stage: Bundle Packaging"}}
         )
 
-        # Generate the HTML5/PixiJS game shell
-        category = GAME_TYPES.get(game_type, {}).get("category", "arcade")
-        is_casino = category == "casino"
-        game_desc = GAME_TYPES.get(game_type, {}).get("description", "Game")
-
+        # Auto-inject registered sprites into game config (newest first) — BEFORE HTML render
         # Write a genre-specific game.js engine using template library
-        # Auto-inject registered sprites into game config (newest first)
         sprite_cursor = sprite_registry_collection().find({}, {"_id": 0}).sort("created_at", -1)
         all_sprites = await sprite_cursor.to_list(200)
         sprite_map = {}
         for spr in all_sprites:
             key = spr["name"].lower().replace(" ", "_").replace(",", "")
-            # Proxy external URLs through our backend to bypass CORS
             sprite_url = spr["sprite_url"]
             if "customer-assets" in sprite_url or "emergentagent" in sprite_url:
                 sprite_url = f"/api/sla113/sprites/proxy?url={sprite_url}"
@@ -1515,15 +1509,13 @@ async def compile_build(build_id: str):
                 lu = f"/api/sla113/sprites/proxy?url={lu}"
             game_config["loader_url"] = lu
 
-        # ─── Lobby overrides ───
-        # If this project was created from a lobby, use its specified assets
+        # ─── Lobby overrides (merge BEFORE HTML render so theme_color/loader propagate) ───
         lobby_cfg = project.get("lobby_config") or {}
         chosen_bg_key = lobby_cfg.get("background_sprite")
         chosen_bg_url = None
         if chosen_bg_key and chosen_bg_key in sprite_map:
             chosen_bg_url = sprite_map[chosen_bg_key]["sprite_url"]
         else:
-            # Fall back to newest registered background
             bg_sprites = [s for s in all_sprites if s["entity_type"] == "background"]
             if bg_sprites:
                 bg_url = bg_sprites[0]["sprite_url"]
@@ -1532,8 +1524,6 @@ async def compile_build(build_id: str):
                 chosen_bg_url = bg_url
         if chosen_bg_url:
             game_config["background_url"] = chosen_bg_url
-
-        # Inject lobby config for engine to filter bosses / theme
         if lobby_cfg:
             game_config["lobby"] = {
                 "name": lobby_cfg.get("name"),
@@ -1546,6 +1536,9 @@ async def compile_build(build_id: str):
             }
 
         # Generate the HTML5/PixiJS game shell (after config enrichment so lobby/loader are available)
+        category = GAME_TYPES.get(game_type, {}).get("category", "arcade")
+        is_casino = category == "casino"
+        game_desc = GAME_TYPES.get(game_type, {}).get("description", "Game")
         html_content = _generate_html5_shell(game_name, game_type, game_desc, game_config, asset_manifest, is_casino)
 
         with open(os.path.join(build_dir, "index.html"), "w") as f:

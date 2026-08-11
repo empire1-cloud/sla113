@@ -1,0 +1,179 @@
+version: 3
+registry_name: sla113_universe_registry
+last_updated_utc: "2026-05-01T12:00:00Z"
+single_source_of_truth: true
+
+owners:
+  - id: sla113
+    display_name: SLA113 Operator Core
+  - id: empire1
+    display_name: Empire One
+  - id: lyrica
+    display_name: Lyrica 3
+  - id: southern
+    display_name: Southern Lyfestyle
+
+universes:
+  factory:
+    id: U0
+    name: SLA113
+    role: control_plane
+    layer: control_plane
+    owner: sla113
+    router: sla113_router.py
+    domains:
+      - sla113.southernlifestyle.org
+    services:
+      - empire1-backend
+    depends_on: []
+    status: active
+
+  foundry:
+    id: U1
+    name: Lyrica3
+    role: creative_intelligence
+    layer: product_surface
+    owner: lyrica
+    router: lyrica_router.py
+    domains:
+      - lyrica3.com
+      - www.lyrica3.com
+      - api.lyrica3.com
+      - sluniversal.lyrica3.com
+    services:
+      - lyrica3-frontend
+      - lyrica3-backend
+    depends_on:
+      - U0
+    status: active
+    sub_universes:
+      - id: U7
+        key: SL_UNIVERSAL
+        name: SL Universal
+        role: streaming_radio
+        note: "Alias → same app, /universal mode"
+        route: /universal
+      - id: U8
+        key: SONANCE_PRO
+        name: Sonance Pro
+        role: pro_studio
+        note: "Alias → same app, default mode"
+        route: /
+
+  cultura:
+    id: U2
+    name: Cultura Vibe Forge
+    role: cultural_os
+    layer: cultural_os
+    owner: sla113
+    router: cultura_router.py
+    domains: []
+    services: []
+    depends_on:
+      - U0
+    status: active
+    products:
+      - id: U6
+        key: EL_ARQUITECTO_AI
+        name: El Arquitecto AI
+        role: cultura_product
+        router: el_arquitecto_router.py
+        services:
+          - arquitecto-frontend
+          - arquitecto-backend
+        depends_on:
+          - U0
+          - U2
+        status: active
+
+  southern:
+    id: U3
+    name: Southern Lifestyle
+    role: aaa_os_factory
+    layer: product_surface
+    owner: southern
+    router: southern_router.py
+    domains:
+      - southernlifestyle.org
+      - www.southernlifestyle.org
+      - arcade.southernlifestyle.org
+    services:
+      - empire1-frontend
+    depends_on:
+      - U0
+    status: active
+
+  empire:
+    id: U4
+    name: EmpireOne
+    role: enterprise_saas
+    layer: product_surface
+    owner: empire1
+    router: empireone_router.py
+    domains:
+      - empire1.cloud
+      - api.empire1.cloud
+    services:
+      - empire1-frontend
+      - empire1-backend
+    depends_on:
+      - U0
+    status: active
+
+  omni:
+    id: U5
+    name: Omni Agent
+    role: operator_os
+    layer: operator_behavior
+    owner: sla113
+    router: omni_router.py
+    domains: []
+    services:
+      - empire1-backend
+    depends_on:
+      - U0
+    status: active
+
+  arquitecto:
+    id: U6
+    name: El Arquitecto AI
+    role: cultura_product
+    layer: cultural_product
+    owner: sla113
+    router: el_arquitecto_router.py
+    domains: []
+    services:
+      - arquitecto-frontend
+      - arquitecto-backend
+    depends_on:
+      - U0
+      - U2
+    status: active
+    note: "Nested product of U2 Cultura Vibe Forge. Also listed under cultura.products for hierarchy reference."
+
+  vault:
+    id: U10
+    name: Black Box Registry
+    role: engine_vault
+    layer: vault
+    owner: sla113
+    router: vault_router.py
+    domains: []
+    services: []
+    depends_on:
+      - U0
+    status: active
+
+contracts:
+  api_base_contract:
+    empire: "https://api.empire1.cloud"
+    lyrica: "https://api.lyrica3.com"
+
+  routing_rules:
+    unknown_host_fallback: empire
+    arcade_external_redirect_env: ARCADE_EXTERNAL_URL
+
+governance:
+  requires_adrs_for_boundary_changes: true
+  requires_pr_for_domain_mapping_changes: true
+  requires_release_receipt_for_track_ship: true

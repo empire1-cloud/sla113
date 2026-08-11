@@ -1,0 +1,14 @@
+{
+  "release_id": "XCB_001",
+  "render_tier": "FINAL",
+  "sample_rate_hz": 48000,
+  "bit_depth": 24,
+  "diffusion_timesteps": 12,
+  "cfg_scale": 2.5,
+  "cost_per_render_usd": 0.0020,
+  "stems": ["vocals", "beat", "bass", "fx"],
+  "mastering_preset": "",
+  "cultural_matrix": "",
+  "vulnerability_score": null,
+  "duo": false
+}

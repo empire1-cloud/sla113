@@ -1,0 +1,13 @@
+{
+  "release_id": "XCB_001",
+  "shipped_utc": null,
+  "shipped_by": null,
+  "universe": "LYRICA3 (U1)",
+  "gate_results": {
+    "backend_health": null,
+    "login_verified": null,
+    "domain_mapping_verified": null,
+    "checksums_verified": null
+  },
+  "status": "pending"
+}

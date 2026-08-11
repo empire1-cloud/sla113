@@ -1,5 +1,7 @@
-"""SLA113 Database Connection — MongoDB via Motor"""
+"""SLA113 Database Connection — MongoDB via Motor (with mock fallback)"""
 import logging
+import os
+import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import get_settings
 
@@ -12,16 +14,27 @@ _db = None
 async def connect_to_database():
     global _client, _db
     settings = get_settings()
-    _client = AsyncIOMotorClient(settings.MONGO_URL)
-    _db = _client[settings.DB_NAME]
-    logger.info(f"Connected to MongoDB: {settings.DB_NAME}")
+    try:
+        _client = AsyncIOMotorClient(
+            settings.MONGO_URL,
+            serverSelectionTimeoutMS=3000,
+            connectTimeoutMS=3000,
+        )
+        await _client.admin.command("ping")
+        _db = _client[settings.DB_NAME]
+        logger.info(f"Connected to MongoDB: {settings.DB_NAME}")
+    except Exception as e:
+        logger.warning(f"MongoDB unavailable ({e}) — using in-memory mock")
+        from mongomock_motor import AsyncMongoMockClient
+        _client = AsyncMongoMockClient()
+        _db = _client[settings.DB_NAME]
 
 
 async def close_database_connection():
     global _client
     if _client:
         _client.close()
-        logger.info("MongoDB connection closed")
+        logger.info("Database connection closed")
 
 
 def get_database():

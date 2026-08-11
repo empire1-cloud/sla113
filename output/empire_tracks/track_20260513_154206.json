@@ -1,0 +1,445 @@
+{
+  "user_prompt": "heartbreak soul ballad 80bpm",
+  "generation_time_ms": 2.2423267364501953,
+  "intent_analysis": {
+    "semantic_intent": "Express emotion through neutral",
+    "rhetorical_devices": [],
+    "bruised_subtext": "Emotional expression seeking outlet",
+    "culture_anchors": [
+      "soul",
+      "west_coast"
+    ],
+    "style_anchors": [
+      "standard"
+    ],
+    "emotional_profile": {},
+    "action_stance": "neutral",
+    "temporal_focus": "present"
+  },
+  "creative_strategy": {
+    "novelty_score": 0.5,
+    "cohesion_score": 0.7,
+    "impact_score": 0.0,
+    "disruption_heuristic": null,
+    "strategy_rationale": "Familiar genre territory."
+  },
+  "lyrics": [
+    {
+      "line": "You played sweet, but I see truth",
+      "lml_trigger": "<vocal_fry>"
+    },
+    {
+      "line": "All those games, I know know you",
+      "lml_trigger": ""
+    },
+    {
+      "line": "You can't hide from what you did",
+      "lml_trigger": ""
+    },
+    {
+      "line": "Not this time, never again",
+      "lml_trigger": "<adaptive_inhale>"
+    }
+  ],
+  "rhythm_blueprint": {
+    "bpm": 120,
+    "swing_feel": "late_pocket",
+    "style": "trap",
+    "intensity": "medium",
+    "tracks": {
+      "kick": {
+        "pattern": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0
+        ],
+        "velocity": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      "snare": {
+        "pattern": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ],
+        "timing_offset_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          10.24,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          17.83,
+          0.0,
+          0.0,
+          11.27
+        ]
+      },
+      "hihat": {
+        "pattern": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        "velocity_humanized": [
+          87,
+          75,
+          73,
+          78,
+          85,
+          75,
+          70,
+          90,
+          78,
+          73,
+          90,
+          0,
+          86,
+          75,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "mastering_blueprint": {
+    "master_bus_dsp": {
+      "vocal_channel": {
+        "eq_200hz_gain_db": 4.0,
+        "eq_200hz_q": 1.2,
+        "eq_200hz_type": "peaking",
+        "reverb_decay_sec": 1.2,
+        "reverb_pre_delay_ms": 15,
+        "reverb_wet_mix": 0.25,
+        "reverb_type": "room",
+        "de_esser_threshold_db": -15,
+        "de_esser_freq_hz": 6000,
+        "de_esser_ratio": 3.0
+      },
+      "drum_channel": {
+        "parallel_comp_ratio": 4.0,
+        "parallel_comp_threshold_db": -20,
+        "parallel_comp_attack_ms": 5,
+        "parallel_comp_release_ms": 100,
+        "parallel_comp_mix": 0.3,
+        "transient_attack_db": 1.0,
+        "transient_sustain_db": -1.0
+      },
+      "bass_channel": {
+        "multiband_comp_enabled": true,
+        "mb_comp_sub_freq_low": 20,
+        "mb_comp_sub_freq_high": 80,
+        "mb_comp_sub_ratio": 3.0,
+        "mb_comp_sub_threshold_db": -18,
+        "mb_comp_sub_attack_ms": 10,
+        "mb_comp_sub_release_ms": 100,
+        "mb_comp_sub_knee_db": 6,
+        "saturation_drive": 0.25,
+        "saturation_mix": 0.4,
+        "saturation_type": "chebyshev"
+      },
+      "master_out": {
+        "tape_hiss_noise_floor_db": -70,
+        "low_pass_filter_hz": 14000,
+        "low_pass_filter_q": 0.7,
+        "limiter_threshold_db": -1.0,
+        "limiter_release_ms": 50,
+        "stereo_width": 1.2,
+        "dither_enabled": true,
+        "dither_depth_bits": 24
+      },
+      "metadata": {
+        "texture_descriptor": "trap intense proximity=balanced analog_flavor=medium",
+        "warmth_level": "analog",
+        "has_modern_processing": false,
+        "proximity_style": "intimate",
+        "reverb_style": "bedroom"
+      }
+    }
+  },
+  "soulfire_payload": {
+    "track_metadata": {
+      "title": "Trap Track",
+      "genre": "trap",
+      "bpm": 120,
+      "dna_tag": "empire_trap_120bpm"
+    },
+    "dope_audio_blueprint": {
+      "rhythm_groove": {
+        "bpm": 120,
+        "swing_feel": "late_pocket",
+        "style": "trap",
+        "intensity": "medium",
+        "tracks": {
+          "kick": {
+            "pattern": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "velocity": [
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100
+            ]
+          },
+          "snare": {
+            "pattern": [
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "timing_offset_ms": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              10.24,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              17.83,
+              0.0,
+              0.0,
+              11.27
+            ]
+          },
+          "hihat": {
+            "pattern": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "velocity_humanized": [
+              87,
+              75,
+              73,
+              78,
+              85,
+              75,
+              70,
+              90,
+              78,
+              73,
+              90,
+              0,
+              86,
+              75,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      "texture_dsp": {
+        "master_bus_dsp": {
+          "vocal_channel": {
+            "eq_200hz_gain_db": 4.0,
+            "eq_200hz_q": 1.2,
+            "eq_200hz_type": "peaking",
+            "reverb_decay_sec": 1.2,
+            "reverb_pre_delay_ms": 15,
+            "reverb_wet_mix": 0.25,
+            "reverb_type": "room",
+            "de_esser_threshold_db": -15,
+            "de_esser_freq_hz": 6000,
+            "de_esser_ratio": 3.0
+          },
+          "drum_channel": {
+            "parallel_comp_ratio": 4.0,
+            "parallel_comp_threshold_db": -20,
+            "parallel_comp_attack_ms": 5,
+            "parallel_comp_release_ms": 100,
+            "parallel_comp_mix": 0.3,
+            "transient_attack_db": 1.0,
+            "transient_sustain_db": -1.0
+          },
+          "bass_channel": {
+            "multiband_comp_enabled": true,
+            "mb_comp_sub_freq_low": 20,
+            "mb_comp_sub_freq_high": 80,
+            "mb_comp_sub_ratio": 3.0,
+            "mb_comp_sub_threshold_db": -18,
+            "mb_comp_sub_attack_ms": 10,
+            "mb_comp_sub_release_ms": 100,
+            "mb_comp_sub_knee_db": 6,
+            "saturation_drive": 0.25,
+            "saturation_mix": 0.4,
+            "saturation_type": "chebyshev"
+          },
+          "master_out": {
+            "tape_hiss_noise_floor_db": -70,
+            "low_pass_filter_hz": 14000,
+            "low_pass_filter_q": 0.7,
+            "limiter_threshold_db": -1.0,
+            "limiter_release_ms": 50,
+            "stereo_width": 1.2,
+            "dither_enabled": true,
+            "dither_depth_bits": 24
+          },
+          "metadata": {
+            "texture_descriptor": "trap intense proximity=balanced analog_flavor=medium",
+            "warmth_level": "analog",
+            "has_modern_processing": false,
+            "proximity_style": "intimate",
+            "reverb_style": "bedroom"
+          }
+        }
+      },
+      "vulnerability_level": 0.5
+    },
+    "lyrics": [
+      {
+        "line": "You played sweet, but I see truth",
+        "lml_trigger": "<vocal_fry>"
+      },
+      {
+        "line": "All those games, I know know you",
+        "lml_trigger": ""
+      },
+      {
+        "line": "You can't hide from what you did",
+        "lml_trigger": ""
+      },
+      {
+        "line": "Not this time, never again",
+        "lml_trigger": "<adaptive_inhale>"
+      }
+    ]
+  },
+  "empire_performance_metrics": {
+    "processing_time_ms": 0,
+    "ai_detection_risk": 0.15,
+    "cultural_fingerprint_score": 0.85,
+    "biomechanical_model": "ready",
+    "note": "Empire Pipeline ready for async audio rendering"
+  },
+  "track_metadata": {
+    "genre": "trap",
+    "bpm": 120,
+    "vulnerability": 0.5,
+    "duration_ms": 30000,
+    "num_lyrics": 4,
+    "num_automation_events": 4
+  },
+  "status": "success",
+  "warnings": [],
+  "errors": []
+}

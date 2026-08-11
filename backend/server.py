@@ -17,6 +17,7 @@ load_dotenv(ROOT_DIR / '.env')
 # Import database connection
 from database import connect_to_database, close_database_connection, get_database
 from routers.sla113 import seed_default_pipelines, seed_default_lobbies, start_worker, stop_worker
+from routers.empire1 import router as empire1_router, seed_ecosystem
 
 # Lifespan context manager for startup/shutdown
 @asynccontextmanager
@@ -26,6 +27,7 @@ async def lifespan(app: FastAPI):
     logging.info("Database connected on startup")
     await seed_default_pipelines()
     await seed_default_lobbies()
+    await seed_ecosystem()
     start_worker()
     logging.info("Night Queue Worker started")
     yield
@@ -78,6 +80,8 @@ from routers.engines import (
 from routers.engines.history_protected import router as history_protected_router
 from routers.pipelines import router as pipelines_router
 from routers.sla113 import router as sla113_router
+from routers.omni_router import router as omni_router
+from routers.empire_router import router as empire_router
 
 # Include auth and team routers first (higher priority)
 api_router.include_router(auth_router)
@@ -112,6 +116,8 @@ api_router.include_router(art_direction_router)
 api_router.include_router(money_pipeline_router)
 api_router.include_router(analytics_router)  # Analytics remains public for now (system-wide metrics)
 api_router.include_router(sla113_router)  # SLA113 - Universal AI Game Studio
+api_router.include_router(omni_router)  # OMNI_AGENT - SLA113 Task Orchestration
+api_router.include_router(empire_router)  # Empire Lyric Master - Zero-API Music Production
 
 
 # Define Models
@@ -167,6 +173,7 @@ async def get_status_checks():
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(empire1_router)  # /api/empire1/* — ecosystem registry + showcase analytics
 
 app.add_middleware(
     CORSMiddleware,

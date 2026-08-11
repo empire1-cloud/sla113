@@ -45,6 +45,10 @@ from app.routers.empire1 import router as empire1_router
 from app.routers.southern import router as southern_router
 from app.routers.soulfire import router as soulfire_router
 
+# ─── AI Engine Routers ───
+from app.routers.hybrid_ai import router as hybrid_ai_router
+from app.routers.omni_agent import router as omni_agent_router
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -98,6 +102,10 @@ app.include_router(sla113_universe_router)
 app.include_router(empire1_router)
 app.include_router(southern_router)
 app.include_router(soulfire_router)
+
+# ─── AI Engines ───
+app.include_router(hybrid_ai_router)
+app.include_router(omni_agent_router)
 
 # ─── Root Health ───
 @app.get("/")

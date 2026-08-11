@@ -217,16 +217,89 @@ const ASSET_MANIFEST = {manifest_json};
 
   // ═══ JACKPOT BANNER ═══
   const jpBar=new PIXI.Graphics();jpBar.beginFill(0x1a0020,0.92).drawRoundedRect(W()/2-200,2,400,32,6).endFill();jpBar.lineStyle(2,THEME,0.65).drawRoundedRect(W()/2-200,2,400,32,6);L.hud.addChild(jpBar);
-  const jpNames=['MINI','MINOR','MAJOR','GRAND'],jpColors=[0x44ff44,0x00c8ff,0xd4af37,0xff0000],jpPools=[22.96,103.50,532.37,1524.95];let jpIdx=0;
+  const jpNames=['MINI','MINOR','MAJOR','GRAND'],jpColors=[0x44ff44,0x00c8ff,0xd4af37,0xff0000],jpPools=[22.96,103.50,532.37,1524.95],jpSeed=[22.96,103.50,532.37,1524.95];let jpIdx=0;
   const jpLabel=new PIXI.Text('MINI',{fontSize:10,fill:0x44ff44,fontFamily:'monospace',fontWeight:'bold',letterSpacing:2});jpLabel.anchor.set(0.5);jpLabel.x=W()/2-70;jpLabel.y=18;L.hud.addChild(jpLabel);
   const jpAmt=new PIXI.Text('$22.96',{fontSize:15,fill:0xffffff,fontFamily:'monospace',fontWeight:'bold'});jpAmt.anchor.set(0.5);jpAmt.x=W()/2+30;jpAmt.y=18;L.hud.addChild(jpAmt);
-  setInterval(()=>{jpIdx=(jpIdx+1)%4;jpLabel.text=jpNames[jpIdx];jpLabel.style.fill=jpColors[jpIdx];jpAmt.text='$'+(jpPools[jpIdx]+jackpotPool*[0.01,0.05,0.2,0.74][jpIdx]).toFixed(2);},3000);
+  const jpShare=[0.01,0.05,0.2,0.74];
+  function jpValue(i){return jpPools[i]+jackpotPool*jpShare[i];}
+  setInterval(()=>{jpIdx=(jpIdx+1)%4;jpLabel.text=jpNames[jpIdx];jpLabel.style.fill=jpColors[jpIdx];jpAmt.text='$'+jpValue(jpIdx).toFixed(2);},3000);
+
+  // ═══ REAL JACKPOT TRIGGER (weighted toward lower tiers; funded by per-shot contribution) ═══
+  const jpWeights=[50,30,15,5],jpBaseChance=0.0025;
+  function triggerJackpot(){
+    let r=Math.random()*jpWeights.reduce((a,b)=>a+b),tierIdx=0;
+    for(let i=0;i<jpWeights.length;i++){r-=jpWeights[i];if(r<=0){tierIdx=i;break;}}
+    const payout=jpValue(tierIdx);
+    credits+=payout;totalWon+=payout;
+    jpPools[tierIdx]=jpSeed[tierIdx]*0.15;jackpotPool=Math.max(500,jackpotPool*0.2);
+    announce(`${jpNames[tierIdx]} JACKPOT! +$${payout.toFixed(2)}`,jpColors[tierIdx]);
+    shake(18,900);updateHUD();
+  }
 
   // ═══ WEAPON + BET HUD ═══
   const weapHud=document.createElement('div');weapHud.style.cssText=`position:fixed;bottom:calc(env(safe-area-inset-bottom) + ${isMobile?20:52}px);left:50%;transform:translateX(-50%) scale(${HUD_SCALE});transform-origin:bottom center;display:flex;gap:${isMobile?6:4}px;z-index:100;flex-wrap:wrap;justify-content:center;max-width:95vw`;document.body.appendChild(weapHud);
   function renderWeaponBar(){weapHud.innerHTML=WEAPONS.map((w,i)=>`<div style="padding:${isMobile?'8px 14px':'4px 10px'};border:1.5px solid ${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#333'};background:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0')+'20':'#0008'};color:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#aaa'};font:bold ${isMobile?11:9}px monospace;cursor:pointer;text-transform:uppercase;letter-spacing:1px;min-width:${isMobile?54:50}px;text-align:center;border-radius:3px" data-w="${i}">${w.name}</div>`).join('');}
   renderWeaponBar();
-  weapHud.addEventListener('click',e=>{const i=e.target.dataset.w;if(i!==undefined){currentWeapon=parseInt(i);renderWeaponBar();}});
+  weapHud.addEventListener('click',e=>{const i=e.target.dataset.w;if(i!==undefined){currentWeapon=parseInt(i);laserMode=false;setBtnOn(rightRail,'LASER',false);renderWeaponBar();}});
+
+  // ═══ SIDE HUD RAILS (Menu/Screen/Info left; Laser/Locked/Auto right) ═══
+  let laserMode=false,lockedMode=false,autoMode=false,lockedTarget=null,weaponBeforeLaser=0;
+  const railBtn=(label,color)=>`<div data-act="${label}" style="width:${isMobile?54:44}px;height:${isMobile?54:44}px;border-radius:50%;border:1.5px solid ${color};background:#0009;display:flex;align-items:center;justify-content:center;font:bold ${isMobile?8:7}px monospace;color:${color};cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;text-align:center;line-height:1.1" data-on="0">${label}</div>`;
+  const leftRail=document.createElement('div');leftRail.style.cssText=`position:fixed;left:${isMobile?4:10}px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:${isMobile?8:10}px;z-index:100`;
+  leftRail.innerHTML=railBtn('MENU','#3388ff')+railBtn('SCREEN','#ff8833')+railBtn('INFO','#ffcc33');
+  document.body.appendChild(leftRail);
+  const rightRail=document.createElement('div');rightRail.style.cssText=`position:fixed;right:${isMobile?4:10}px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:${isMobile?8:10}px;z-index:100`;
+  rightRail.innerHTML=railBtn('LASER','#aa44ff')+railBtn('LOCKED','#44ff88')+railBtn('AUTO','#ff6633');
+  document.body.appendChild(rightRail);
+
+  function setBtnOn(rail,act,on){const el=[...rail.children].find(c=>c.dataset.act===act);if(!el)return;el.dataset.on=on?'1':'0';el.style.background=on?el.style.borderColor+'33':'#0009';el.style.boxShadow=on?`0 0 12px ${el.style.borderColor}`:'none';}
+
+  const infoOverlay=document.createElement('div');
+  infoOverlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;display:none;align-items:center;justify-content:center;padding:20px';
+  infoOverlay.innerHTML=`<div style="max-width:420px;border:2px solid #d4af37;background:#0a0a0a;padding:20px;font-family:monospace;color:#eee">
+    <div style="color:#d4af37;font-weight:bold;letter-spacing:3px;font-size:13px;margin-bottom:14px;text-transform:uppercase">Game Introduction</div>
+    <div style="font-size:11px;line-height:1.9;color:#ccc">
+      <b style="color:#00c8ff">TAP / HOLD</b> — aim &amp; fire at fish<br/>
+      <b style="color:#d4af37">Q / E</b> — decrease / increase bet<br/>
+      <b style="color:#aa44ff">LASER</b> — switch to piercing beam weapon<br/>
+      <b style="color:#44ff88">LOCKED</b> — auto-aim &amp; fire at the highest-value target<br/>
+      <b style="color:#ff6633">AUTO</b> — continuous fire at nearest fish<br/>
+      <b style="color:#ff8833">SCREEN</b> — toggle fullscreen<br/>
+      Weapon bar (bottom) — pick CANNON / LASER / CHAIN / BOMB / AUTO / RAILGUN
+    </div>
+    <div style="text-align:right;margin-top:16px"><span data-act="CLOSE_INFO" style="cursor:pointer;color:#d4af37;border:1px solid #d4af37;padding:6px 16px;font-size:10px;letter-spacing:2px">CLOSE</span></div>
+  </div>`;
+  document.body.appendChild(infoOverlay);
+
+  const menuOverlay=document.createElement('div');
+  menuOverlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;display:none;align-items:center;justify-content:center;padding:20px';
+  menuOverlay.innerHTML=`<div style="max-width:320px;border:2px solid #d4af37;background:#0a0a0a;padding:20px;font-family:monospace;color:#eee;text-align:center">
+    <div style="color:#d4af37;font-weight:bold;letter-spacing:3px;font-size:13px;margin-bottom:16px;text-transform:uppercase">Menu</div>
+    <div data-act="TOGGLE_MUTE" style="cursor:pointer;border:1px solid #3388ff;color:#3388ff;padding:8px;margin-bottom:8px;font-size:10px;letter-spacing:2px">MUTE / UNMUTE</div>
+    <div data-act="CLOSE_MENU" style="cursor:pointer;border:1px solid #d4af37;color:#d4af37;padding:8px;font-size:10px;letter-spacing:2px">CLOSE</div>
+  </div>`;
+  document.body.appendChild(menuOverlay);
+
+  function railClick(e){
+    const act=e.target.dataset.act;if(!act)return;
+    if(act==='SCREEN'){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{});return;}
+    if(act==='INFO'){infoOverlay.style.display='flex';return;}
+    if(act==='MENU'){menuOverlay.style.display='flex';return;}
+    if(act==='LASER'){
+      laserMode=!laserMode;setBtnOn(rightRail,'LASER',laserMode);
+      const laserIdx=WEAPONS.findIndex(w=>w.name==='LASER');
+      if(laserMode){weaponBeforeLaser=currentWeapon;currentWeapon=laserIdx;}else{currentWeapon=weaponBeforeLaser;}
+      renderWeaponBar();return;
+    }
+    if(act==='LOCKED'){lockedMode=!lockedMode;if(lockedMode){autoMode=false;setBtnOn(rightRail,'AUTO',false);}lockedTarget=null;setBtnOn(rightRail,'LOCKED',lockedMode);return;}
+    if(act==='AUTO'){autoMode=!autoMode;if(autoMode){lockedMode=false;setBtnOn(rightRail,'LOCKED',false);}setBtnOn(rightRail,'AUTO',autoMode);return;}
+  }
+  leftRail.addEventListener('click',railClick);rightRail.addEventListener('click',railClick);
+  infoOverlay.addEventListener('click',e=>{if(e.target.dataset.act==='CLOSE_INFO')infoOverlay.style.display='none';});
+  menuOverlay.addEventListener('click',e=>{
+    if(e.target.dataset.act==='CLOSE_MENU')menuOverlay.style.display='none';
+    if(e.target.dataset.act==='TOGGLE_MUTE'&&masterGain){masterGain.gain.value=masterGain.gain.value>0?0:(window.__sla_volume||0.7);}
+  });
 
   // ═══ COMBO DISPLAY ═══
   const comboText=new PIXI.Text('',{fontSize:24,fill:0xd4af37,fontFamily:'monospace',fontWeight:'bold',letterSpacing:4,stroke:0x000000,strokeThickness:4});comboText.anchor.set(0.5);comboText.x=W()/2;comboText.y=H()/2+40;comboText.visible=false;L.ui.addChild(comboText);
@@ -400,12 +473,12 @@ const ASSET_MANIFEST = {manifest_json};
     const type=BOSSES[Math.floor(Math.random()*BOSSES.length)],bi=BOSSES.indexOf(type);
     const f=new PIXI.Container();
     const sn=type.sprite||type.name.toLowerCase().replace(/[\s,]+/g,'_');
-    if(loadedTex[sn]){const td=loadedTex[sn];const a=new PIXI.AnimatedSprite(td.anims.walk||td.anims.run||td.anims.idle||td.frames.slice(0,4));a.anchor.set(0.5);a.animationSpeed=0.12;a.play();a.scale.set((type.sz*2.5)/td.cfg.frame_width);f.addChild(a);f._a=a;f._td=td;}
-    else{const s=new PIXI.Sprite(bossTex[bi]);s.anchor.set(0.5);s.scale.set(0.5);f.addChild(s);}
+    if(loadedTex[sn]){const td=loadedTex[sn];const a=new PIXI.AnimatedSprite(td.anims.walk||td.anims.run||td.anims.idle||td.frames.slice(0,4));a.anchor.set(0.5);a.animationSpeed=0.12;a.play();const bScale=(type.sz*2.5)/td.cfg.frame_width;a.scale.set(bScale);f.addChild(a);f._a=a;f._td=td;f._body=a;f._bScale=bScale;}
+    else{const s=new PIXI.Sprite(bossTex[bi]);s.anchor.set(0.5);s.scale.set(0.5);f.addChild(s);f._body=s;f._bScale=0.5;}
     const nm=new PIXI.Text(type.name,{fontSize:13,fill:type.color,fontFamily:'monospace',fontWeight:'bold',letterSpacing:2,stroke:0x000000,strokeThickness:4});nm.anchor.set(0.5);nm.y=-type.sz-12;f.addChild(nm);
     const hw=type.sz*2;const bg=new PIXI.Graphics();bg.beginFill(0x000000,0.7).drawRoundedRect(-hw/2,-type.sz-5,hw,5,2).endFill();const fl=new PIXI.Graphics();fl.beginFill(0xff0000).drawRoundedRect(-hw/2,-type.sz-5,hw,5,2).endFill();f.addChild(bg);f.addChild(fl);f._hf=fl;f._hw=hw;
     const mt=new PIXI.Text(`x${type.val}`,{fontSize:15,fill:0xd4af37,fontFamily:'monospace',fontWeight:'bold',stroke:0x000000,strokeThickness:4});mt.anchor.set(0.5);mt.y=type.sz+10;f.addChild(mt);
-    f.x=W()+120;f.y=H()/2;f.vx=-0.3;f.hp=Math.ceil(type.hp*(1+betLevel*2));f.mhp=f.hp;f.val=type.val;f.tier=99;f.sz=type.sz;f.isBoss=true;f.pat='boss';f.ph=0;f.alive=true;
+    f.x=W()+120;f.y=H()/2;f.vx=-1.6;f.hp=Math.ceil(type.hp*(1+betLevel*2));f.mhp=f.hp;f.val=type.val;f.tier=99;f.sz=type.sz;f.isBoss=true;f.pat='boss';f.ph=0;f.alive=true;
     f.interactive=true;f.cursor='none';f.hitArea=new PIXI.Circle(0,0,type.sz*1.5);
     f.visible=false;
     L.fish.addChild(f);fishes.push(f);
@@ -418,7 +491,7 @@ const ASSET_MANIFEST = {manifest_json};
     const now=Date.now();if(now-turret.lastFire<w.rate)return;turret.lastFire=now;
     const cost=w.cost*betLevel;
     if(!turret.isBot&&credits<cost)return;
-    if(!turret.isBot){credits-=cost;totalShots++;jackpotPool+=cost*0.02;}
+    if(!turret.isBot){credits-=cost;totalShots++;jackpotPool+=cost*0.02;if(Math.random()<jpBaseChance*(betLevel/0.10))triggerJackpot();}
 
     const angle=Math.atan2(targetY-turret.y,targetX-turret.x);
     turret._barrel.rotation=angle+Math.PI/2;
@@ -518,36 +591,49 @@ const ASSET_MANIFEST = {manifest_json};
   // ═══ GAME LOOP ═══
   app.ticker.add(()=>{
     const now=Date.now(),frozen=now<frozenUntil;
+    const dt=app.ticker.deltaTime||1;
 
-    // Player continuous fire (hold to shoot)
-    if(mouseDown){
+    // Player continuous fire (hold to shoot / LOCKED target / AUTO nearest)
+    if(lockedMode){
+      if(!lockedTarget||!lockedTarget.alive){
+        const alive=fishes.filter(f=>f.alive);
+        lockedTarget=alive.sort((a,b)=>(b.isBoss?1e9+b.val:b.val)-(a.isBoss?1e9+a.val:a.val))[0]||null;
+      }
+      if(lockedTarget){myTurret._barrel.rotation=Math.atan2(lockedTarget.y-myTurret.y,lockedTarget.x-myTurret.x)+Math.PI/2;fireFromTurret(myTurret,lockedTarget.x,lockedTarget.y);}
+    } else if(autoMode||mouseDown){
       const closest=fishes.filter(f=>f.alive).sort((a,b)=>Math.hypot(a.x-mouseX,a.y-mouseY)-Math.hypot(b.x-mouseX,b.y-mouseY))[0];
       if(closest)fireFromTurret(myTurret,closest.x,closest.y);
       else fireFromTurret(myTurret,mouseX,mouseY);
     }
-    // Aim turret at mouse
-    myTurret._barrel.rotation=Math.atan2(mouseY-myTurret.y,mouseX-myTurret.x)+Math.PI/2;
+    // Aim turret at mouse (skip while a LOCKED target is steering it)
+    if(!lockedMode)myTurret._barrel.rotation=Math.atan2(mouseY-myTurret.y,mouseX-myTurret.x)+Math.PI/2;
 
-    // Bot AI — pick random fish and fire
+    // Bot presence — aim only, no auto-fire (bots are table ambience, not phantom shooters)
     turrets.forEach(t=>{
       if(!t.isBot)return;
       if(!t.targetFish||!t.targetFish.alive){t.targetFish=fishes.filter(f=>f.alive)[Math.floor(Math.random()*fishes.filter(f=>f.alive).length)];}
-      if(t.targetFish){
-        t._barrel.rotation=Math.atan2(t.targetFish.y-t.y,t.targetFish.x-t.x)+Math.PI/2;
-        if(Math.random()<0.08)fireFromTurret(t,t.targetFish.x,t.targetFish.y);
-      }
+      if(t.targetFish){t._barrel.rotation=Math.atan2(t.targetFish.y-t.y,t.targetFish.x-t.x)+Math.PI/2;}
     });
 
     // Update fish
     fishes.forEach(f=>{
       if(!f.alive)return;if(frozen&&!f.isBoss){f.alpha=0.5+Math.sin(now/200)*0.2;return;}f.alpha=1;
       const t=now/1000+f.ph;
-      if(f.pat==='sine'){f.x+=f.vx;f.y+=Math.sin(t*2)*1.5;}
-      else if(f.pat==='zigzag'){f.x+=f.vx;f.y+=Math.sin(t*4)*2.5;}
-      else if(f.pat==='circle'){f.x+=f.vx;f.y+=Math.cos(t*1.5)*2;}
-      else if(f.pat==='drift'){f.x+=f.vx*0.5;f.y+=Math.sin(t*0.5)*0.8;}
-      else if(f.pat==='boss'){if(f.x>W()*0.7)f.vx=-0.4;else if(f.x<W()*0.3)f.vx=0.4;f.x+=f.vx;f.y=H()/2+Math.sin(t)*H()*0.25;}
-      else{f.x+=f.vx;f.y+=f.vy;}
+      if(f.pat==='sine'){f.x+=f.vx*dt;f.y+=Math.sin(t*2)*1.5;}
+      else if(f.pat==='zigzag'){f.x+=f.vx*dt;f.y+=Math.sin(t*4)*2.5;}
+      else if(f.pat==='circle'){f.x+=f.vx*dt;f.y+=Math.cos(t*1.5)*2;}
+      else if(f.pat==='drift'){f.x+=f.vx*0.5*dt;f.y+=Math.sin(t*0.5)*0.8;}
+      else if(f.pat==='boss'){
+        if(f.x>W()*0.7)f.vx=-1.6;else if(f.x<W()*0.3)f.vx=1.6;f.x+=f.vx*dt;f.y=H()/2+Math.sin(t)*H()*0.25;
+        if(f._body){
+          const gait=t*9,stride=Math.abs(Math.sin(gait));
+          f._body.scale.x=Math.abs(f._bScale)*(f.vx<0?1:-1)*(1-stride*0.06);
+          f._body.scale.y=f._bScale*(1+stride*0.06);
+          f._body.y=-stride*f.sz*0.14;
+          f._body.rotation=Math.sin(gait)*0.05;
+        }
+      }
+      else{f.x+=f.vx*dt;f.y+=f.vy*dt;}
       if(f.y<45)f.vy=Math.abs(f.vy||0.5);if(f.y>H()-80)f.vy=-Math.abs(f.vy||0.5);
       if(!f.isBoss&&(f.x<-100||f.x>W()+100)){f.alive=false;f.visible=false;}
       if(f._coinTxt)f._coinTxt.text=(f.val*betLevel).toFixed(2);
@@ -556,7 +642,7 @@ const ASSET_MANIFEST = {manifest_json};
 
     // Update bullets
     bullets.forEach(b=>{
-      if(!b.alive)return;b.x+=b.vx;b.y+=b.vy;
+      if(!b.alive)return;b.x+=b.vx*dt;b.y+=b.vy*dt;
       if(b.x<-20||b.x>W()+20||b.y<-20||b.y>H()+20){b.alive=false;b.visible=false;return;}
       fishes.forEach(f=>{
         if(f.alive&&b.alive&&Math.hypot(f.x-b.x,f.y-b.y)<f.sz*1.2){

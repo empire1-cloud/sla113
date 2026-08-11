@@ -100,6 +100,69 @@ function TitleScreen({ onComplete }) {
   );
 }
 
+
+const BACKEND = process.env.REACT_APP_BACKEND_URL || '';
+
+function SLA113LoginGate({ children }) {
+  const [token, setToken] = React.useState(() => localStorage.getItem('sla113_op_token'));
+  const [handle, setHandle] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const login = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const r = await fetch(`${BACKEND}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handle, password }),
+      });
+      const data = await r.json();
+      if (data.token) {
+        localStorage.setItem('sla113_op_token', data.token);
+        setToken(data.token);
+      } else {
+        setError(data.detail || 'Invalid credentials');
+      }
+    } catch {
+      setError('Connection error — try again');
+    }
+    setLoading(false);
+  };
+
+  if (token) return children;
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'ui-monospace, monospace' }}>
+      <div style={{ width: 360, background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 16, padding: 40 }}>
+        <div style={{ marginBottom: 32, textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: '#D4AF37', letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 8 }}>SLA-113</div>
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>OPERATOR OS</div>
+          <div style={{ fontSize: 9, color: '#333', marginTop: 4, letterSpacing: '0.3em', textTransform: 'uppercase' }}>Sovereign Access Required</div>
+        </div>
+        <form onSubmit={login}>
+          <div style={{ marginBottom: 12 }}>
+            <input type="text" placeholder="Handle" value={handle} onChange={e => setHandle(e.target.value)} required
+              style={{ width: '100%', background: '#000', border: '1px solid #1a1a1a', color: '#fff', padding: '12px 14px', borderRadius: 8, fontSize: 13, boxSizing: 'border-box', outline: 'none' }} />
+          </div>
+          <div style={{ marginBottom: 20 }}>
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required
+              style={{ width: '100%', background: '#000', border: '1px solid #1a1a1a', color: '#fff', padding: '12px 14px', borderRadius: 8, fontSize: 13, boxSizing: 'border-box', outline: 'none' }} />
+          </div>
+          {error && <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 14, textAlign: 'center' }}>{error}</div>}
+          <button type="submit" disabled={loading}
+            style={{ width: '100%', background: '#D4AF37', color: '#000', border: 'none', borderRadius: 8, padding: '13px 0', fontWeight: 900, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+            {loading ? 'Authenticating...' : 'Enter OS'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function SLA113App() {
   const [showTitle, setShowTitle] = useState(true);
 
@@ -107,8 +170,8 @@ export default function SLA113App() {
     <div id="sla113-root">
       {showTitle && <TitleScreen onComplete={() => setShowTitle(false)} />}
       <Routes>
-        <Route path="/sla113" element={<SLA113Page />} />
-        <Route path="/sla113/*" element={<SLA113Page />} />
+        <Route path="/sla113" element={<SLA113LoginGate><SLA113Page /></SLA113LoginGate>} />
+        <Route path="/sla113/*" element={<SLA113LoginGate><SLA113Page /></SLA113LoginGate>} />
         <Route path="*" element={<Navigate to="/sla113" replace />} />
       </Routes>
     </div>
