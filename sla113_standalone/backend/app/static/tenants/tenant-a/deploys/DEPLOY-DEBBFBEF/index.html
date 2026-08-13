@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Alpha Fish Shooter — Tenant Alpha</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a12; color:#fff; font-family:system-ui,-apple-system,sans-serif; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #game-container { width:100%; max-width:480px; aspect-ratio:9/16; background:#111; border-radius:12px; border:2px solid #ff0000; overflow:hidden; position:relative; }
+  #game-canvas { width:100%; height:100%; display:block; }
+  .header { text-align:center; padding:12px 16px; width:100%; max-width:480px; }
+  .header h1 { font-size:1.1rem; color:#ff0000; }
+  .header .meta { font-size:0.75rem; color:#888; margin-top:4px; }
+  .footer { text-align:center; padding:12px; font-size:0.7rem; color:#555; }
+  .build-badge { position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.7); color:#555; font-size:0.6rem; padding:2px 6px; border-radius:4px; pointer-events:none; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Alpha Fish Shooter</h1>
+    <div class="meta">Powered by Tenant Alpha</div>
+  </div>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div class="build-badge">BLD-EE6CAE8B</div>
+  </div>
+  <div class="footer">SLA113 Game OS &mdash; Tenant Alpha</div>
+  <script>
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      const container = document.getElementById('game-container');
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    function draw() {
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = '#0a0a12';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#ff0000';
+      ctx.font = `${Math.min(w,h)*0.05}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.fillText('Alpha Fish Shooter', w/2, h/2);
+      ctx.font = `${Math.min(w,h)*0.025}px system-ui`;
+      ctx.fillStyle = '#555';
+      ctx.fillText('Game Bundle Loading...', w/2, h/2 + 30);
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>

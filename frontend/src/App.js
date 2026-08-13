@@ -32,6 +32,10 @@ import EmpireLyricMasterPage from "./pages/EmpireLyricMasterPage";
 import SLA113App from "./sla113/SLA113App";
 import ArcadePage from "./arcade/ArcadePage";
 
+// Admin sub-pages
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminTeamsPage from "./pages/admin/AdminTeamsPage";
+
 /**
  * Root Router — splits traffic at the top level.
  * /sla113/* → SLA113App (isolated, no Empire 1 providers)
@@ -79,6 +83,8 @@ function RootRouter() {
             <Route path="/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} />
             <Route path="/settings/api-keys" element={<ProtectedRoute><APIKeysPage /></ProtectedRoute>} />
             <Route path="/admin/overview" element={<ProtectedRoute><AdminOverviewPage /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute><AdminUsersPage /></ProtectedRoute>} />
+            <Route path="/admin/teams" element={<ProtectedRoute><AdminTeamsPage /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

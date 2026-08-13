@@ -34,10 +34,10 @@ export default function GameComposerPanel() {
     setLoading(true);
     try {
       const [lRes, sRes] = await Promise.all([
-        axios.get(`${API}/lobbies`),
+        axios.get(`${API}/games`),
         axios.get(`${API}/sprites`),
       ]);
-      setLobbies(lRes.data.lobbies || []);
+      setLobbies(lRes.data.games || []);
       setSprites(sRes.data.sprites || []);
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -57,7 +57,7 @@ export default function GameComposerPanel() {
   const handleDeploy = async (lobby) => {
     setDeploying(d => ({ ...d, [lobby.id]: true }));
     try {
-      const res = await axios.post(`${API}/lobbies/${lobby.id}/deploy`);
+      const res = await axios.post(`${API}/games/${lobby.id}/deploy`);
       const url = `${process.env.REACT_APP_BACKEND_URL}${res.data.preview_url}`;
       setLastDeploy({ lobby_name: lobby.name, preview_url: url });
     } catch (e) {
@@ -68,7 +68,7 @@ export default function GameComposerPanel() {
 
   const handleDelete = async (lobby) => {
     if (!window.confirm(`Delete lobby "${lobby.name}"?`)) return;
-    try { await axios.delete(`${API}/lobbies/${lobby.id}`); load(); } catch (e) { alert(e.message); }
+    try { await axios.delete(`${API}/games/${lobby.id}`); load(); } catch (e) { alert(e.message); }
   };
 
   const handleSave = async () => {
@@ -76,9 +76,9 @@ export default function GameComposerPanel() {
     setSaving(true);
     try {
       if (editing.id) {
-        await axios.patch(`${API}/lobbies/${editing.id}`, editing);
+        await axios.patch(`${API}/games/${editing.id}`, editing);
       } else {
-        await axios.post(`${API}/lobbies`, editing);
+        await axios.post(`${API}/games`, editing);
       }
       setEditing(null);
       load();

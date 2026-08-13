@@ -7,7 +7,7 @@ const GAME_CONFIG = {
   "built_by": "SLA113",
   "sprites": {
     "g-wolf": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/kfmzgzqn_spritesheet1.png",
+      "sprite_url": "assets/kfmzgzqn_spritesheet1.png",
       "frame_width": 410,
       "frame_height": 512,
       "columns": 5,
@@ -48,7 +48,7 @@ const GAME_CONFIG = {
       }
     },
     "aztec_fish_species_v2": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/594ce0tv_image.png",
+      "sprite_url": "assets/594ce0tv_image.png",
       "frame_width": 512,
       "frame_height": 512,
       "columns": 4,
@@ -97,7 +97,7 @@ const GAME_CONFIG = {
       }
     },
     "jaguar_warrior_champion": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/zvo9csfi_image.jpeg",
+      "sprite_url": "assets/zvo9csfi_image.jpeg",
       "frame_width": 400,
       "frame_height": 400,
       "columns": 4,
@@ -136,7 +136,7 @@ const GAME_CONFIG = {
       }
     },
     "jaguar_warrior_elite": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m8pbtswb_image.jpeg",
+      "sprite_url": "assets/m8pbtswb_image.jpeg",
       "frame_width": 320,
       "frame_height": 400,
       "columns": 5,
@@ -178,7 +178,7 @@ const GAME_CONFIG = {
       }
     },
     "wolf_xolotl_pack": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/pbmyew6l_image.png",
+      "sprite_url": "assets/pbmyew6l_image.png",
       "frame_width": 400,
       "frame_height": 340,
       "columns": 5,
@@ -228,7 +228,7 @@ const GAME_CONFIG = {
       }
     },
     "wolf_xolotls_arena": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/zfvily4d_image.png",
+      "sprite_url": "assets/zfvily4d_image.png",
       "frame_width": 2048,
       "frame_height": 2048,
       "columns": 1,
@@ -241,7 +241,7 @@ const GAME_CONFIG = {
       }
     },
     "aztec_wolf_male": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/z1ncb721_boss%20%281%29.jpg",
+      "sprite_url": "assets/z1ncb721_boss (1).jpg",
       "frame_width": 1024,
       "frame_height": 1024,
       "columns": 1,
@@ -254,7 +254,7 @@ const GAME_CONFIG = {
       }
     },
     "aztec_temple_guardians": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/2u8qf3cj_unnamed%20%283%29.jpg",
+      "sprite_url": "assets/2u8qf3cj_unnamed (3).jpg",
       "frame_width": 256,
       "frame_height": 256,
       "columns": 4,
@@ -288,7 +288,7 @@ const GAME_CONFIG = {
       }
     },
     "three_worlds_pyramid": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/jdc5h7c3_threeworlds%20%281%29.jpg",
+      "sprite_url": "assets/jdc5h7c3_threeworlds (1).jpg",
       "frame_width": 341,
       "frame_height": 1024,
       "columns": 3,
@@ -307,7 +307,7 @@ const GAME_CONFIG = {
       }
     },
     "aztec_fish_species": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/cvci6vxx_spritesheet2_fish.jpg",
+      "sprite_url": "assets/cvci6vxx_spritesheet2_fish.jpg",
       "frame_width": 200,
       "frame_height": 200,
       "columns": 5,
@@ -360,7 +360,7 @@ const GAME_CONFIG = {
       }
     },
     "ocelotl_voidmane": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/ncd8zsod_unnamed%20%284%29.jpg",
+      "sprite_url": "assets/ncd8zsod_unnamed (4).jpg",
       "frame_width": 270,
       "frame_height": 340,
       "columns": 4,
@@ -388,7 +388,7 @@ const GAME_CONFIG = {
       }
     },
     "jaguar_warrior": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/xooi0xfr_boss%20%283%29.jpg",
+      "sprite_url": "assets/xooi0xfr_boss (3).jpg",
       "frame_width": 512,
       "frame_height": 512,
       "columns": 1,
@@ -401,7 +401,7 @@ const GAME_CONFIG = {
       }
     },
     "quetzalcoatl_fireborn": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/vr76ezmx_spritesheet1%20%284%29.jpg",
+      "sprite_url": "assets/vr76ezmx_spritesheet1 (4).jpg",
       "frame_width": 256,
       "frame_height": 256,
       "columns": 4,
@@ -435,7 +435,7 @@ const GAME_CONFIG = {
       }
     },
     "mictlantecuilti_bone_sovereign": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/aufgqv07_spritesheet1%20%285%29.jpg",
+      "sprite_url": "assets/aufgqv07_spritesheet1 (5).jpg",
       "frame_width": 256,
       "frame_height": 341,
       "columns": 4,
@@ -469,7 +469,7 @@ const GAME_CONFIG = {
       }
     },
     "quetzalflare_prismwing": {
-      "sprite_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/m9d2kcms_spritesheet1%20%282%29.jpg",
+      "sprite_url": "assets/m9d2kcms_spritesheet1 (2).jpg",
       "frame_width": 200,
       "frame_height": 200,
       "columns": 5,
@@ -514,7 +514,7 @@ const GAME_CONFIG = {
       }
     }
   },
-  "background_url": "/api/sla113/sprites/proxy?url=https://customer-assets.emergentagent.com/job_3653cf8a-8710-488d-846f-2f0428b714dd/artifacts/zfvily4d_image.png",
+  "background_url": "assets/zfvily4d_image.png",
   "lobby": {
     "name": "Shadow Pack",
     "main_boss": "wolf_xolotl_pack",
@@ -549,6 +549,9 @@ const ASSET_MANIFEST = [];
     } catch {}
   }
   await Promise.all(Object.entries(SPRITES).map(([n, c]) => loadSheet(n, c)));
+  const loadedCount = Object.keys(loadedTex).length;
+  const assetEl = document.getElementById('asset-count');
+  if (assetEl) assetEl.textContent = loadedCount;
   const TIER_ANIM = {0:'tiny_fish',1:'tiny_fish',2:'small_fish',3:'small_fish',4:'medium_fish',5:'shark',6:'shark',7:'large_fish',8:'large_fish',9:'shark',10:'serpent',11:'serpent'};
   function fishFrames(ti) { const s = loadedTex['aztec_fish_species']; return s ? (s.anims[TIER_ANIM[ti]||'medium_fish']||null) : null; }
 
@@ -575,7 +578,7 @@ const ASSET_MANIFEST = [];
   }
 
   // ═══ GAME STATE ═══
-  let credits=10000,betLevel=0.10,totalWon=0,totalShots=0,currentWeapon=0,jackpotPool=500,frozenUntil=0,bossActive=false;
+  let credits=10000,sweeps=0,betLevel=0.10,totalWon=0,totalShots=0,currentWeapon=0,jackpotPool=500,frozenUntil=0,bossActive=false;
   let mouseX=W()/2,mouseY=H()/2,mouseDown=false,comboCount=0,comboTimer=0,lastKillTime=0;
   const BET_LEVELS=[0.01,0.05,0.10,0.25,0.50,1.00,5.00,10.00];
   const WEAPONS=[
@@ -623,20 +626,14 @@ const ASSET_MANIFEST = [];
 
   // ═══ BACKGROUND ═══
   if(GAME_CONFIG.background_url){try{const img=new Image();img.crossOrigin='anonymous';img.src=GAME_CONFIG.background_url;await new Promise((r,e)=>{img.onload=r;img.onerror=e;setTimeout(e,8000);});
-    // AGGRESSIVE watermark nuker: mirror-flip bottom-right & top-right corners from the LEFT side of the image
+    // Hard-crop Gemini watermark (bottom-right ~10%) by copying bottom-LEFT region over it
     const cn=document.createElement('canvas');const cW=img.naturalWidth,cH=img.naturalHeight;cn.width=cW;cn.height=cH;const cx=cn.getContext('2d');cx.drawImage(img,0,0);
-    const pct=0.14;const mW=Math.ceil(cW*pct),mH=Math.ceil(cH*pct);
-    try{
-      // Mirror-copy left→right for bottom-right corner (preserves lighting)
-      cx.save();cx.translate(cW,cH-mH);cx.scale(-1,1);cx.drawImage(cn,0,cH-mH,mW,mH,0,0,mW,mH);cx.restore();
-      // Mirror-copy left→right for top-right corner
-      cx.save();cx.translate(cW,0);cx.scale(-1,1);cx.drawImage(cn,0,0,mW,mH,0,0,mW,mH);cx.restore();
-      // Dark vignette over both right corners to erase any residual artifacts
-      [[cW-mW*0.5,cH-mH*0.5],[cW-mW*0.5,mH*0.5]].forEach(([px,py])=>{
-        const gd=cx.createRadialGradient(px,py,mH*0.15,px,py,mH*1.1);
-        gd.addColorStop(0,'rgba(0,0,0,0)');gd.addColorStop(0.55,'rgba(0,0,0,0.55)');gd.addColorStop(1,'rgba(0,0,0,0.95)');
-        cx.fillStyle=gd;cx.fillRect(px-mW*0.7,py-mH*0.7,mW*1.4,mH*1.4);
-      });
+    const mW=Math.ceil(cW*0.11),mH=Math.ceil(cH*0.11);
+    try{cx.drawImage(cn,0,cH-mH,mW,mH,cW-mW,cH-mH,mW,mH);
+      // Add radial vignette to blend the patch seam
+      const gd=cx.createRadialGradient(cW-mW*0.5,cH-mH*0.5,mH*0.2,cW-mW*0.5,cH-mH*0.5,mH*1.2);
+      gd.addColorStop(0,'rgba(0,0,0,0)');gd.addColorStop(0.7,'rgba(0,0,0,0.35)');gd.addColorStop(1,'rgba(0,0,0,0.85)');
+      cx.fillStyle=gd;cx.fillRect(cW-mW*1.4,cH-mH*1.4,mW*1.4,mH*1.4);
     }catch(_){}
     const s=new PIXI.Sprite(PIXI.Texture.from(cn));s.width=W();s.height=H();L.bg.addChild(s);
   }catch{const g=new PIXI.Graphics();for(let y=0;y<H();y+=2){const t=y/H();g.lineStyle(2,(Math.floor(t*10)<<16)|(Math.floor(14+t*14)<<8)|Math.floor(20+t*35));g.moveTo(0,y).lineTo(W(),y);}L.bg.addChild(g);}}
@@ -716,51 +713,46 @@ const ASSET_MANIFEST = [];
 
   // ═══ PLAYER BALANCE CORNERS ═══
   const balances=[]; const botCredits=[8500,12300,6700];
-  function makeBalance(x,y,color,name,amount,align){
-    const bg=new PIXI.Graphics();bg.beginFill(0x003300,0.85).drawRoundedRect(0,0,140,38,6).endFill();bg.lineStyle(1.5,color,0.5).drawRoundedRect(0,0,140,38,6);bg.x=x;bg.y=y;
-    const bal=new PIXI.Text(amount,{fontSize:14,fill:color,fontFamily:'monospace',fontWeight:'bold'});bal.anchor.set(align==='left'?0:1,0.5);bal.x=align==='left'?8:132;bal.y=13;
-    const id=new PIXI.Text(name,{fontSize:7,fill:color,fontFamily:'monospace'});id.x=8;id.y=27;
-    bg.addChild(bal);bg.addChild(id);L.hud.addChild(bg);return bal;
+  function makeBalance(x,y,color,name,amount,sweepsAmt,align){
+    const bg=new PIXI.Graphics();bg.beginFill(0x003300,0.85).drawRoundedRect(0,0,152,48,6).endFill();bg.lineStyle(1.5,color,0.5).drawRoundedRect(0,0,152,48,6);bg.x=x;bg.y=y;
+    const bal=new PIXI.Text(amount,{fontSize:13,fill:color,fontFamily:'monospace',fontWeight:'bold'});bal.anchor.set(align==='left'?0:1,0.5);bal.x=align==='left'?8:144;bal.y=12;
+    const sweep=new PIXI.Text('SC: '+sweepsAmt,{fontSize:9,fill:0xd4af37,fontFamily:'monospace',fontWeight:'bold'});sweep.anchor.set(align==='left'?0:1,0.5);sweep.x=align==='left'?8:144;sweep.y=26;
+    const id=new PIXI.Text(name,{fontSize:7,fill:color,fontFamily:'monospace'});id.x=8;id.y=37;
+    bg.addChild(bal);bg.addChild(sweep);bg.addChild(id);L.hud.addChild(bg);return{bal,sweep};
   }
   // Balance chips sit under/above each turret (2 top + 2 bottom)
-  const myBal=makeBalance(6,H()-44,0x00c8ff,'P1 (YOU)',credits.toFixed(2),'left');                 // bottom-left
-  makeBalance(W()-146,H()-44,0xff4444,'P2 (BOT)',botCredits[0].toFixed(2),'right');               // bottom-right
-  makeBalance(6,4,0x44ff44,'P3 (BOT)',botCredits[1].toFixed(2),'left');                            // top-left
-  makeBalance(W()-146,4,0xd4af37,'P4 (BOT)',botCredits[2].toFixed(2),'right');                     // top-right
+  const myBal=makeBalance(6,H()-54,0x00c8ff,'P1 (YOU)',credits.toFixed(2),sweeps.toFixed(2),'left');
+  makeBalance(W()-158,H()-54,0xff4444,'P2 (BOT)',botCredits[0].toFixed(2),'0','right');
+  makeBalance(6,4,0x44ff44,'P3 (BOT)',botCredits[1].toFixed(2),'0','left');
+  makeBalance(W()-158,4,0xd4af37,'P4 (BOT)',botCredits[2].toFixed(2),'0','right');
 
-  // ═══ LOBBY THEME TINT ═══
-  const THEME_HEX=(LOB.theme_color||'#d4af37').replace('#','');
-  const THEME=parseInt(THEME_HEX,16)||0xd4af37;
-  const isMobile=/Mobi|Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent)||('ontouchstart' in window);
-  const HUD_SCALE=isMobile?1.35:1;
-
-  // ═══ JACKPOT BANNER ═══
-  const jpBar=new PIXI.Graphics();jpBar.beginFill(0x1a0020,0.92).drawRoundedRect(W()/2-200,2,400,32,6).endFill();jpBar.lineStyle(2,THEME,0.65).drawRoundedRect(W()/2-200,2,400,32,6);L.hud.addChild(jpBar);
-  const jpNames=['MINI','MINOR','MAJOR','GRAND'],jpColors=[0x44ff44,0x00c8ff,0xd4af37,0xff0000],jpPools=[22.96,103.50,532.37,1524.95];let jpIdx=0;
-  const jpLabel=new PIXI.Text('MINI',{fontSize:10,fill:0x44ff44,fontFamily:'monospace',fontWeight:'bold',letterSpacing:2});jpLabel.anchor.set(0.5);jpLabel.x=W()/2-70;jpLabel.y=18;L.hud.addChild(jpLabel);
-  const jpAmt=new PIXI.Text('$22.96',{fontSize:15,fill:0xffffff,fontFamily:'monospace',fontWeight:'bold'});jpAmt.anchor.set(0.5);jpAmt.x=W()/2+30;jpAmt.y=18;L.hud.addChild(jpAmt);
-  setInterval(()=>{jpIdx=(jpIdx+1)%4;jpLabel.text=jpNames[jpIdx];jpLabel.style.fill=jpColors[jpIdx];jpAmt.text='$'+(jpPools[jpIdx]+jackpotPool*[0.01,0.05,0.2,0.74][jpIdx]).toFixed(2);},3000);
+  // ═══ JACKPOT BANNER — GRAND / MAJOR / MINOR / MINI persistent ticker ═══
+  const jpBar=new PIXI.Graphics();jpBar.beginFill(0x0a0012,0.94).drawRoundedRect(W()/2-240,1,480,36,6).endFill();jpBar.lineStyle(1.5,0xd4af37,0.4).drawRoundedRect(W()/2-240,1,480,36,6);L.hud.addChild(jpBar);
+  const jpNames=['GRAND','MAJOR','MINOR','MINI'],jpColors=[0xff0000,0xd4af37,0x00c8ff,0x44ff44],jpPools=[1524.95,532.37,103.50,22.96],jpWeights=[0.74,0.2,0.05,0.01];
+  const jpTexts=jpNames.map((name,i)=>{
+    const lx=W()/2-230+i*120;
+    const lbl=new PIXI.Text(name,{fontSize:8,fill:jpColors[i],fontFamily:'monospace',fontWeight:'bold',letterSpacing:1});lbl.x=lx;lbl.y=3;L.hud.addChild(lbl);
+    const amt=new PIXI.Text('$'+jpPools[i].toFixed(2),{fontSize:12,fill:0xffffff,fontFamily:'monospace',fontWeight:'bold'});amt.x=lx;amt.y=17;L.hud.addChild(amt);
+    return{lbl,amt};
+  });
+  setInterval(()=>{jpTexts.forEach((t,i)=>{t.amt.text='$'+(jpPools[i]+jackpotPool*jpWeights[i]).toFixed(2);});},2000);
 
   // ═══ WEAPON + BET HUD ═══
-  const weapHud=document.createElement('div');weapHud.style.cssText=`position:fixed;bottom:calc(env(safe-area-inset-bottom) + ${isMobile?20:52}px);left:50%;transform:translateX(-50%) scale(${HUD_SCALE});transform-origin:bottom center;display:flex;gap:${isMobile?6:4}px;z-index:100;flex-wrap:wrap;justify-content:center;max-width:95vw`;document.body.appendChild(weapHud);
-  function renderWeaponBar(){weapHud.innerHTML=WEAPONS.map((w,i)=>`<div style="padding:${isMobile?'8px 14px':'4px 10px'};border:1.5px solid ${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#333'};background:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0')+'20':'#0008'};color:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#aaa'};font:bold ${isMobile?11:9}px monospace;cursor:pointer;text-transform:uppercase;letter-spacing:1px;min-width:${isMobile?54:50}px;text-align:center;border-radius:3px" data-w="${i}">${w.name}</div>`).join('');}
+  const weapHud=document.createElement('div');weapHud.style.cssText='position:fixed;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:100';document.body.appendChild(weapHud);
+  function renderWeaponBar(){weapHud.innerHTML=WEAPONS.map((w,i)=>`<div style="padding:4px 10px;border:1.5px solid ${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#333'};background:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0')+'20':'#0008'};color:${i===currentWeapon?'#'+w.color.toString(16).padStart(6,'0'):'#555'};font:bold 9px monospace;cursor:pointer;text-transform:uppercase;letter-spacing:1px;min-width:50px;text-align:center" data-w="${i}">${w.name}</div>`).join('');}
   renderWeaponBar();
   weapHud.addEventListener('click',e=>{const i=e.target.dataset.w;if(i!==undefined){currentWeapon=parseInt(i);renderWeaponBar();}});
 
   // ═══ COMBO DISPLAY ═══
   const comboText=new PIXI.Text('',{fontSize:24,fill:0xd4af37,fontFamily:'monospace',fontWeight:'bold',letterSpacing:4,stroke:0x000000,strokeThickness:4});comboText.anchor.set(0.5);comboText.x=W()/2;comboText.y=H()/2+40;comboText.visible=false;L.ui.addChild(comboText);
 
-  // ═══ CROSSHAIR + UNIFIED POINTER (mouse/touch/pen) ═══
-  const cross=new PIXI.Graphics();cross.lineStyle(1.5,THEME,0.7).drawCircle(0,0,20).moveTo(-24,0).lineTo(-8,0).moveTo(8,0).lineTo(24,0).moveTo(0,-24).lineTo(0,-8).moveTo(0,8).lineTo(0,24);cross.lineStyle(0.5,THEME,0.4).drawCircle(0,0,10);cross.zIndex=999;L.hud.addChild(cross);
-  if(isMobile)cross.visible=false;
-  const _pos=e=>{const r=app.view.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top};};
-  app.view.addEventListener('pointermove',e=>{const p=_pos(e);mouseX=p.x;mouseY=p.y;cross.x=mouseX;cross.y=mouseY;},{passive:true});
-  app.view.addEventListener('pointerdown',e=>{const p=_pos(e);mouseX=p.x;mouseY=p.y;cross.x=mouseX;cross.y=mouseY;mouseDown=true;if(isMobile)cross.visible=true;},{passive:true});
-  app.view.addEventListener('pointerup',()=>{mouseDown=false;},{passive:true});
-  app.view.addEventListener('pointercancel',()=>{mouseDown=false;},{passive:true});
-  app.view.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+  // ═══ CROSSHAIR ═══
+  const cross=new PIXI.Graphics();cross.lineStyle(1.5,0xff0000,0.5).drawCircle(0,0,20).moveTo(-24,0).lineTo(-8,0).moveTo(8,0).lineTo(24,0).moveTo(0,-24).lineTo(0,-8).moveTo(0,8).lineTo(0,24);cross.lineStyle(0.5,0xff0000,0.3).drawCircle(0,0,10);cross.zIndex=999;L.hud.addChild(cross);
+  app.view.addEventListener('mousemove',e=>{mouseX=e.offsetX;mouseY=e.offsetY;cross.x=mouseX;cross.y=mouseY;});
+  app.view.addEventListener('mousedown',()=>{mouseDown=true;});
+  app.view.addEventListener('mouseup',()=>{mouseDown=false;});
 
-  // Keyboard (desktop only, mobile has touch)
+  // Keyboard
   document.addEventListener('keydown',e=>{
     const n=parseInt(e.key);if(n>=1&&n<=6){currentWeapon=n-1;renderWeaponBar();}
     if(e.key==='q'){const i=BET_LEVELS.indexOf(betLevel);betLevel=BET_LEVELS[Math.max(0,i-1)];myTurret._betTxt.text=betLevel.toFixed(2);updateHUD();}
@@ -783,59 +775,48 @@ const ASSET_MANIFEST = [];
     // HP bar
     if(type.tier>=2){const bg=new PIXI.Graphics();bg.beginFill(0x000000,0.6).drawRoundedRect(-type.sz*0.6,-type.sz*0.65,type.sz*1.2,3,1).endFill();const fl=new PIXI.Graphics();fl.beginFill(0x44ff44).drawRoundedRect(-type.sz*0.6,-type.sz*0.65,type.sz*1.2,3,1).endFill();f.addChild(bg);f.addChild(fl);f._hf=fl;f._hw=type.sz*1.2;}
 
-    const left=Math.random()>0.5;f.x=left?-50:W()+50;f.y=55+Math.random()*(H()-160);
-    f.vx=(left?1:-1)*type.spd*(0.8+Math.random()*0.4);f.vy=(Math.random()-0.5)*0.4;f.scale.x=left?1:-1;
+    const left=Math.random()>0.5;
+    // Spawn paths: 60% edges, 25% center cross, 15% top/bottom
+    const spawnRoll=Math.random();
+    if(spawnRoll<0.25){
+      // Center cross — fish start mid-screen, swim across
+      f.x=W()*0.2+Math.random()*W()*0.6;f.y=Math.random()>0.5?-50:H()+50;
+      f.vx=(left?1:-1)*type.spd*(0.8+Math.random()*0.4);f.vy=(left?1:-1)*Math.abs(f.vy)*0.3;f.scale.x=left?1:-1;
+    }else if(spawnRoll<0.40){
+      // Vertical entry — top or bottom
+      f.x=Math.random()*W();f.y=Math.random()>0.5?-50:H()+50;
+      f.vx=(Math.random()-0.5)*type.spd*0.6;f.vy=(Math.random()>0.5?1:-1)*type.spd*(0.6+Math.random()*0.3);f.scale.x=1;
+    }else{
+      // Standard edge entry
+      f.x=left?-50:W()+50;f.y=55+Math.random()*(H()-160);
+      f.vx=(left?1:-1)*type.spd*(0.8+Math.random()*0.4);f.vy=(Math.random()-0.5)*0.4;f.scale.x=left?1:-1;
+    }
     f.hp=Math.ceil(type.hp*(1+betLevel*2));f.mhp=f.hp;f.val=type.val;f.tier=type.tier;f.sz=type.sz;f.pat=type.pat;f.ph=Math.random()*Math.PI*2;f.alive=true;
     f.interactive=true;f.cursor='none';f.hitArea=new PIXI.Circle(0,0,type.sz*1.3);
     L.fish.addChild(f);fishes.push(f);
   }
 
   // ═══ AUDIO (Web Audio API) ═══
-  let AC=null,masterGain=null,ambientNodes=null;
-  function audio(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();masterGain=AC.createGain();masterGain.gain.value=window.__sla_volume||0.7;masterGain.connect(AC.destination);window.__sla_master_gain=masterGain;}catch(_){}}return AC;}
-  function startAmbient(){
-    const ac=audio();if(!ac||ambientNodes)return;
-    // Slow undersea drone: two detuned oscillators + low-pass
-    const o1=ac.createOscillator();o1.type='sawtooth';o1.frequency.value=55;
-    const o2=ac.createOscillator();o2.type='triangle';o2.frequency.value=110;
-    const lfo=ac.createOscillator();lfo.type='sine';lfo.frequency.value=0.15;
-    const lfoGain=ac.createGain();lfoGain.gain.value=8;lfo.connect(lfoGain).connect(o1.frequency);
-    const flt=ac.createBiquadFilter();flt.type='lowpass';flt.frequency.value=400;flt.Q.value=2;
-    const g=ac.createGain();g.gain.value=0.12;
-    o1.connect(flt);o2.connect(flt);flt.connect(g).connect(masterGain);
-    o1.start();o2.start();lfo.start();
-    ambientNodes={o1,o2,lfo,g};
-  }
-  function playBossTheme(colorHex){
-    const ac=audio();if(!ac)return;
-    const t=ac.currentTime;
-    // Pentatonic stinger tuned to boss color hue
-    const hue=((colorHex>>16)&0xff)+((colorHex>>8)&0xff)+(colorHex&0xff);
-    const root=180+(hue%12)*30;
-    const notes=[root,root*1.25,root*1.5,root*2,root*1.5,root];
-    notes.forEach((f,i)=>{
-      const o=ac.createOscillator();o.type='square';o.frequency.value=f;
-      const g=ac.createGain();g.gain.setValueAtTime(0,t+i*0.14);g.gain.linearRampToValueAtTime(0.12,t+i*0.14+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.14+0.35);
-      const flt=ac.createBiquadFilter();flt.type='lowpass';flt.frequency.value=1400;
-      o.connect(flt).connect(g).connect(masterGain);o.start(t+i*0.14);o.stop(t+i*0.14+0.4);
-    });
-  }
+  let AC=null;function audio(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(_){}}return AC;}
   function playRoar(color){
     const ac=audio();if(!ac)return;const t=ac.currentTime;
+    // Low rumble (30-80Hz sawtooth)
     const rum=ac.createOscillator();rum.type='sawtooth';rum.frequency.setValueAtTime(32,t);rum.frequency.exponentialRampToValueAtTime(70,t+1.3);
     const rumG=ac.createGain();rumG.gain.setValueAtTime(0,t);rumG.gain.linearRampToValueAtTime(0.45,t+0.08);rumG.gain.exponentialRampToValueAtTime(0.001,t+1.5);
-    rum.connect(rumG).connect(masterGain);rum.start(t);rum.stop(t+1.5);
+    rum.connect(rumG).connect(ac.destination);rum.start(t);rum.stop(t+1.5);
+    // High snarl (400-1200Hz sawtooth)
     const snr=ac.createOscillator();snr.type='sawtooth';snr.frequency.setValueAtTime(1100,t);snr.frequency.exponentialRampToValueAtTime(380,t+0.8);
     const snrG=ac.createGain();snrG.gain.setValueAtTime(0,t);snrG.gain.linearRampToValueAtTime(0.22,t+0.1);snrG.gain.exponentialRampToValueAtTime(0.001,t+1.2);
     const flt=ac.createBiquadFilter();flt.type='bandpass';flt.frequency.value=700;flt.Q.value=4;
-    snr.connect(flt).connect(snrG).connect(masterGain);snr.start(t);snr.stop(t+1.2);
+    snr.connect(flt).connect(snrG).connect(ac.destination);snr.start(t);snr.stop(t+1.2);
+    // Noise burst (thunder crack)
     const buf=ac.createBuffer(1,ac.sampleRate*0.6,ac.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/d.length*3);
     const ns=ac.createBufferSource();ns.buffer=buf;const nsG=ac.createGain();nsG.gain.setValueAtTime(0.35,t);nsG.gain.exponentialRampToValueAtTime(0.001,t+0.5);
     const nsF=ac.createBiquadFilter();nsF.type='lowpass';nsF.frequency.value=1800;
-    ns.connect(nsF).connect(nsG).connect(masterGain);ns.start(t);
-    playBossTheme(color);
+    ns.connect(nsF).connect(nsG).connect(ac.destination);ns.start(t);
   }
-  ['click','keydown','touchstart','pointerdown'].forEach(ev=>document.addEventListener(ev,()=>{const a=audio();if(a&&a.state==='suspended')a.resume();startAmbient();},{once:true}));
+  // Unlock audio on first user interaction
+  ['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{const a=audio();if(a&&a.state==='suspended')a.resume();},{once:true}));
 
   // ═══ SCREEN SHAKE ═══
   let shakeAmt=0,shakeDecay=0;
@@ -997,7 +978,7 @@ const ASSET_MANIFEST = [];
 
   function kill(fish,bul){
     fish.alive=false;const win=fish.val*betLevel;
-    if(!bul||bul.owner===0){credits+=win;totalWon+=win;}
+    if(!bul||bul.owner===0){credits+=win;totalWon+=win;sweeps+=Math.max(0.01,win*0.1);}
     if(fish.isBoss){bossActive=false;announce(`BOSS KILLED! +$${win.toFixed(2)}`,0xd4af37);}
 
     // Combo system
@@ -1026,12 +1007,12 @@ const ASSET_MANIFEST = [];
   function dmg(x,y,text,color){const t=new PIXI.Text(String(text),{fontSize:String(text).startsWith('+')?14:10,fill:color,fontFamily:'monospace',fontWeight:'bold',stroke:0x000000,strokeThickness:3});t.anchor.set(0.5);t.x=x;t.y=y;t.vy=-1.5;t.life=50;L.ui.addChild(t);dmgNums.push(t);}
   function announce(text,color){const t=new PIXI.Text(text,{fontSize:26,fill:color,fontFamily:'monospace',fontWeight:'bold',letterSpacing:4,stroke:0x000000,strokeThickness:5});t.anchor.set(0.5);t.x=W()/2;t.y=H()/2-50;t.life=100;L.ui.addChild(t);dmgNums.push(t);}
 
-  function updateHUD(){myBal.text=credits.toFixed(2);myTurret._betTxt.text=betLevel.toFixed(2);const _s=document.getElementById('score');if(_s)_s.textContent=credits.toFixed(2);}
+  function updateHUD(){myBal.bal.text=credits.toFixed(2);myBal.sweep.text='SC: '+sweeps.toFixed(2);myTurret._betTxt.text=betLevel.toFixed(2);document.getElementById('score').textContent=credits.toFixed(2);}
   updateHUD();
 
   // ═══ SPAWN TIMERS ═══
-  for(let i=0;i<18;i++)spawnFish();
-  setInterval(()=>{if(fishes.filter(f=>f.alive).length<22)spawnFish();},1200);
+  for(let i=0;i<24;i++)spawnFish();
+  setInterval(()=>{if(fishes.filter(f=>f.alive).length<30)spawnFish();},900);
   setTimeout(spawnBoss,8000);setInterval(()=>{if(!bossActive)spawnBoss();},30000);
 
   // ═══ GAME LOOP ═══

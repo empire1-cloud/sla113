@@ -42,8 +42,8 @@ export default function ArcadePage() {
 
   const load = useCallback(async () => {
     try {
-      const [lRes, sRes] = await Promise.all([axios.get(`${API}/lobbies`), axios.get(`${API}/sprites`)]);
-      setLobbies(lRes.data.lobbies || []);
+      const [lRes, sRes] = await Promise.all([axios.get(`${API}/games`), axios.get(`${API}/sprites`)]);
+      setLobbies(lRes.data.games || []);
       setSprites(sRes.data.sprites || []);
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -55,7 +55,7 @@ export default function ArcadePage() {
     setDeploying(lobby.id);
     logEvent('game_open', { lobby: lobby.name });
     try {
-      const res = await axios.post(`${API}/lobbies/${lobby.id}/deploy`);
+      const res = await axios.post(`${API}/games/${lobby.id}/deploy`);
       const url = `${process.env.REACT_APP_BACKEND_URL}${res.data.preview_url}`;
       setActive({ ...lobby, url });
       setBalance(b => Math.max(0, b - 5));
@@ -126,12 +126,12 @@ export default function ArcadePage() {
             </div>
           </div>
           <div className="text-right hidden sm:block">
-            <div className="text-[9px] uppercase tracking-[3px] text-zinc-500">Lobbies</div>
+            <div className="text-[9px] uppercase tracking-[3px] text-zinc-500">Games</div>
             <div className="text-xl font-bold text-[#d4af37] font-mono">{String(lobbies.length).padStart(2,'0')}</div>
           </div>
         </div>
 
-        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }} data-testid="arcade-lobby-row">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }} data-testid="arcade-game-row">
           <style>{`.snap-x::-webkit-scrollbar{display:none}`}</style>
           {lobbies.map(l => {
             const tier = TIER[l.jackpot_tier] || TIER.MAJOR;

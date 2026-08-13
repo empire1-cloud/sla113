@@ -1,0 +1,80 @@
+{
+  "arcade": {
+    "description": "Asset pack for SLA113 Southern Arcade",
+    "files": [
+      {
+        "type": "atlas",
+        "key": "characters",
+        "textureURL": "assets/generated/atlases/characters-atlas.png",
+        "atlasURL": "assets/generated/atlases/characters-atlas.json"
+      },
+      {
+        "type": "atlas",
+        "key": "bosses",
+        "textureURL": "assets/generated/atlases/bosses-atlas.png",
+        "atlasURL": "assets/generated/atlases/bosses-atlas.json"
+      },
+      {
+        "type": "atlas",
+        "key": "effects",
+        "textureURL": "assets/generated/atlases/effects-atlas.png",
+        "atlasURL": "assets/generated/atlases/effects-atlas.json"
+      },
+      {
+        "type": "atlas",
+        "key": "ui",
+        "textureURL": "assets/generated/atlases/ui-atlas.png",
+        "atlasURL": "assets/generated/atlases/ui-atlas.json"
+      },
+      {
+        "type": "atlas",
+        "key": "arcade-ui",
+        "textureURL": "assets/generated/atlases/arcade-ui.png",
+        "atlasURL": "assets/generated/atlases/arcade-ui.json"
+      },
+      {
+        "type": "atlas",
+        "key": "game-covers",
+        "textureURL": "assets/generated/atlases/game-covers-atlas.png",
+        "atlasURL": "assets/generated/atlases/game-covers-atlas.json"
+      },
+      {
+        "type": "image",
+        "key": "lobby-background",
+        "url": "assets/generated/lobby-background.jpg"
+      },
+      {
+        "type": "audio",
+        "key": "lobby-theme",
+        "url": [
+          "assets/audio/lobby-theme.ogg",
+          "assets/audio/lobby-theme.mp3"
+        ]
+      },
+      {
+        "type": "audio",
+        "key": "coin-sound",
+        "url": [
+          "assets/audio/coin-sound.ogg",
+          "assets/audio/coin-sound.mp3"
+        ]
+      },
+      {
+        "type": "audio",
+        "key": "laser-shot",
+        "url": [
+          "assets/audio/laser-shot.ogg",
+          "assets/audio/laser-shot.mp3"
+        ]
+      },
+      {
+        "type": "audio",
+        "key": "explosion",
+        "url": [
+          "assets/audio/explosion.ogg",
+          "assets/audio/explosion.mp3"
+        ]
+      }
+    ]
+  }
+}

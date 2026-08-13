@@ -1,0 +1,268 @@
+"""
+Event System Model for Game Events
+Handles dynamic in-game events like Boss Rush, Treasure Hunt, Multiplier Madness
+and limited-time events like Double Payout Weekends, Jackpot Frenzy Tournaments
+"""
+
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
+from datetime import datetime, timezone, timedelta
+from bson import ObjectId
+import json
+
+
+class PyObjectId(str):
+    """Custom ObjectId type for Pydantic."""
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v, info=None):
+        if isinstance(v, ObjectId):
+            return str(v)
+        if isinstance(v, str) and ObjectId.is_valid(v):
+            return v
+        raise ValueError("Invalid ObjectId")
+
+
+from enum import Enum
+
+
+class DynamicEventType(str, Enum):
+    """Dynamic event types that can occur during gameplay."""
+    BOSS_RUSH = "boss_rush"
+    TREASURE_HUNT = "treasure_hunt"
+    MULTIPLIER_MADNESS = "multiplier_madness"
+
+
+class LimitedTimeEventType(str, Enum):
+    """Limited-time event types that run for extended periods."""
+    DOUBLE_PAYOUT_WEEKEND = "double_payout_weekend"
+    JACKPOT_FRENZY = "jackpot_frenzy"
+    SEASONAL_EVENT = "seasonal_event"
+
+
+class EventStatus(str, Enum):
+    """Event status states."""
+    SCHEDULED = "scheduled"
+    ACTIVE = "active"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class DynamicEventBase(BaseModel):
+    """Base dynamic event fields."""
+    event_type: DynamicEventType
+    name: str
+    description: str
+    duration_minutes: int  # How long the event lasts when active
+    multiplier: float = 1.0  # XP/credit multiplier during event
+    special_rewards: List[str] = []  # Special items/rewards during event
+    min_player_level: int = 1  # Minimum level to participate
+    max_players: Optional[int] = None  # Max players (null = unlimited)
+    cooldown_minutes: int = 60  # How often this event can trigger
+    is_recurring: bool = True  # Whether this event can happen multiple times
+
+
+class DynamicEventCreate(DynamicEventBase):
+    """Schema for creating a new dynamic event."""
+    pass
+
+
+class DynamicEventUpdate(BaseModel):
+    """Schema for updating dynamic event."""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    duration_minutes: Optional[int] = None
+    multiplier: Optional[float] = None
+    special_rewards: Optional[List[str]] = None
+    min_player_level: Optional[int] = None
+    max_players: Optional[int] = None
+    cooldown_minutes: Optional[int] = None
+    is_recurring: Optional[bool] = None
+
+
+class LimitedTimeEventBase(BaseModel):
+    """Base limited-time event fields."""
+    event_type: LimitedTimeEventType
+    name: str
+    description: str
+    start_time: datetime
+    end_time: datetime
+    recurrence_pattern: Optional[str] = None  # e.g., "weekly_friday_sunday", "biweekly_48h"
+    xp_multiplier: float = 1.0
+    credit_multiplier: float = 1.0
+    special_rewards: List[str] = []
+    min_player_level: int = 1
+    max_players: Optional[int] = None
+    leaderboard_enabled: bool = False
+    entry_fee: int = 0  # Cost to enter (0 = free)
+    prize_pool: int = 0  # Total prize pool for winners
+
+
+class LimitedTimeEventCreate(LimitedTimeEventBase):
+    """Schema for creating a new limited-time event."""
+    pass
+
+
+class LimitedTimeEventUpdate(BaseModel):
+    """Schema for updating limited-time event."""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    recurrence_pattern: Optional[str] = None
+    xp_multiplier: Optional[float] = None
+    credit_multiplier: Optional[float] = None
+    special_rewards: Optional[List[str]] = None
+    min_player_level: Optional[int] = None
+    max_players: Optional[int] = None
+    leaderboard_enabled: Optional[bool] = None
+    entry_fee: Optional[int] = None
+    prize_pool: Optional[int] = None
+
+
+class ActiveDynamicEvent(BaseModel):
+    """Currently active dynamic event instance."""
+    id: str = Field(alias="_id")
+    event_type: DynamicEventType
+    name: str
+    description: str
+    started_at: datetime
+    ends_at: datetime
+    multiplier: float
+    special_rewards: List[str]
+    participating_players: List[str] = []  # List of user_ids
+    announcements_sent: List[str] = []  # Types of announcements already sent
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
+class ActiveLimitedTimeEvent(BaseModel):
+    """Currently active limited-time event instance."""
+    id: str = Field(alias="_id")
+    event_type: LimitedTimeEventType
+    name: str
+    description: str
+    started_at: datetime
+    ends_at: datetime
+    xp_multiplier: float
+    credit_multiplier: float
+    special_rewards: List[str]
+    participating_players: List[str] = []
+    leaderboard: List[Dict[str, Any]] = []  # Top players for this event
+    total_participants: int = 0
+    total_prize_awarded: int = 0
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
+class EventParticipation(BaseModel):
+    """Track player participation in events."""
+    id: str = Field(alias="_id")
+    user_id: str
+    event_type: str  # Either dynamic or limited-time event type
+    event_id: str  # Reference to the specific event instance
+    joined_at: datetime
+    rewards_earned: Dict[str, int] = {}  # Reward type -> amount
+    xp_earned: int = 0
+    credits_earned: int = 0
+    completed: bool = False
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
+class EventAnnouncement(BaseModel):
+    """Pre-defined announcements for events."""
+    id: str = Field(alias="_id")
+    event_type: str  # What type of event this announcement is for
+    trigger: str  # When to show this announcement (start, midway, end, etc.)
+    message: str
+    priority: int = 1  # Higher priority = shown more prominently
+    duration_seconds: int = 10  # How long to show the announcement
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
+# Default event configurations
+DEFAULT_DYNAMIC_EVENTS = [
+    {
+        "event_type": DynamicEventType.BOSS_RUSH,
+        "name": "Boss Rush",
+        "description": "A powerful boss fish appears with increased rewards for a limited time!",
+        "duration_minutes": 180,  # 3 minutes
+        "multiplier": 3.0,  # 3x XP/credits
+        "special_rewards": ["boss_trophy", "rare_weapon_upgrade"],
+        "min_player_level": 5,
+        "max_players": 4,
+        "cooldown_minutes": 120,  # Every 2 hours
+        "is_recurring": True
+    },
+    {
+        "event_type": DynamicEventType.TREASURE_HUNT,
+        "name": "Treasure Hunt",
+        "description": "Special treasure chests appear! Find and destroy them for bonus rewards!",
+        "duration_minutes": 120,  # 2 minutes
+        "multiplier": 1.5,  # 1.5x XP/credits
+        "special_rewards": ["treasure_key", "mystery_chest", "golden_lure"],
+        "min_player_level": 3,
+        "max_players": 4,
+        "cooldown_minutes": 90,  # Every 1.5 hours
+        "is_recurring": True
+    },
+    {
+        "event_type": DynamicEventType.MULTIPLIER_MADNESS,
+        "name": "Multiplier Madness",
+        "description": "All points earned are multiplied for a short burst!",
+        "duration_minutes": 60,  # 1 minute
+        "multiplier": 5.0,  # 5x XP/credits
+        "special_rewards": ["speed_boost", "rapid_fire_token"],
+        "min_player_level": 1,
+        "max_players": 4,
+        "cooldown_minutes": 45,  # Every 45 minutes
+        "is_recurring": True
+    }
+]
+
+DEFAULT_LIMITED_TIME_EVENTS = [
+    {
+        "event_type": LimitedTimeEventType.DOUBLE_PAYOUT_WEEKEND,
+        "name": "Double Payout Weekend",
+        "description": "All fish caught worth 2x credits! (XP gains normal to prevent power-leveling)",
+        "start_time": None,  # Will be set dynamically
+        "end_time": None,    # Will be set dynamically
+        "recurrence_pattern": "weekly_friday_sunday",
+        "xp_multiplier": 1.0,  # Normal XP
+        "credit_multiplier": 2.0,  # 2x credits
+        "special_rewards": ["weekend_warrior_badge", "extra_lives"],
+        "min_player_level": 1,
+        "leaderboard_enabled": True,
+        "entry_fee": 0,
+        "prize_pool": 0  # Prize pool grows from participation
+    },
+    {
+        "event_type": LimitedTimeEventType.JACKPOT_FRENZY,
+        "name": "Jackpot Frenzy Tournament",
+        "description": "All slot spins contribute to progressive tournament jackpot! Win big prizes!",
+        "start_time": None,  # Will be set dynamically
+        "end_time": None,    # Will be set dynamically
+        "recurrence_pattern": "biweekly_48h",
+        "xp_multiplier": 1.2,  # Slightly boosted XP
+        "credit_multiplier": 1.0,  # Normal credits
+        "special_rewards": ["trophy_avatar", "exclusive_weapon_skin", "jackpot_ticket"],
+        "min_player_level": 10,
+        "leaderboard_enabled": True,
+        "entry_fee": 100,  # 100 credit entry fee
+        "prize_pool": 0  # Will accumulate from entry fees
+    }
+]

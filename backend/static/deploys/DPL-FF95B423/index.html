@@ -16,6 +16,15 @@ canvas { display:block; }
 #loading { position:fixed; inset:0; background:#0a0a0a; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:1000; }
 #loading h1 { color:#00c8ff; font-size:24px; letter-spacing:6px; text-transform:uppercase; }
 #loading p { color:#444; font-size:10px; letter-spacing:3px; margin-top:8px; text-transform:uppercase; }
+#sweepstakes-footer {
+  position:fixed; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,0.92); border-top:1px solid #222;
+  padding:6px 12px; z-index:200;
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  font:9px/1.4 'Courier New',monospace; color:#666; text-transform:uppercase; letter-spacing:1px;
+}
+#sweepstakes-footer a { color:#448; text-decoration:none; }
+#sweepstakes-footer a:hover { color:#66a; }
 </style>
 </head>
 <body>
@@ -27,6 +36,23 @@ canvas { display:block; }
   <div class="row"><span class="label">Score</span><br><span class="value" id="score">0</span></div>
   <div class="row"><span class="label">Engine</span><br><span class="value">SLA113 v1.0</span></div>
 </div>
+<div id="sweepstakes-footer">
+  <span>NO PURCHASE NECESSARY</span>
+  <span>&middot;</span>
+  <span>A purchase will not increase your chances of winning</span>
+  <span>&middot;</span>
+  <span>18+</span>
+  <span>&middot;</span>
+  <a href="#rules">See Official Rules</a>
+</div>
+<script>
+(function(){
+  // Gate debug HUD behind ?debug=1
+  if(!new URLSearchParams(location.search).has('debug')){
+    document.getElementById('hud').style.display='none';
+  }
+})();
+</script>
 <script src="game.js"></script>
 </body>
 </html>

@@ -52,7 +52,17 @@ def _require_tenant(x_tenant_id: Optional[str]) -> str:
 
 
 def _check_access(tenant_id: str, engine_id: str):
-    pass
+    """Enforce engine access via TenantEngine (Build Spec machine_catalog / entitlements)."""
+    try:
+        _tenant_engine.resolve(tenant_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    if not _tenant_engine.check_engine_access(tenant_id, engine_id):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Tenant '{tenant_id}' is not entitled to engine '{engine_id}'",
+        )
 
 
 # ---------------------------------------------------------

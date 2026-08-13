@@ -8,10 +8,55 @@ This engine is the single entry point for resolving a tenant's full context
 before any arcade game engine is dispatched.
 """
 
+from pathlib import Path
 from typing import Optional
 
-# Tenant registry — statically defined from SLA113_BUILD_SPEC.yaml
-TENANT_REGISTRY = {}
+# machine_catalog key -> engine_id, so allowed_machine_types can gate engine access
+_MACHINE_TYPE_ENGINE_MAP = {
+    "fish": "fishing_engine_v2",
+    "slots": "slots_engine_v1",
+    "keno": "keno_engine_v1",
+}
+
+
+def _load_tenant_registry() -> dict:
+    """Load the tenants section of SLA113_BUILD_SPEC.yaml into a tenant_id-keyed dict."""
+    spec_path = Path(__file__).resolve().parents[2] / "config" / "SLA113_BUILD_SPEC.yaml"
+    if not spec_path.exists():
+        return {}
+
+    import yaml
+    with open(spec_path) as f:
+        spec = yaml.safe_load(f) or {}
+
+    registry = {}
+    for tenant in spec.get("tenants", []) or []:
+        tenant_id = tenant.get("tenant_id")
+        if not tenant_id:
+            continue
+
+        machine_catalog = tenant.get("machine_catalog", {}) or {}
+        allowed_machine_types = [
+            machine_type for machine_type, enabled in machine_catalog.items()
+            if machine_type != "default_machine_type" and enabled
+        ]
+        allowed_engines = [
+            _MACHINE_TYPE_ENGINE_MAP[mt] for mt in allowed_machine_types
+            if mt in _MACHINE_TYPE_ENGINE_MAP
+        ]
+
+        registry[tenant_id] = {
+            **tenant,
+            "allowed_machine_types": allowed_machine_types,
+            "allowed_engines": allowed_engines,
+            "governance": tenant.get("governance", {}),
+        }
+
+    return registry
+
+
+# Tenant registry — loaded from SLA113_BUILD_SPEC.yaml at import time
+TENANT_REGISTRY = _load_tenant_registry()
 
 # Ensure display_name is used consistently
 for tid, t in TENANT_REGISTRY.items():
@@ -49,6 +94,22 @@ class TenantEngine:
         if not tenant:
             return False
         return machine_type in tenant.get("allowed_machine_types", [])
+
+    # Engines with no per-tenant machine_catalog entry — any known tenant may use them
+    _NON_MACHINE_ENGINES = {"payout_engine", "machine_engine", "tenant_engine", "canon_layer_sgv_aztec"}
+
+    def check_engine_access(self, tenant_id: str, engine_id: str) -> bool:
+        """
+        Check if a known tenant is entitled to dispatch a given arcade engine.
+        Machine-backed engines (fish/slots/keno) are gated by the tenant's
+        machine_catalog (allowed_engines); other engines just require a known tenant.
+        """
+        tenant = TENANT_REGISTRY.get(tenant_id)
+        if not tenant:
+            return False
+        if engine_id in self._NON_MACHINE_ENGINES:
+            return True
+        return engine_id in tenant.get("allowed_engines", [])
 
     def check_stripe_entitlement(
         self,

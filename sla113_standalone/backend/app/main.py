@@ -5,19 +5,23 @@ Sovereign FastAPI entrypoint. All universes are routers/modules under SLA113.
 
 Architecture:
   SLA113 (Sovereign Root)
-  ├── sla113_admin         — Tenant Management (White Label Mint)
-  ├── sla113_billing       — Revenue Pipelines
+  ├── sla113_admin           — Tenant Management (White Label Mint)
+  ├── sla113_billing         — Revenue Pipelines
   ├── sla113_dashboard_context — Stats, Game Types, Projects CRUD
   ├── sla113_engine_dashboard  — Vision, Logic, Composer, Terminal
-  ├── sla113_factory       — Build Pipeline
-  ├── sla113_foundry       — Vision Smith Image Generation (Gemini 3 Pro)
-  ├── sla113_health        — System Status
-  ├── sla113_orchestration — Night Queue Worker, Jobs, Dependencies
-  ├── sla113_regulatory    — Compliance Engine
-  ├── sla113/factory       — Deploy Engine
-  ├── empire1              — Empire1 Universe (stub)
-  ├── southern             — SouthernLifestyle Game OS (stub)
-  └── soulfire             — Soulfire Ecosystem / Lyrica 3 Pro (stub)
+  ├── sla113_factory         — Build Pipeline
+  ├── sla113_foundry         — Vision Smith Image Generation (Gemini 3 Pro)
+  ├── sla113_health          — System Status
+  ├── sla113_orchestration   — Night Queue Worker, Jobs, Dependencies
+  ├── sla113_regulatory      — Compliance Engine
+  ├── sla113/factory         — Deploy Engine
+  ├── sla113_tenant_console  — Per-tenant branded operator dashboard
+  ├── sla113_tenant_billing  — Per-tenant billing & plan management
+  ├── sla113_tenant_deploy   — Per-tenant game deployment
+  ├── sla113_tenant_admin    — Master Admin Console (system-wide)
+  ├── empire1                — Empire1 Universe (stub)
+  ├── southern               — SouthernLifestyle Game OS (stub)
+  └── soulfire               — Soulfire Ecosystem / Lyrica 3 Pro (stub)
 """
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -40,6 +44,13 @@ from app.routers.sla113_regulatory import router as sla113_regulatory_router
 from app.routers.sla113.factory import router as sla113_deploy_router
 from app.routers.sla113_universe import router as sla113_universe_router
 
+# ─── White-Label Platform Routers ───
+from app.routers.sla113_tenant_console import router as sla113_tenant_console_router
+from app.routers.sla113_tenant_billing import router as sla113_tenant_billing_router
+from app.routers.sla113_tenant_deploy import router as sla113_tenant_deploy_router
+from app.routers.sla113_tenant_admin import router as sla113_tenant_admin_router
+from app.core.tenant_context import TenantContextMiddleware
+
 # ─── Universe Routers ───
 from app.routers.empire1 import router as empire1_router
 from app.routers.southern import router as southern_router
@@ -56,6 +67,21 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle."""
+    settings = get_settings()
+    db_name = settings.DB_NAME
+    if db_name in ("sla113", "sla113_db") and not os.environ.get("COLLISION_BYPASS", "").lower() in ("true", "1", "yes"):
+        import sys
+        print(
+            f"\n"
+            f"╔══════════════════════════════════════════════════════╗\n"
+            f"║  SAFETY GUARD: DB_NAME='{db_name}' matches         ║\n"
+            f"║  monolith database. Refusing to start.              ║\n"
+            f"║  Set DB_NAME to 'sla113_standalone' or export       ║\n"
+            f"║  COLLISION_BYPASS=true for migration.               ║\n"
+            f"╚══════════════════════════════════════════════════════╝",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     await connect_to_database()
     await seed_default_pipelines()
     start_worker()
@@ -85,6 +111,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ─── Tenant Context Resolution ───
+app.add_middleware(TenantContextMiddleware)
+
 # ─── SLA113 Core ───
 app.include_router(sla113_admin_router)
 app.include_router(sla113_billing_router)
@@ -97,6 +126,12 @@ app.include_router(sla113_orchestration_router)
 app.include_router(sla113_regulatory_router)
 app.include_router(sla113_deploy_router)
 app.include_router(sla113_universe_router)
+
+# ─── White-Label Platform ───
+app.include_router(sla113_tenant_console_router)
+app.include_router(sla113_tenant_billing_router)
+app.include_router(sla113_tenant_deploy_router)
+app.include_router(sla113_tenant_admin_router)
 
 # ─── Universes ───
 app.include_router(empire1_router)

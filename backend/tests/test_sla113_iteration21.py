@@ -12,48 +12,48 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://genesis-engine-4.pre
 class TestArcadePortalBackend:
     """Test /arcade portal backend dependencies"""
     
-    def test_lobbies_list_returns_7_seeded(self):
-        """GET /api/sla113/lobbies returns 7 seeded lobbies"""
-        response = requests.get(f"{BASE_URL}/api/sla113/lobbies")
+    def test_games_list_returns_7_seeded(self):
+        """GET /api/sla113/games returns 7 seeded games"""
+        response = requests.get(f"{BASE_URL}/api/sla113/games")
         assert response.status_code == 200
         data = response.json()
-        assert "lobbies" in data
+        assert "games" in data
         assert data["total"] == 7
-        lobbies = data["lobbies"]
+        games = data["games"]
         # Verify all required fields present
-        for lobby in lobbies:
-            assert "id" in lobby
-            assert "name" in lobby
-            assert "theme_color" in lobby
-            assert "jackpot_tier" in lobby
-            assert "base_bet" in lobby
-            assert "main_boss_sprite" in lobby
-        print(f"PASS: 7 lobbies returned with all required fields")
-    
-    def test_lobby_has_theme_color_and_tier(self):
-        """Verify lobbies have theme_color and jackpot_tier for arcade cards"""
-        response = requests.get(f"{BASE_URL}/api/sla113/lobbies")
+        for game in games:
+            assert "id" in game
+            assert "name" in game
+            assert "theme_color" in game
+            assert "jackpot_tier" in game
+            assert "base_bet" in game
+            assert "main_boss_sprite" in game
+        print(f"PASS: 7 games returned with all required fields")
+
+    def test_game_has_theme_color_and_tier(self):
+        """Verify games have theme_color and jackpot_tier for arcade cards"""
+        response = requests.get(f"{BASE_URL}/api/sla113/games")
         assert response.status_code == 200
-        lobbies = response.json()["lobbies"]
-        
+        games = response.json()["games"]
+
         # Check Shadow Pack specifically
-        shadow = next((l for l in lobbies if l["slug"] == "shadow_pack"), None)
+        shadow = next((g for g in games if g["slug"] == "shadow_pack"), None)
         assert shadow is not None
         assert shadow["theme_color"] == "#d4af37"
         assert shadow["jackpot_tier"] == "GRAND"
         assert shadow["base_bet"] == 0.25
         print(f"PASS: Shadow Pack has theme_color={shadow['theme_color']}, tier={shadow['jackpot_tier']}")
-    
-    def test_lobby_deploy_creates_build_and_returns_preview_url(self):
-        """POST /api/sla113/lobbies/{id}/deploy creates build and returns preview_url"""
-        # Use Shadow Pack lobby
-        response = requests.get(f"{BASE_URL}/api/sla113/lobbies")
-        lobbies = response.json()["lobbies"]
-        shadow = next((l for l in lobbies if l["slug"] == "shadow_pack"), None)
+
+    def test_game_deploy_creates_build_and_returns_preview_url(self):
+        """POST /api/sla113/games/{id}/deploy creates build and returns preview_url"""
+        # Use Shadow Pack game
+        response = requests.get(f"{BASE_URL}/api/sla113/games")
+        games = response.json()["games"]
+        shadow = next((g for g in games if g["slug"] == "shadow_pack"), None)
         assert shadow is not None
-        
+
         # Deploy
-        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/lobbies/{shadow['id']}/deploy")
+        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/games/{shadow['id']}/deploy")
         assert deploy_resp.status_code == 200
         data = deploy_resp.json()
         assert "preview_url" in data
@@ -67,12 +67,12 @@ class TestCompiledGameMobileSupport:
     
     @pytest.fixture
     def compiled_game_js(self):
-        """Get compiled game.js from a deployed lobby"""
+        """Get compiled game.js from a deployed game"""
         # Deploy Shadow Pack
-        response = requests.get(f"{BASE_URL}/api/sla113/lobbies")
-        lobbies = response.json()["lobbies"]
-        shadow = next((l for l in lobbies if l["slug"] == "shadow_pack"), None)
-        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/lobbies/{shadow['id']}/deploy")
+        response = requests.get(f"{BASE_URL}/api/sla113/games")
+        games = response.json()["games"]
+        shadow = next((g for g in games if g["slug"] == "shadow_pack"), None)
+        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/games/{shadow['id']}/deploy")
         preview_url = deploy_resp.json()["preview_url"]
         
         # Get game.js
@@ -116,11 +116,11 @@ class TestHTML5ShellMobileSupport:
     
     @pytest.fixture
     def compiled_html(self):
-        """Get compiled index.html from a deployed lobby"""
-        response = requests.get(f"{BASE_URL}/api/sla113/lobbies")
-        lobbies = response.json()["lobbies"]
-        shadow = next((l for l in lobbies if l["slug"] == "shadow_pack"), None)
-        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/lobbies/{shadow['id']}/deploy")
+        """Get compiled index.html from a deployed game"""
+        response = requests.get(f"{BASE_URL}/api/sla113/games")
+        games = response.json()["games"]
+        shadow = next((g for g in games if g["slug"] == "shadow_pack"), None)
+        deploy_resp = requests.post(f"{BASE_URL}/api/sla113/games/{shadow['id']}/deploy")
         preview_url = deploy_resp.json()["preview_url"]
         
         html_resp = requests.get(f"{BASE_URL}{preview_url}")

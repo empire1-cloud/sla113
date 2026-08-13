@@ -1,4 +1,21 @@
 {
-  "assets": [],
-  "total": 0
+  "assets": [
+    "kfmzgzqn_spritesheet1.png",
+    "594ce0tv_image.png",
+    "zvo9csfi_image.jpeg",
+    "m8pbtswb_image.jpeg",
+    "pbmyew6l_image.png",
+    "zfvily4d_image.png",
+    "z1ncb721_boss (1).jpg",
+    "2u8qf3cj_unnamed (3).jpg",
+    "jdc5h7c3_threeworlds (1).jpg",
+    "cvci6vxx_spritesheet2_fish.jpg",
+    "ncd8zsod_unnamed (4).jpg",
+    "xooi0xfr_boss (3).jpg",
+    "vr76ezmx_spritesheet1 (4).jpg",
+    "aufgqv07_spritesheet1 (5).jpg",
+    "m9d2kcms_spritesheet1 (2).jpg"
+  ],
+  "total": 15,
+  "hosting": "local"
 }

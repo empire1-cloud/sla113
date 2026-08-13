@@ -1,8 +1,9 @@
 """SLA113 API Router - Universal AI Game Studio"""
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Depends
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
+from pathlib import Path
 import uuid
 import logging
 import os
@@ -30,9 +31,23 @@ from sla113.logic_engine import generate_logic
 from sla113.composer_engine import compose_game_bundle
 from sla113.audio_forge import generate_audio_asset
 from sla113.fish_multiplayer import create_lobby, get_lobby, list_lobbies, delete_lobby
+from services.event_service import get_event_service
+from models.game.event_system import (
+    DynamicEventType, DynamicEventCreate, DynamicEventUpdate,
+    LimitedTimeEventType, LimitedTimeEventCreate, LimitedTimeEventUpdate,
+    EventStatus
+)
+from models.game.player_profile import PlayerProfileCreate, PlayerProfileUpdate
+from core.dependencies import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/sla113", tags=["sla113"])
+# event_service = get_event_service()  # Moved to function scope to avoid DB init issues
+
+# Backend root (routers/sla113.py -> routers -> backend), used for deploy static file storage.
+# Was hardcoded to /app/backend, which only existed inside the original container.
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+DEPLOYS_DIR = BACKEND_DIR / "static" / "deploys"
 
 # In-memory session store for terminal conversations
 _terminal_sessions = {}
@@ -1972,7 +1987,7 @@ async def deploy_build(req: DeployRequest):
 
     now = datetime.now(timezone.utc).isoformat()
     deploy_id = f"DPL-{uuid.uuid4().hex[:8].upper()}"
-    deploy_dir = f"/app/backend/static/deploys/{deploy_id}"
+    deploy_dir = str(DEPLOYS_DIR / deploy_id)
 
     deployment = {
         "id": deploy_id,
@@ -2062,7 +2077,7 @@ async def delete_deployment(deploy_id: str):
     """Delete deployment and clean up static files."""
     import shutil
     deploy = await deployments_collection().find_one({"id": deploy_id}, {"_id": 0})
-    deploy_dir = f"/app/backend/static/deploys/{deploy_id}"
+    deploy_dir = str(DEPLOYS_DIR / deploy_id)
     if os.path.exists(deploy_dir):
         shutil.rmtree(deploy_dir, ignore_errors=True)
     result = await deployments_collection().delete_one({"id": deploy_id})
@@ -2083,7 +2098,7 @@ async def serve_live_game(deploy_id: str, file_path: str):
         raise HTTPException(status_code=400, detail="Invalid deploy ID format")
 
     # Security: prevent path traversal
-    base_dir = os.path.realpath("/app/backend/static/deploys")
+    base_dir = os.path.realpath(str(DEPLOYS_DIR))
     full_path = os.path.realpath(os.path.join(base_dir, deploy_id, file_path))
     if not full_path.startswith(base_dir):
         raise HTTPException(status_code=403, detail="Access denied")
@@ -2410,17 +2425,38 @@ async def delete_sprite(sprite_id: str):
         raise HTTPException(status_code=404, detail="Sprite not found")
     return {"deleted": True}
 
-# ═══════════════════════════════════════════════════════════════════════
-# ─── LOBBY / GAME OS COMPOSER ───
-# A "Lobby" is a fish-shooter game variant defined by which assets to mix:
-# main boss sprite(s), background, theme color, audio track, jackpot tier.
-# One lobby = one deployed game URL.
-# ═══════════════════════════════════════════════════════════════════════
-def lobbies_collection():
-    return get_database()["sla113_lobbies"]
+
+SPRITES_DIR = BACKEND_DIR / "static" / "sprites"
 
 
-class LobbyRequest(BaseModel):
+@router.get("/sprites/static/{filename}")
+async def serve_sprite_asset(filename: str):
+    """Serve locally-generated sprite/background PNGs (e.g. seeded placeholders)."""
+    import re as _re
+    from fastapi.responses import FileResponse
+
+    if not _re.match(r'^[A-Za-z0-9_.-]+\.png$', filename):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    full_path = os.path.realpath(str(SPRITES_DIR / filename))
+    if not full_path.startswith(os.path.realpath(str(SPRITES_DIR))):
+        raise HTTPException(status_code=403, detail="Access denied")
+    if not os.path.isfile(full_path):
+        raise HTTPException(status_code=404, detail="Sprite asset not found")
+    return FileResponse(full_path, media_type="image/png")
+
+# ═══════════════════════════════════════════════════════════════════════
+# ─── GAME OS COMPOSER ───
+# There is one arcade lobby (Southern Lyfestyle). A "Game" is one playable
+# variant inside that lobby, defined by which assets to mix: main boss
+# sprite(s), background, theme color, audio track, jackpot tier.
+# One game = one deployed game URL, shown as one tile in the arcade lobby.
+# ═══════════════════════════════════════════════════════════════════════
+def games_collection():
+    return get_database()["sla113_games"]
+
+
+class GameEntryRequest(BaseModel):
     name: str
     slug: str
     game_type: str = "fish_shooting"
@@ -2436,59 +2472,59 @@ class LobbyRequest(BaseModel):
     extra_bosses: List[str] = []         # optional additional boss sprite keys
 
 
-@router.post("/lobbies")
-async def create_composer_lobby(req: LobbyRequest):
+@router.post("/games")
+async def create_composer_game(req: GameEntryRequest):
     now = datetime.now(timezone.utc).isoformat()
-    lobby = {
+    game = {
         "id": f"LBY-{uuid.uuid4().hex[:8].upper()}",
         **req.model_dump(),
         "created_at": now,
         "updated_at": now,
     }
-    await lobbies_collection().insert_one(lobby)
-    lobby.pop("_id", None)
-    return lobby
+    await games_collection().insert_one(game)
+    game.pop("_id", None)
+    return game
 
 
-@router.get("/lobbies")
-async def list_composer_lobbies():
-    cursor = lobbies_collection().find({}, {"_id": 0}).sort("created_at", 1)
-    lobbies = await cursor.to_list(200)
-    return {"lobbies": lobbies, "total": len(lobbies)}
+@router.get("/games")
+async def list_composer_games():
+    cursor = games_collection().find({}, {"_id": 0}).sort("created_at", 1)
+    games = await cursor.to_list(200)
+    return {"games": games, "total": len(games)}
 
 
-@router.get("/lobbies/{lobby_id}")
-async def get_composer_lobby(lobby_id: str):
-    lobby = await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
-    if not lobby:
-        raise HTTPException(status_code=404, detail="Lobby not found")
-    return lobby
+@router.get("/games/{game_id}")
+async def get_composer_game(game_id: str):
+    game = await games_collection().find_one({"id": game_id}, {"_id": 0})
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    return game
 
 
-@router.patch("/lobbies/{lobby_id}")
-async def update_lobby(lobby_id: str, body: Dict[str, Any]):
+@router.patch("/games/{game_id}")
+async def update_game(game_id: str, body: Dict[str, Any]):
     body.pop("id", None); body.pop("_id", None)
     body["updated_at"] = datetime.now(timezone.utc).isoformat()
-    result = await lobbies_collection().update_one({"id": lobby_id}, {"$set": body})
+    result = await games_collection().update_one({"id": game_id}, {"$set": body})
     if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Lobby not found")
-    return await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
+        raise HTTPException(status_code=404, detail="Game not found")
+    return await games_collection().find_one({"id": game_id}, {"_id": 0})
 
 
-@router.delete("/lobbies/{lobby_id}")
-async def delete_lobby_row(lobby_id: str):
-    result = await lobbies_collection().delete_one({"id": lobby_id})
+@router.delete("/games/{game_id}")
+async def delete_game_row(game_id: str):
+    result = await games_collection().delete_one({"id": game_id})
     if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Lobby not found")
+        raise HTTPException(status_code=404, detail="Game not found")
     return {"deleted": True}
 
 
-@router.post("/lobbies/{lobby_id}/deploy")
-async def deploy_lobby(lobby_id: str):
-    """One-shot: create project from lobby config, compile, deploy, return preview URL."""
-    lobby = await lobbies_collection().find_one({"id": lobby_id}, {"_id": 0})
+@router.post("/games/{game_id}/deploy")
+async def deploy_game(game_id: str):
+    """One-shot: create project from game config, compile, deploy, return preview URL."""
+    lobby = await games_collection().find_one({"id": game_id}, {"_id": 0})
     if not lobby:
-        raise HTTPException(status_code=404, detail="Lobby not found")
+        raise HTTPException(status_code=404, detail="Game not found")
 
     now = datetime.now(timezone.utc).isoformat()
 
@@ -2500,7 +2536,7 @@ async def deploy_lobby(lobby_id: str):
         "game_type": lobby["game_type"],
         "theme": lobby.get("description", "")[:60],
         "status": "in_dev",
-        "lobby_id": lobby_id,
+        "lobby_id": game_id,
         "lobby_config": lobby,   # snapshot
         "created_at": now, "updated_at": now,
     }
@@ -2522,7 +2558,7 @@ async def deploy_lobby(lobby_id: str):
             {"name": "Optimization Pass", "status": "pending", "progress": 0},
         ],
         "output": None, "download_url": None, "size_mb": None,
-        "logs": [f"[{now}] Lobby deploy initiated: {lobby['name']}"],
+        "logs": [f"[{now}] Game deploy initiated: {lobby['name']}"],
         "created_at": now, "updated_at": now,
     }
     await builds_collection().insert_one(build)
@@ -2535,8 +2571,8 @@ async def deploy_lobby(lobby_id: str):
     dep_req = DeployRequest(build_id=build_id, target_cdn="emergent-mock", region="us-east-1", auto_ssl=True)
     deployment = await deploy_build(dep_req)
     return {
-        "lobby_id": lobby_id,
-        "lobby_name": lobby["name"],
+        "game_id": game_id,
+        "game_name": lobby["name"],
         "project_id": project_id,
         "build_id": build_id,
         "deployment": deployment,
@@ -2544,8 +2580,8 @@ async def deploy_lobby(lobby_id: str):
     }
 
 
-async def seed_default_lobbies():
-    count = await lobbies_collection().count_documents({})
+async def seed_default_games():
+    count = await games_collection().count_documents({})
     if count > 0:
         return
     now = datetime.now(timezone.utc).isoformat()
@@ -2581,7 +2617,7 @@ async def seed_default_lobbies():
          "description": "The Champion. Ultimate solo boss.", "jackpot_tier": "GRAND", "base_bet": 0.50},
     ]
     for d in defaults:
-        await lobbies_collection().insert_one({
+        await games_collection().insert_one({
             "id": f"LBY-{uuid.uuid4().hex[:8].upper()}",
             "game_type": "fish_shooting",
             "partner_boss_sprite": d.get("partner_boss_sprite"),
@@ -2589,9 +2625,309 @@ async def seed_default_lobbies():
             "created_at": now, "updated_at": now,
             **d,
         })
-    logger.info("Seeded %d default lobbies", len(defaults))
+    logger.info("Seeded %d default games", len(defaults))
 
 
+# ─── Seed placeholder sprites for the default lobbies (no real art registered yet) ───
+async def seed_default_sprites():
+    count = await sprite_registry_collection().count_documents({})
+    if count > 0:
+        return
+
+    from sla113.sprite_placeholder import generate_boss_spritesheet, generate_background, generate_loader
+
+    os.makedirs(SPRITES_DIR, exist_ok=True)
+    now = datetime.now(timezone.utc).isoformat()
+
+    bosses = [
+        ("wolf_xolotl_pack", "#d4af37"),
+        ("g_wolf", "#8a8a8a"),
+        ("jaguar_warrior", "#d4af37"),
+        ("quetzalcoatl_fireborn", "#00ffcc"),
+        ("ocelotl_voidmane", "#9900ff"),
+        ("aztec_wolf_male", "#d4af37"),
+        ("jaguar_warrior_elite", "#ff6600"),
+        ("jaguar_warrior_champion", "#ff2244"),
+    ]
+    backgrounds = [
+        ("wolf_xolotls_arena", "#d4af37"),
+        ("three_worlds_pyramid", "#00ffcc"),
+    ]
+
+    sprites = []
+    for key, color in bosses:
+        png = generate_boss_spritesheet(key, color)
+        with open(os.path.join(SPRITES_DIR, f"{key}.png"), "wb") as f:
+            f.write(png)
+        sprites.append({
+            "id": f"SPR-{uuid.uuid4().hex[:6].upper()}", "name": key, "entity_type": "boss",
+            "sprite_url": f"/api/sla113/sprites/static/{key}.png",
+            "frame_width": 128, "frame_height": 128, "columns": 2, "rows": 2, "total_frames": 4,
+            "animations": {"idle": [0, 1, 2, 3], "walk": [0, 1, 2, 3]},
+            "tier": 0, "metadata": {"placeholder": True}, "created_at": now,
+        })
+
+    for key, color in backgrounds:
+        png = generate_background(key, color)
+        with open(os.path.join(SPRITES_DIR, f"{key}.png"), "wb") as f:
+            f.write(png)
+        sprites.append({
+            "id": f"SPR-{uuid.uuid4().hex[:6].upper()}", "name": key, "entity_type": "background",
+            "sprite_url": f"/api/sla113/sprites/static/{key}.png",
+            "frame_width": 800, "frame_height": 450, "columns": 1, "rows": 1, "total_frames": 1,
+            "animations": {}, "tier": 0, "metadata": {"placeholder": True}, "created_at": now,
+        })
+
+    loader_png = generate_loader()
+    with open(os.path.join(SPRITES_DIR, "loader.png"), "wb") as f:
+        f.write(loader_png)
+    sprites.append({
+        "id": f"SPR-{uuid.uuid4().hex[:6].upper()}", "name": "loader", "entity_type": "ui",
+        "sprite_url": "/api/sla113/sprites/static/loader.png",
+        "frame_width": 400, "frame_height": 400, "columns": 1, "rows": 1, "total_frames": 1,
+        "animations": {}, "tier": 0, "metadata": {"placeholder": True}, "created_at": now,
+    })
+
+    await sprite_registry_collection().insert_many(sprites)
+    logger.info("Seeded %d placeholder sprites", len(sprites))
+
+
+# ─── Event Management Routes ───
+@router.post("/events/dynamic/initialize")
+async def initialize_default_events():
+    """Initialize default dynamic and limited-time events."""
+    await get_event_service().initialize_default_events()
+    return {"message": "Default events initialized successfully"}
+
+
+@router.get("/events/dynamic/templates")
+async def get_dynamic_event_templates():
+    """Get all dynamic event templates."""
+    templates = await event_service.get_dynamic_event_templates()
+    return {"templates": templates}
+
+
+@router.get("/events/limited-time/templates")
+async def get_limited_time_event_templates():
+    """Get all limited-time event templates."""
+    templates = await event_service.get_limited_time_event_templates()
+    return {"templates": templates}
+
+
+@router.post("/events/dynamic")
+async def create_dynamic_event(event_data: DynamicEventCreate):
+    """Create a new dynamic event template."""
+    event_id = await event_service.create_dynamic_event(event_data)
+    return {"event_id": event_id, "message": "Dynamic event created successfully"}
+
+
+@router.post("/events/limited-time")
+async def create_limited_time_event(event_data: LimitedTimeEventCreate):
+    """Create a new limited-time event template."""
+    event_id = await event_service.create_limited_time_event(event_data)
+    return {"event_id": event_id, "message": "Limited-time event created successfully"}
+
+
+@router.post("/events/check-and-trigger")
+async def check_and_trigger_events():
+    """Check for events that should be started or ended."""
+    await event_service.check_and_trigger_events()
+    return {"message": "Event check completed"}
+
+
+@router.get("/events/active")
+async def get_active_events():
+    """Get currently active events."""
+    events = await event_service.get_active_events()
+    return events
+
+
+@router.post("/events/join/{event_type}")
+async def join_event(event_type: str, current_user: dict = Depends(get_current_user)):
+    """Join an active event."""
+    user_id = str(current_user["_id"])
+    success = await event_service.join_event(user_id, event_type)
+    if success:
+        return {"message": f"Joined {event_type} event successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Unable to join event")
+
+
+@router.get("/events/participation/status")
+async def get_event_participation_status(current_user: dict = Depends(get_current_user)):
+    """Get current user's event participation status."""
+    user_id = str(current_user["_id"])
+    status = await event_service.get_event_participation_status(user_id)
+    return {"participations": status}
+
+
+@router.post("/events/award-rewards")
+async def award_event_rewards(
+    event_type: str,
+    xp_amount: int = 0,
+    credit_amount: int = 0,
+    rewards: dict = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Award rewards to current user for participating in an event."""
+    user_id = str(current_user["_id"])
+    success = await event_service.award_event_rewards(
+        user_id, event_type, xp_amount, credit_amount, rewards
+    )
+    if success:
+        return {"message": "Rewards awarded successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Failed to award rewards")
+
+
+@router.get("/events/modifiers")
+async def get_event_modifiers(current_user: dict = Depends(get_current_user)):
+    """Get current event modifiers for the user."""
+    user_id = str(current_user["_id"])
+    modifiers = await event_service.get_event_modifiers(user_id)
+    return modifiers
+
+
+@router.get("/events/history")
+async def get_event_history(limit: int = 10, offset: int = 0, event_type: Optional[str] = None):
+    """Get historical events (both dynamic and limited-time)."""
+    # Get archived dynamic events
+    dynamic_query = {}
+    if event_type:
+        dynamic_query["event_type"] = event_type
+
+    dynamic_cursor = self.archived_dynamic_events_collection.find(dynamic_query).sort("ended_at", -1).skip(offset).limit(limit)
+    dynamic_events = await dynamic_cursor.to_list(length=None)
+
+    # Get archived limited-time events
+    limited_query = {}
+    if event_type:
+        limited_query["event_type"] = event_type
+
+    limited_cursor = self.archived_limited_time_events_collection.find(limited_query).sort("ended_at", -1).skip(offset).limit(limit)
+    limited_events = await limited_cursor.to_list(length=None)
+
+    # Combine and format events
+    historical_events = []
+
+    for event in dynamic_events:
+        event["_id"] = str(event["_id"])
+        event["event_category"] = "dynamic"
+        historical_events.append(event)
+
+    for event in limited_events:
+        event["_id"] = str(event["_id"])
+        event["event_category"] = "limited_time"
+        historical_events.append(event)
+
+    # Sort by end time (most recent first)
+    historical_events.sort(key=lambda x: x.get("ended_at", ""), reverse=True)
+
+    return {
+        "historical_events": historical_events,
+        "total": len(historical_events),
+        "limit": limit,
+        "offset": offset
+    }
+
+
+@router.get("/events/upcoming")
+async def get_upcoming_events():
+    """Get upcoming scheduled events."""
+    now = datetime.now(timezone.utc)
+
+    # Get upcoming dynamic events (based on templates and cooldowns - simplified)
+    # For dynamic events, we'll show ones that could start soon based on templates
+    dynamic_templates = await event_service.get_dynamic_event_templates()
+
+    # Get upcoming limited-time events from templates
+    limited_templates = await event_service.get_limited_time_event_templates()
+
+    upcoming_events = []
+
+    # Add limited-time events that are scheduled to start in the future
+    for template in limited_templates:
+        start_time = template.get("start_time")
+        if start_time:
+            if isinstance(start_time, str):
+                start_time = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+
+            if start_time > now:
+                event_info = {
+                    "event_type": template["event_type"],
+                    "name": template["name"],
+                    "description": template["description"],
+                    "start_time": start_time.isoformat(),
+                    "end_time": template.get("end_time", "").isoformat() if template.get("end_time") else None,
+                    "event_category": "limited_time",
+                    "xp_multiplier": template.get("xp_multiplier", 1.0),
+                    "credit_multiplier": template.get("credit_multiplier", 1.0),
+                    "special_rewards": template.get("special_rewards", []),
+                    "entry_fee": template.get("entry_fee", 0),
+                    "leaderboard_enabled": template.get("leaderboard_enabled", False)
+                }
+                upcoming_events.append(event_info)
+
+    # Sort by start time
+    upcoming_events.sort(key=lambda x: x.get("start_time", ""))
+
+    return {
+        "upcoming_events": upcoming_events,
+        "total": len(upcoming_events)
+    }
+
+
+@router.get("/events/leaderboard/{event_type}")
+async def get_event_leaderboard(event_type: str, limit: int = 10):
+    """Get leaderboard for a specific event type."""
+    # Validate event type
+    valid_event_types = [e.value for e in DynamicEventType] + [e.value for e in LimitedTimeEventType]
+    if event_type not in valid_event_types:
+        raise HTTPException(status_code=400, detail=f"Invalid event type: {event_type}")
+
+    # Get participations for this event type, ordered by achievement
+    # For now, we'll get completed participations and sort by credits earned + xp/10
+    pipeline = [
+        {"$match": {"event_type": event_type, "completed": True}},
+        {"$lookup": {
+            "from": "player_profiles",
+            "localField": "user_id",
+            "foreignField": "user_id",
+            "as": "player_info"
+        }},
+        {"$unwind": "$player_info"},
+        {"$addFields": {
+            "total_score": {"$add": ["$credits_earned", {"$divide": ["$xp_earned", 10]}]},
+            "username": "$player_info.username"
+        }},
+        {"$sort": {"total_score": -1}},
+        {"$limit": limit},
+        {"$project": {
+            "_id": 0,
+            "user_id": 1,
+            "username": 1,
+            "credits_earned": 1,
+            "xp_earned": 1,
+            "total_score": 1,
+            "rewards_earned": 1,
+            "joined_at": 1,
+            "completed_at": 1
+        }}
+    ]
+
+    leaderboard = []
+    async for doc in event_service.event_participation_collection.aggregate(pipeline):
+        leaderboard.append(doc)
+
+    # Add rankings
+    for i, entry in enumerate(leaderboard):
+        entry["rank"] = i + 1
+
+    return {
+        "event_type": event_type,
+        "leaderboard": leaderboard,
+        "total_participants": len(leaderboard)
+    }
 
 
 # ─── Seed default pipelines if empty ───
