@@ -26,6 +26,7 @@ import PipelineComposerPage from "./pages/PipelineComposerPage";
 import ExecutionHistoryPage from "./pages/ExecutionHistoryPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import EmpireLyricMasterPage from "./pages/EmpireLyricMasterPage";
+import StartupsWelcomePage from "./pages/StartupsWelcomePage";
 
 // SLA113 — Fully isolated sovereign OS (separate project/repo)
 // SLA113 runs on its own domain/port — NOT embedded in Empire 1
@@ -74,6 +75,7 @@ function RootRouter() {
 
             {/* Protected */}
             <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/startups-welcome" element={<ProtectedRoute><StartupsWelcomePage /></ProtectedRoute>} />
             <Route path="/empire" element={<ProtectedRoute><EmpireLyricMasterPage /></ProtectedRoute>} />
             <Route path="/engines" element={<ProtectedRoute><EnginesPage /></ProtectedRoute>} />
             <Route path="/money-pipeline" element={<ProtectedRoute><MoneyPipelinePage /></ProtectedRoute>} />

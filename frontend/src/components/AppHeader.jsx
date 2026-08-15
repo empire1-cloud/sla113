@@ -68,6 +68,7 @@ const AppHeader = () => {
       </Link>
 
       <nav className="header-nav-main">
+        <Link to="/startups-welcome" className="nav-link startups-link" title="Claude for Startups Program" data-testid="startups-nav">🚀 Startups</Link>
         <Link to="/engines" className="nav-link" data-testid="engines-nav">Engines</Link>
         <Link to="/pipeline-composer" className="nav-link" data-testid="composer-nav">Composer</Link>
 
