@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "yarn --cwd frontend install --frozen-lockfile",
+  "installCommand": "yarn --cwd frontend install --frozen-lockfile --ignore-engines",
   "buildCommand": "yarn --cwd frontend build",
   "outputDirectory": "frontend/build",
   "build": {
