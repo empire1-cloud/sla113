@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Repo root marker only — the actual app lives in frontend/. This file exists solely so Vercel's Node.js version auto-detection (engines.node) applies to the build; it has no scripts or dependencies of its own.",
+  "engines": {
+    "node": "20.x"
+  }
+}
