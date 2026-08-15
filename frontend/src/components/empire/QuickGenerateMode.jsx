@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Zap, Music, Loader2, Download, ChevronRight } from 'lucide-react';
 
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
 /**
  * Quick Generate Mode
- * 
+ *
  * Fast workflow: Prompt → Generate → Results
  * Perfect for rapid ideation and quick tracks
  */
@@ -23,7 +25,7 @@ export default function QuickGenerateMode() {
     setError(null);
 
     try {
-      const response = await fetch('/api/empire/generate', {
+      const response = await fetch(`${API}/empire/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
