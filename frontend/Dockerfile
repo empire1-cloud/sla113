@@ -7,9 +7,9 @@ RUN yarn install --frozen-lockfile || yarn install
 
 COPY . .
 
-ARG REACT_APP_BACKEND_URL
-ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
-
+# Production API origin is intentionally sourced from frontend/.env.production.
+# Do not inject the frontend's own custom domain here: that causes auth requests
+# such as /api/auth/signup to hit nginx/static hosting instead of FastAPI.
 RUN yarn build
 
 FROM nginx:alpine
