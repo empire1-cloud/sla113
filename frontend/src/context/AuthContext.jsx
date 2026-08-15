@@ -5,8 +5,9 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { API_BASE } from '../config/apiBase';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = API_BASE;
 
 const AuthContext = createContext(null);
 
@@ -14,6 +15,13 @@ const AuthContext = createContext(null);
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const CURRENT_TEAM_KEY = 'current_team_id';
+
+const requestErrorMessage = (err, fallback) => {
+  const detail = err.response?.data?.detail;
+  if (typeof detail === 'string' && detail.trim()) return detail;
+  if (err.request) return `Unable to reach the SLA113 control plane at ${API}.`;
+  return err.message || fallback;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -164,7 +172,7 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (err) {
-      const message = err.response?.data?.detail || 'Login failed';
+      const message = requestErrorMessage(err, 'Login failed');
       setError(message);
       return { success: false, error: message };
     }
@@ -194,7 +202,7 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (err) {
-      const message = err.response?.data?.detail || 'Signup failed';
+      const message = requestErrorMessage(err, 'Signup failed');
       setError(message);
       return { success: false, error: message };
     }
