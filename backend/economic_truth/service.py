@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping, Optional
 
 from .domain import ActionState, ALLOWED_TRANSITIONS, EconomicTruthError, canonical_json, digest
+from .signing import GoogleCloudKmsSigner
 
 
 REQUIRED_SURFACES = (
@@ -44,8 +45,8 @@ class EconomicTruthService:
                 "event_type": event_type,
                 "contract_version": "empire1.economic-event.v1",
                 "implemented": True,
-                "enabled": owner == "SLA113",
-                "last_seen_at": now_iso() if owner == "SLA113" else None,
+                "enabled": owner == "SLA113" and (surface_id == "sla113.execution" or isinstance(self.signer, GoogleCloudKmsSigner)),
+                "last_seen_at": now_iso() if owner == "SLA113" and (surface_id == "sla113.execution" or isinstance(self.signer, GoogleCloudKmsSigner)) else None,
                 "updated_at": now_iso(),
             })
 
@@ -201,7 +202,16 @@ class EconomicTruthService:
         expected = hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
         if expected != receipt.get("payload_hash"):
             return False
-        return await self.signer.verify_digest(expected, str(receipt.get("signature", "")))
+        key_id = str(receipt.get("key_id", ""))
+        revoked = {value.strip() for value in os.getenv("ECONOMIC_TRUTH_REVOKED_KEY_IDS", "").split(",") if value.strip()}
+        if not key_id or key_id in revoked:
+            return False
+        signer = self.signer
+        if key_id != signer.key_id:
+            if "/cryptoKeyVersions/" not in key_id:
+                return False
+            signer = GoogleCloudKmsSigner(key_id)
+        return await signer.verify_digest(expected, str(receipt.get("signature", "")))
 
     async def graph(self, organization_id: str) -> dict[str, Any]:
         receipts = await self.store.list_receipts(organization_id)
@@ -249,6 +259,10 @@ class EconomicTruthService:
         return surface
 
     async def coverage(self) -> dict[str, Any]:
+        managed_keys = isinstance(self.signer, GoogleCloudKmsSigner)
+        for surface_id in ("sla113.execution", "trust.key-rotation", "trust.key-revocation"):
+            healthy = surface_id == "sla113.execution" or managed_keys
+            await self.heartbeat_surface({"surface_id": surface_id, "healthy": healthy, "detail": {"key_id": self.signer.key_id}})
         surfaces = await self.store.list_surfaces()
         freshness_seconds = int(os.getenv("ECONOMIC_TRUTH_COVERAGE_FRESHNESS_SECONDS", "300"))
         cutoff = datetime.now(timezone.utc) - timedelta(seconds=freshness_seconds)
