@@ -108,6 +108,14 @@ def create_economic_truth_router(service_provider) -> APIRouter:
             raise HTTPException(status_code=403, detail="Metrics belong to another organization")
         return await service().metrics(organization_id)
 
+    @router.post("/coverage/heartbeat")
+    async def coverage_heartbeat(payload: FlexiblePayload, x_economic_truth_key: str | None = Header(None)):
+        require_write_key(x_economic_truth_key)
+        try:
+            return await service().heartbeat_surface(payload.model_dump())
+        except EconomicTruthError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
     @router.get("/coverage")
     async def coverage():
         return await service().coverage()
