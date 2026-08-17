@@ -75,7 +75,7 @@ class GoogleCloudKmsSigner:
     def _verify_sync(self, digest_hex: str, signature_b64: str) -> bool:
         from cryptography.exceptions import InvalidSignature
         from cryptography.hazmat.primitives import hashes
-        from cryptography.hazmat.primitives.asymmetric import ec, padding
+        from cryptography.hazmat.primitives.asymmetric import ec, padding, utils
         from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
         client, _ = self._client()
@@ -84,9 +84,9 @@ class GoogleCloudKmsSigner:
         signature = base64.urlsafe_b64decode(signature_b64 + "=" * (-len(signature_b64) % 4))
         try:
             if hasattr(key, "curve"):
-                key.verify(signature, bytes.fromhex(digest_hex), ec.ECDSA(hashes.SHA256()))
+                key.verify(signature, bytes.fromhex(digest_hex), ec.ECDSA(utils.Prehashed(hashes.SHA256())))
             else:
-                key.verify(signature, bytes.fromhex(digest_hex), padding.PKCS1v15(), hashes.SHA256())
+                key.verify(signature, bytes.fromhex(digest_hex), padding.PKCS1v15(), utils.Prehashed(hashes.SHA256()))
             return True
         except InvalidSignature:
             return False
