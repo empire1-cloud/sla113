@@ -64,7 +64,10 @@ class EconomicTruthEndToEndTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(before_heartbeats["claim_allowed"])
         for surface_id, _, _ in REQUIRED_SURFACES:
             await self.service.heartbeat_surface({"surface_id": surface_id, "healthy": True})
-        self.assertTrue((await self.service.coverage())["claim_allowed"])
+        development_coverage = await self.service.coverage()
+        self.assertFalse(development_coverage["claim_allowed"])
+        self.assertIn("trust.key-rotation", development_coverage["uncovered_surfaces"])
+        self.assertIn("trust.key-revocation", development_coverage["uncovered_surfaces"])
 
     async def test_duplicate_external_event_cannot_bind_two_actions(self):
         async def make(key):
