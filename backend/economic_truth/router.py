@@ -6,9 +6,10 @@ import hmac
 import os
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from core.dependencies import get_current_user
 from .domain import EconomicTruthError
 
 
@@ -96,11 +97,15 @@ def create_economic_truth_router(service_provider) -> APIRouter:
         return {"verified": await service().verify_envelope(body), "receipt_id": body.get("receipt_id")}
 
     @router.get("/graph/{organization_id}")
-    async def graph(organization_id: str):
+    async def graph(organization_id: str, user: dict = Depends(get_current_user)):
+        if str(user.get("team_id")) != organization_id and user.get("system_role") != "admin":
+            raise HTTPException(status_code=403, detail="Receipt Graph belongs to another organization")
         return await service().graph(organization_id)
 
     @router.get("/metrics/{organization_id}")
-    async def metrics(organization_id: str):
+    async def metrics(organization_id: str, user: dict = Depends(get_current_user)):
+        if str(user.get("team_id")) != organization_id and user.get("system_role") != "admin":
+            raise HTTPException(status_code=403, detail="Metrics belong to another organization")
         return await service().metrics(organization_id)
 
     @router.get("/coverage")
