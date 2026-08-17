@@ -12,7 +12,6 @@
     "TSC_COMPILE_ON_ERROR": "true",
     "REACT_APP_BACKEND_URL": "https://sla113-backend-339698334666.us-central1.run.app"
   },
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/service-worker.js",
