@@ -340,7 +340,7 @@ const StartupsWelcomePage = () => {
               <span className="btn-icon">📊</span>
               <span className="btn-text">View Analytics</span>
             </a>
-            <a href="/team/settings className="quick-access-btn">
+            <a href="/team/settings" className="quick-access-btn">
               <span className="btn-icon">👥</span>
               <span className="btn-text">Team Settings</span>
             </a>
