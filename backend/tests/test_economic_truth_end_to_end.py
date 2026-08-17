@@ -2,6 +2,7 @@ import copy
 import unittest
 
 from economic_truth import DevelopmentHmacSigner, EconomicTruthService, MemoryEconomicTruthStore
+from economic_truth.service import REQUIRED_SURFACES
 
 
 class EconomicTruthEndToEndTests(unittest.IsolatedAsyncioTestCase):
@@ -59,6 +60,10 @@ class EconomicTruthEndToEndTests(unittest.IsolatedAsyncioTestCase):
         metrics = await self.service.metrics("empire1")
         self.assertEqual(5, metrics["receipts_issued"])
         self.assertEqual(1.25, metrics["economic_value_covered"]["USD"])
+        before_heartbeats = await self.service.coverage()
+        self.assertFalse(before_heartbeats["claim_allowed"])
+        for surface_id, _, _ in REQUIRED_SURFACES:
+            await self.service.heartbeat_surface({"surface_id": surface_id, "healthy": True})
         self.assertTrue((await self.service.coverage())["claim_allowed"])
 
     async def test_duplicate_external_event_cannot_bind_two_actions(self):
