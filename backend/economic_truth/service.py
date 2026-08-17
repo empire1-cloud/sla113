@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping, Optional
 
 from .domain import ActionState, ALLOWED_TRANSITIONS, EconomicTruthError, canonical_json, digest
@@ -43,7 +44,8 @@ class EconomicTruthService:
                 "event_type": event_type,
                 "contract_version": "empire1.economic-event.v1",
                 "implemented": True,
-                "enabled": True,
+                "enabled": owner == "SLA113",
+                "last_seen_at": now_iso() if owner == "SLA113" else None,
                 "updated_at": now_iso(),
             })
 
@@ -226,9 +228,39 @@ class EconomicTruthService:
                 value_by_currency[currency] = value_by_currency.get(currency, 0.0) + float(value["amount"])
         return {"receipts_issued": len(receipts), "by_type": counts, "economic_value_covered": value_by_currency}
 
+    async def heartbeat_surface(self, payload: Mapping[str, Any]) -> dict[str, Any]:
+        surface_id = str(payload.get("surface_id") or "")
+        definition = next((item for item in REQUIRED_SURFACES if item[0] == surface_id), None)
+        if not definition:
+            raise EconomicTruthError("Unknown required Economic Truth surface")
+        healthy = bool(payload.get("healthy"))
+        surface = {
+            "surface_id": surface_id,
+            "owner": definition[1],
+            "event_type": definition[2],
+            "contract_version": "empire1.economic-event.v1",
+            "implemented": True,
+            "enabled": healthy,
+            "last_seen_at": now_iso(),
+            "detail": dict(payload.get("detail") or {}),
+            "updated_at": now_iso(),
+        }
+        await self.store.upsert_surface(surface)
+        return surface
+
     async def coverage(self) -> dict[str, Any]:
         surfaces = await self.store.list_surfaces()
-        uncovered = [s["surface_id"] for s in surfaces if not (s.get("implemented") and s.get("enabled"))]
+        freshness_seconds = int(os.getenv("ECONOMIC_TRUTH_COVERAGE_FRESHNESS_SECONDS", "300"))
+        cutoff = datetime.now(timezone.utc) - timedelta(seconds=freshness_seconds)
+        def covered_surface(surface: Mapping[str, Any]) -> bool:
+            seen = surface.get("last_seen_at")
+            if not (surface.get("implemented") and surface.get("enabled") and seen):
+                return False
+            try:
+                return datetime.fromisoformat(str(seen).replace("Z", "+00:00")) >= cutoff
+            except ValueError:
+                return False
+        uncovered = [s["surface_id"] for s in surfaces if not covered_surface(s)]
         required_ids = {item[0] for item in REQUIRED_SURFACES}
         present = {s["surface_id"] for s in surfaces}
         uncovered.extend(sorted(required_ids - present))
@@ -241,6 +273,7 @@ class EconomicTruthService:
             "uncovered_surfaces": sorted(set(uncovered)),
             "claim_allowed": covered == total,
             "contract_version": "empire1.economic-event.v1",
+            "freshness_seconds": freshness_seconds,
         }
 
     async def _require_action(self, action_id: str) -> dict[str, Any]:
