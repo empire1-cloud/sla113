@@ -1,11 +1,12 @@
-const DEFAULT_PRODUCTION_API = 'https://sla113-monieqs-projects.vercel.app';
+const DEFAULT_PRODUCTION_API = 'https://api.sla113.southernlifestyle.org';
 
 const trimSlash = (value = '') => value.trim().replace(/\/+$/, '');
 
 /**
  * Resolve the SLA113 API origin once for the browser bundle.
  *
- * Production defaults to the canonical SLA113 Vercel backend. An explicit
+ * Production defaults to the stable SLA113 API domain so Vercel team/project
+ * aliases can change without breaking the browser bundle. An explicit
  * REACT_APP_BACKEND_URL may override it. Local development keeps the
  * configured value (or localhost:8000).
  */
