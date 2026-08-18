@@ -1,6 +1,6 @@
-version: 3
+version: 4
 registry_name: sla113_universe_registry
-last_updated_utc: "2026-05-01T12:00:00Z"
+last_updated_utc: "2026-08-18T10:56:00Z"
 single_source_of_truth: true
 
 owners:
@@ -25,6 +25,8 @@ universes:
       - sla113.southernlifestyle.org
     services:
       - empire1-backend
+    deployment_target: vercel
+    vercel_project: sla113
     depends_on: []
     status: active
 
