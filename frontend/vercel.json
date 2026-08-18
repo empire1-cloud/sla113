@@ -10,7 +10,7 @@
     "INLINE_RUNTIME_CHUNK": "false",
     "DISABLE_ESLINT_PLUGIN": "true",
     "TSC_COMPILE_ON_ERROR": "true",
-    "REACT_APP_BACKEND_URL": "https://sla113-monieqs-projects.vercel.app"
+    "REACT_APP_BACKEND_URL": "https://api.sla113.southernlifestyle.org"
   },
   "rewrites": [
     {
