@@ -3,6 +3,8 @@ name: SLA113 backend smoke
 on:
   push:
     branches: [newest]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
