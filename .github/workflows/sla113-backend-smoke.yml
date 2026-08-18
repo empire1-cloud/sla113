@@ -40,3 +40,5 @@ jobs:
           print('server:app import OK')
           print('/api/health route OK')
           PY
+
+# Mirrored on main so PR #8 can expose this check through GitHub Actions.
