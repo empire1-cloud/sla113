@@ -10,7 +10,7 @@
     "INLINE_RUNTIME_CHUNK": "false",
     "DISABLE_ESLINT_PLUGIN": "true",
     "TSC_COMPILE_ON_ERROR": "true",
-    "REACT_APP_BACKEND_URL": "https://sla113-backend-339698334666.us-central1.run.app"
+    "REACT_APP_BACKEND_URL": "https://sla113-monieqs-projects.vercel.app"
   },
   "rewrites": [
     {
