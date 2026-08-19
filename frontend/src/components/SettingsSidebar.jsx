@@ -37,6 +37,13 @@ const SettingsSidebar = () => {
       visible: isTeamAdmin,
     },
     {
+      label: 'Economic Truth',
+      path: '/economic-truth',
+      icon: '◈',
+      description: 'Receipt Graph & proof',
+      visible: isTeamAdmin,
+    },
+    {
       label: 'API Keys',
       path: '/settings/api-keys',
       icon: '🔑',
@@ -58,6 +65,7 @@ const SettingsSidebar = () => {
     '/team/settings',
     '/billing',
     '/settings/api-keys',
+    '/economic-truth',
     '/admin/overview',
   ].includes(location.pathname);
 
