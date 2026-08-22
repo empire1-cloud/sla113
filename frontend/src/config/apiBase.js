@@ -1,4 +1,4 @@
-const DEFAULT_PRODUCTION_API = 'https://api.sla113.southernlifestyle.org';
+const DEFAULT_PRODUCTION_API = 'https://sla113-api.onrender.com';
 
 const trimSlash = (value = '') => value.trim().replace(/\/+$/, '');
 
