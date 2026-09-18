@@ -1,0 +1,2 @@
+// Vertex AI Asset Generation Prompt: Firme Banner
+"Create a grand prize display banner with Chicano-style 3D script. The banner should have chrome lowrider hydraulics at its base, glowing red roses, and volumetric orange sunset lighting. The phrase 'Firme' must be prominently displayed in flowing, elegant gold lettering with glowing alpha outlines. Ensure a mix of iconic Chicano luxury and modern graphics."

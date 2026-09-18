@@ -1,0 +1,9 @@
+{
+  "name": "pitchbook",
+  "type": "mcp",
+  "domain": "private-markets",
+  "description": "Private market data — VC/PE deals, company profiles, funds, investors",
+  "connection": {"url": "https://premium.mcp.pitchbook.com/mcp", "auth": "api-key"},
+  "capabilities": ["private_deals", "company_profiles", "fund_data", "investor_profiles"],
+  "status": "active"
+}

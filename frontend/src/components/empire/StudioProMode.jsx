@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Music2, Sliders, FileAudio, Settings, Loader2, Play, Download } from 'lucide-react';
 
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
 /**
  * Studio Pro Mode
- * 
+ *
  * Full production interface with manual controls
  * Genre selection, BPM control, vulnerability slider, etc.
  */
@@ -43,7 +45,7 @@ export default function StudioProMode() {
         vulnerability_override: vulnerability
       };
 
-      const response = await fetch('/api/empire/generate', {
+      const response = await fetch(`${API}/empire/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

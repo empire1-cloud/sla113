@@ -1,0 +1,9 @@
+{
+  "name": "chronograph",
+  "type": "mcp",
+  "domain": "pe-portfolio",
+  "description": "Private equity portfolio monitoring and valuations",
+  "connection": {"url": "https://ai.chronograph.pe/mcp", "auth": "api-key"},
+  "capabilities": ["portfolio_monitoring", "valuations", "waterfall_analysis", "irr_calculations"],
+  "status": "active"
+}

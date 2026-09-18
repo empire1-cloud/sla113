@@ -1,0 +1,14 @@
+{
+  "name": "quarterly_reporting",
+  "description": "Quarterly financial close including consolidation, variance analysis, and board reporting",
+  "agents": ["month_end_closer", "gl_reconciler"],
+  "skills": ["accrual_schedule", "roll_forward", "variance_commentary", "gl_recon", "break_trace", "audit_xls"],
+  "providers": ["egnyte", "box"],
+  "steps": [
+    {"step": 1, "agent": "gl_reconciler", "action": "Reconcile GL to subledgers"},
+    {"step": 2, "agent": "month_end_closer", "action": "Process accruals and roll-forwards"},
+    {"step": 3, "agent": "month_end_closer", "action": "Variance analysis and commentary"},
+    {"step": 4, "action": "Assemble reporting package"}
+  ],
+  "trigger": "Month-end or quarter-end close cycle"
+}

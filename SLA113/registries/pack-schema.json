@@ -1,0 +1,124 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/capability-pack.json",
+  "title": "CapabilityPack",
+  "description": "Generic interface for SLA113 capability packs. Every pack (Financial, Music, Gaming, Creator, etc.) follows this contract. No pack is a special case.",
+  "type": "object",
+  "required": [
+    "name", "pack_version", "schema_version", "engine_version",
+    "domain", "lifecycle", "capabilities", "revenue_model"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique pack identifier (e.g., 'financial-services', 'lyrica-3-soulfire')"
+    },
+    "label": {
+      "type": "string",
+      "description": "Human-readable display name"
+    },
+    "pack_version": {
+      "type": "string",
+      "description": "Semantic version of this pack (e.g., '1.2.0')",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of the pack schema this manifest conforms to",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "compatibility_version": {
+      "type": "string",
+      "description": "Minimum SLA113 platform version this pack is compatible with (e.g., '0.5.0')",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "engine_version": {
+      "type": "string",
+      "description": "Required SLA113 Execution Engine version constraint (e.g., '>=0.5.0')"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain category (finance, music, gaming, creator, healthcare, legal, education, etc.)"
+    },
+    "product": {
+      "type": "string",
+      "description": "Primary universe that consumes this pack (e.g., 'ArchiSynapse', 'Lyrica 3', 'Cultura Vibes')"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this pack does"
+    },
+
+    "lifecycle": {
+      "type": "string",
+      "enum": ["scaffold", "development", "testing", "active", "deprecated"],
+      "description": "Current lifecycle state. Engine only loads 'active' packs unless explicitly overridden."
+    },
+
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities this pack provides. The Execution Engine routes by capability name, not pack name.",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name":        {"type": "string", "description": "Capability identifier (e.g., 'financial_analysis', 'music_generation', 'creator_campaigns')"},
+          "description": {"type": "string", "description": "What this capability provides"},
+          "type":        {"type": "string", "enum": ["agent", "skill", "provider", "workflow"], "description": "Type of capability"}
+        }
+      }
+    },
+
+    "dependencies": {
+      "type": "array",
+      "description": "Optional shared capabilities this pack depends on. Resolved by the kernel at startup.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capability": {"type": "string", "description": "Required capability, e.g., 'payments', 'analytics', 'creator-identity'"},
+          "optional":   {"type": "boolean", "description": "If true, pack loads without this dependency"}
+        }
+      }
+    },
+
+    "revenue_model": {
+      "type": "object",
+      "required": ["primary", "white_label"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Revenue streams the universe earns directly"
+        },
+        "white_label": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Revenue streams from white-label licensing"
+        }
+      }
+    },
+
+    "registry": {
+      "type": "object",
+      "properties": {
+        "agents":    {"type": "integer", "description": "Number of registered agents"},
+        "skills":    {"type": "integer", "description": "Number of registered skills"},
+        "providers": {"type": "integer", "description": "Number of registered data providers"},
+        "workflows": {"type": "integer", "description": "Number of registered workflows"}
+      }
+    },
+
+    "white_label": {
+      "type": "object",
+      "properties": {
+        "layer": {"type": "string", "description": "Where white-labeling applies (product, not core)"},
+        "scope": {"type": "array", "items": {"type": "string"}},
+        "excluded_from_core": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "source": {
+      "type": "string",
+      "description": "Origin of this pack's content"
+    }
+  }
+}

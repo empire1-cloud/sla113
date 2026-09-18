@@ -1,0 +1,17 @@
+{
+  "engine_id": "SLA113_ARCADE_V9",
+  "render_mode": "UNIVERSAL_STUDIO",
+  "viewport_config": {
+    "sharpness": "high-res",
+    "aliasing": "none",
+    "layer_separation": true
+  },
+  "modules": {
+    "A": { "type": "fish_target", "limit": 30 },
+    "S": { "type": "logic_unit", "limit": 10 }
+  },
+  "api_mapping": {
+    "root": "/api/foundry/api",
+    "sync_interval": 1000
+  }
+}

@@ -28,8 +28,7 @@ from LYRICA3.rhythm_engine.mma_groove_agent import MMAGrooveAgent, generate_late
 from LYRICA3.mastering_engine.pda_mastering_agent import PDAMasteringAgent, generate_texture_mastering
 from LYRICA3.soulfire_engine.pfa_tag_processor import PFATagProcessor, process_lml_tags
 from LYRICA3.soulfire_engine.empire_audio_pipeline import EmpireAudioPipeline
-from backend.models.soulfire import SoulfirePayload
-
+from models.soulfire import SoulfirePayload
 
 @dataclass
 class TrackGenerationResult:

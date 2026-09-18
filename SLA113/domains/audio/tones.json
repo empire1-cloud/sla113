@@ -1,0 +1,97 @@
+{
+  "domain": "audio",
+  "version": "1.0",
+  "description": "Tone profiles — sonic characteristics that define the emotional and timbral quality of audio output. Referenced by workflows, presets, and mastering chains.",
+  "tones": [
+    {
+      "id": "warm",
+      "name": "Warm",
+      "description": "Rich, full-bodied sound with emphasis on mid-low frequencies. Smooth highs.",
+      "eq_curve": {"low_shelf": "+2dB at 150Hz", "high_shelf": "-3dB at 8kHz"},
+      "characteristics": ["round bass", "smooth highs", "thick mids", "tube saturation"],
+      "best_for": ["soul", "chicano-soul", "r-and-b", "lo-fi"],
+      "intensity": 0.6
+    },
+    {
+      "id": "bright",
+      "name": "Bright",
+      "description": "Clean, sparkling sound with emphasis on highs and upper mids. Crisp transients.",
+      "eq_curve": {"low_shelf": "-2dB at 100Hz", "high_shelf": "+3dB at 10kHz"},
+      "characteristics": ["sparkling highs", "crisp transients", "clear mids", "airy"],
+      "best_for": ["house", "pop", "edm", "trap"],
+      "intensity": 0.7
+    },
+    {
+      "id": "dark",
+      "name": "Dark",
+      "description": "Muted, brooding sound with rolled-off highs. Emphasis on low end and sub-bass.",
+      "eq_curve": {"low_shelf": "+3dB at 60Hz", "high_shelf": "-6dB at 6kHz"},
+      "characteristics": ["heavy lows", "muted highs", "sub-bass focus", "atmospheric"],
+      "best_for": ["drill", "trap-soul", "dark-trap", "phonk"],
+      "intensity": 0.8
+    },
+    {
+      "id": "aggressive",
+      "name": "Aggressive",
+      "description": "In-your-face presence with punchy mids and sharp transients. High dynamic contrast.",
+      "eq_curve": {"low_shelf": "+1dB at 80Hz", "mid_peak": "+4dB at 2.5kHz", "high_shelf": "+2dB at 8kHz"},
+      "characteristics": ["punchy mids", "sharp attacks", "high presence", "distortion"],
+      "best_for": ["drill", "phonk", "trap", "boom-bap"],
+      "intensity": 0.8
+    },
+    {
+      "id": "smooth",
+      "name": "Smooth",
+      "description": "Silky, polished sound with gentle transients and even frequency response. Fatigue-free.",
+      "eq_curve": {"low_shelf": "+1dB at 80Hz", "high_shelf": "-2dB at 10kHz"},
+      "characteristics": ["gentle transients", "even response", "silky highs", "non-fatiguing"],
+      "best_for": ["chicano-soul", "r-and-b", "lo-fi", "ambient"],
+      "intensity": 0.5
+    },
+    {
+      "id": "ethereal",
+      "name": "Ethereal",
+      "description": "Dreamy, spacious sound with heavy reverb, modulated textures, and soft attacks.",
+      "eq_curve": {"low_shelf": "-1dB at 80Hz", "high_boost": "+2dB at 12kHz"},
+      "characteristics": ["heavy reverb", "modulated", "soft attacks", "spacious", "shimmering"],
+      "best_for": ["ambient", "dream-pop", "lo-fi", "trap-soul"],
+      "intensity": 0.7
+    },
+    {
+      "id": "gritty",
+      "name": "Gritty",
+      "description": "Raw, lo-fi sound with saturation, harmonic distortion, and analog noise.",
+      "eq_curve": {"mid_peak": "+3dB at 1kHz", "high_shelf": "-4dB at 8kHz"},
+      "characteristics": ["saturation", "distortion", "noise floor", "analog warmth", "lo-fi"],
+      "best_for": ["phonk", "boom-bap", "lo-fi", "drill"],
+      "intensity": 0.9
+    },
+    {
+      "id": "clean",
+      "name": "Clean",
+      "description": "Pristine, transparent sound with flat frequency response. Minimal coloration.",
+      "eq_curve": {"flat": "±0dB"},
+      "characteristics": ["transparent", "uncolored", "pristine", "wide stereo"],
+      "best_for": ["house", "pop", "classical", "r-and-b"],
+      "intensity": 0.3
+    },
+    {
+      "id": "lush",
+      "name": "Lush",
+      "description": "Rich, layered sound with wide stereo, dense harmonics, and complex textures.",
+      "eq_curve": {"low_shelf": "+1dB at 100Hz", "mid_peak": "+2dB at 400Hz", "high_shelf": "+2dB at 10kHz"},
+      "characteristics": ["wide stereo", "dense harmonics", "layered", "rich", "textured"],
+      "best_for": ["soul", "chicano-soul", "r-and-b", "ambient"],
+      "intensity": 0.7
+    },
+    {
+      "id": "punchy",
+      "name": "Punchy",
+      "description": "Emphasized transients with tight low end. Attack-forward and dynamic.",
+      "eq_curve": {"low_mid": "+3dB at 200Hz", "high_mid": "+3dB at 3kHz"},
+      "characteristics": ["tight transients", "dynamic", "present", "forward"],
+      "best_for": ["boom-bap", "trap", "drill", "phonk"],
+      "intensity": 0.8
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "registry_version": "1.0",
+  "description": "Master registry of all capability packs. Scanned by the Universe Loader at startup.",
+  "packs": [
+    {
+      "name": "financial-services",
+      "path": "./packs/financial-services",
+      "domain": "finance",
+      "product": "ArchiSynapse",
+      "lifecycle": "active",
+      "registered_at": null
+    },
+    {
+      "name": "lyrica-3-soulfire",
+      "path": "./packs/lyrica-3-soulfire",
+      "domain": "music",
+      "product": "Lyrica 3 / Southern Lifestyle",
+      "lifecycle": "scaffold",
+      "registered_at": null
+    },
+    {
+      "name": "cultura-vibes",
+      "path": "./packs/cultura-vibes",
+      "domain": "creator",
+      "product": "Cultura Vibes / Southern Lifestyle",
+      "lifecycle": "scaffold",
+      "registered_at": null
+    },
+    {
+      "name": "gaming",
+      "path": "./packs/gaming",
+      "domain": "gaming",
+      "product": "Arcade / Empire-1",
+      "lifecycle": "scaffold",
+      "registered_at": null
+    }
+  ]
+}

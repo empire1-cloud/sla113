@@ -1,0 +1,16 @@
+{
+  "name": "due_diligence",
+  "description": "PE deal pipeline: source → screen → diligence → IC memo → close",
+  "agents": ["valuation_reviewer"],
+  "skills": ["deal_sourcing", "deal_screening", "dd_checklist", "unit_economics", "returns_analysis", "ic_memo"],
+  "providers": ["pitchbook", "capiq", "chronograph"],
+  "steps": [
+    {"step": 1, "name": "source", "skill": "deal_sourcing", "action": "Identify potential targets"},
+    {"step": 2, "name": "screen", "skill": "deal_screening", "action": "Apply screening criteria"},
+    {"step": 3, "name": "dd_checklist", "skill": "dd_checklist", "action": "Generate due diligence requirements"},
+    {"step": 4, "name": "unit_economics", "skill": "unit_economics", "action": "Analyze unit economics"},
+    {"step": 5, "name": "returns", "skill": "returns_analysis", "action": "Model returns, MOIC, IRR"},
+    {"step": 6, "name": "ic_memo", "skill": "ic_memo", "action": "Draft investment committee memo"}
+  ],
+  "trigger": "New deal sourced or screening initiated"
+}

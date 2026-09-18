@@ -7,9 +7,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_ROOT } from '../config/apiBase';
 import axios from 'axios';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = API_ROOT;
 
 const SignupPage = () => {
   const [searchParams] = useSearchParams();

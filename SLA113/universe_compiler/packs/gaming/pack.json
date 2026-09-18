@@ -1,0 +1,57 @@
+{
+  "name": "gaming",
+  "label": "Gaming",
+  "pack_version": "0.1.0",
+  "schema_version": "1.0",
+  "compatibility_version": "0.5.0",
+  "engine_version": ">=0.5.0",
+  "domain": "gaming",
+  "product": "Arcade / Empire-1",
+  "description": "AI game platform capability pack — NPC AI, quest engine, game economy, procedural generation",
+
+  "lifecycle": "scaffold",
+
+  "capabilities": [
+    {"name": "npc_ai",               "description": "NPC dialogue, behavior, personality, companion AI", "type": "agent"},
+    {"name": "quest_generation",     "description": "Quest creation, branching narratives, rewards", "type": "skill"},
+    {"name": "game_economy",         "description": "Virtual economy balancing, pricing, inflation models", "type": "skill"},
+    {"name": "procedural_generation","description": "Procedural level, asset, and content generation", "type": "skill"},
+    {"name": "multiplayer_orchestration", "description": "Lobby management, matchmaking, state sync", "type": "workflow"},
+    {"name": "asset_pipeline",       "description": "Asset import, optimization, versioning pipeline", "type": "workflow"}
+  ],
+
+  "dependencies": [
+    {"capability": "payments",         "optional": false},
+    {"capability": "analytics",        "optional": true},
+    {"capability": "creator-identity", "optional": true}
+  ],
+
+  "revenue_model": {
+    "primary": [
+      "Game platform subscriptions",
+      "Revenue sharing",
+      "Asset marketplace",
+      "Premium game features"
+    ],
+    "white_label": [
+      "White-label game engines for studios",
+      "Branded arcade platforms",
+      "Private-label gamification suites"
+    ]
+  },
+
+  "registry": {
+    "agents": 0,
+    "skills": 0,
+    "providers": 0,
+    "workflows": 0
+  },
+
+  "white_label": {
+    "layer": "product",
+    "scope": ["branding", "game-templates", "ui", "pricing", "domain"],
+    "excluded_from_core": ["templates", "reference-materials"]
+  },
+
+  "source": "Mapped from Empire-1 and arcade projects"
+}

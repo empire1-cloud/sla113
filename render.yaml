@@ -1,0 +1,129 @@
+# ============================================================
+# SLA113 Backend — Render deploy spec (DRAFT)
+# ============================================================
+# This file only PREPARES a Render Blueprint config. It does nothing on its
+# own — Render only acts on it once someone creates a Blueprint/service in
+# the Render dashboard pointed at this repo. No service exists yet, nothing
+# is deployed by merging this file.
+#
+# Modeled on Lyrica3-pro/render.yaml (same org, same pattern: Docker runtime
+# + MongoDB Atlas). This service has no heavy ML dependencies (no Demucs/
+# torch/whisper in backend/requirements.txt), so "starter" should be enough —
+# bump to "standard" if it turns out to need more than 512MB RAM in practice.
+#
+# ALL env vars below are declared as secrets with NO values (sync: false).
+# Every value gets pasted directly into the Render dashboard by Manda when
+# the service is created. Nothing here was read from, or will be written to,
+# any .env file or secret store.
+#
+# ⚠ DB_NAME: the code (backend/database/connection.py) has no default and
+# raises on startup if unset — it will accept whatever name is provided.
+# But the repo's own docs disagree with each other on what that name should
+# be: 8+ references (AGENTS.md, README.md, LOCAL_SETUP.md, deployment/*.md,
+# LYRICA3/docs/SETUP.md) consistently say `hybrid_intelligence`, while the
+# current local backend/.env has DB_NAME=sla113 instead. Neither matches
+# any of the three existing Atlas databases (empire / lyrica / southern).
+# Looking at the actual collections this service owns (users, teams,
+# team_memberships, sessions, team_invites, audit_logs, pipelines,
+# execution_logs, password_reset_tokens) it reads as its own self-contained
+# schema, not a natural fit inside empire/lyrica/southern's databases.
+# Manda should confirm the DB name before filling this in — do not guess.
+#
+# ⚠ PORT: the Dockerfile's CMD hardcodes `--port 8080` and the app does not
+# read a PORT env var, so PORT is set below as a plain (non-secret) value
+# matching that hardcoded port, so Render proxies to the right place.
+#
+# ⚠ Health check: /admin/health belongs to a *different* FastAPI app
+# (backend/admin_server.py) that this Dockerfile does not build or run.
+# The Dockerfile's CMD runs `server:app`, whose real health route is
+# /api/health (backend/server.py:139, mounted under the /api prefix at
+# server.py:48) — that's what's used below.
+
+services:
+  - type: web
+    name: sla113-backend
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: "8080"          # matches the Dockerfile's hardcoded --port 8080
+
+      # --- Database (see DB_NAME note above before filling in) ---
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        sync: false
+
+      # --- Auth / tokens ---
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: SLA113_TOKEN_SECRET
+        sync: false
+      - key: SLA113_OPERATOR_HANDLE
+        sync: false
+      - key: SLA113_OPERATOR_PASSWORD
+        sync: false
+
+      # --- CORS / origins ---
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+      # --- LLM / AI provider keys ---
+      - key: EMERGENT_LLM_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: VERTEX_AI_KEY
+        sync: false
+
+      # --- OAuth ---
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+      # --- Billing (Stripe) ---
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRO_PRICE_ID
+        sync: false
+      - key: STRIPE_ENTERPRISE_PRICE_ID
+        sync: false
+
+      # --- Email ---
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        sync: false
+
+      # --- App config ---
+      - key: APP_ENV
+        sync: false
+      - key: APP_VERSION
+        sync: false
+      - key: DEBUG
+        sync: false
+      - key: LOG_LEVEL
+        sync: false
+
+    healthCheckPath: /api/health
+    autoDeploy: false        # left off on purpose — Manda turns this on when ready

@@ -1,0 +1,818 @@
+# SLA113 MAXIMUM-CONTROL BUILD SPEC
+# Complete, fully populated SLA113 operating system configuration
+# Matches JSON Schema for Phase 6 deployment
+# Version: 1.0.0
+# Created: 2026-03-03
+
+---
+api_version: "1.0.0"
+kind: SLA113BuildSpec
+metadata:
+  build_id: "sla113-prod-2026-03"
+  version: "1.0.0"
+  created_at: "2026-03-03T14:41:00Z"
+  created_by: "Copilot-CLI"
+  notes: "Full maximum-control SLA113 OS configuration for multi-tenant commercial deployment"
+
+# =============================================================================
+# GLOBAL OS BEHAVIOR
+# =============================================================================
+
+orchestration_mode: "reactive"  # reactive | event-driven | schedule-driven | hybrid
+default_narrative_beat: "ambient"  # ambient | climactic | tutorial | endgame
+default_session_memory_mode: "stateful"  # stateless | stateful | ephemeral
+adaptive_difficulty_enabled: true
+identity_personalization_enabled: true
+economic_state_influence_enabled: true
+cinematic_weighting_default: 0.6  # 0.0 (mechanical) to 1.0 (cinematic)
+
+# =============================================================================
+# CANON LAYERS (Economic, Shell, Fault, Governance)
+# =============================================================================
+
+canon:
+  economic:
+    currency: "USD"
+    house_edge_base: 0.05  # 5% base house edge
+    rtp_minimum: 0.90  # 90% minimum return to player
+    rtp_maximum: 0.98  # 98% maximum RTP
+    betting_unit_minimum: 0.01
+    betting_unit_maximum: 500.00
+    session_buy_in_minimum: 10.00
+    session_buy_in_maximum: 10000.00
+    volatility_tiers:
+      low:
+        min: 0.0
+        max: 0.3
+        rtp_default: 0.96
+        narrative_beat: "ambient"
+      medium:
+        min: 0.3
+        max: 0.7
+        rtp_default: 0.95
+        narrative_beat: "climactic"
+      high:
+        min: 0.7
+        max: 1.0
+        rtp_default: 0.90
+        narrative_beat: "endgame"
+    loss_limit_per_session_pct: 0.50  # Player can lose max 50% of buy-in
+    win_ceiling_multiplier: 100.0  # Max payout 100x bet
+    frequency_of_win_events:
+      rate_per_session: 0.35  # ~35% sessions contain at least one win
+      average_between_wins_spins: 8
+
+  shell:
+    reel_count_standard: 5
+    payline_count_standard: 20
+    symbol_count_unique: 12
+    animation_frame_rate: 60
+    transition_speed_milliseconds: 400
+    audio_sample_rate: 48000
+    audio_bit_depth: 24
+    video_codec: "h264"
+    video_resolution_max: "1920x1080"
+
+  fault:
+    session_timeout_idle_minutes: 30
+    session_timeout_max_duration_hours: 8
+    max_consecutive_losses_before_warning: 10
+    max_consecutive_losses_before_halt: 25
+    network_latency_threshold_milliseconds: 500
+    rng_seed_rotation_every_spins: 1000
+    fault_detection_interval_seconds: 5
+
+  governance:
+    age_gate_minimum: 21
+    geofence_enabled: true
+    self_exclusion_enforcement: true
+    time_of_day_restrictions_enabled: true
+    restricted_hours_start: "03:00"  # 3 AM
+    restricted_hours_end: "06:00"  # 6 AM
+    max_players_per_machine: 1
+    max_concurrent_sessions_per_player: 1
+    session_activity_logging: true
+    payout_audit_frequency_hours: 1
+
+# =============================================================================
+# MACHINE PROFILES (Fish, Slots, Keno, Custom)
+# =============================================================================
+
+machine_profiles:
+  fish:
+    enabled: true
+    display_name: "Arcade Fish Game"
+    description: "Action-oriented arcade fishing game with instant payouts"
+    default_rtp: 0.94
+    default_volatility: 0.5
+    narrative_beat_primary: "climactic"
+    sessions_per_day_target: 100
+    revenue_contribution_pct: 0.15
+    player_skill_factor: 0.3  # 30% skill, 70% chance
+    payoff_structure:
+      catch_rates:
+        common: 0.70
+        uncommon: 0.25
+        rare: 0.04
+        epic: 0.01
+      multipliers:
+        common: 1.0
+        uncommon: 3.0
+        rare: 10.0
+        epic: 50.0
+
+  slots:
+    enabled: true
+    display_name: "Classic Slots"
+    description: "Traditional 5-reel, 20-payline slot games with bonus features"
+    default_rtp: 0.95
+    default_volatility: 0.6
+    narrative_beat_primary: "climactic"
+    sessions_per_day_target: 200
+    revenue_contribution_pct: 0.60
+    player_skill_factor: 0.0  # Pure chance
+    themes:
+      - "gold_rush"
+      - "ancient_egypt"
+      - "space_odyssey"
+      - "wild_west"
+    bonus_features:
+      free_spins_enabled: true
+      multiplier_bonus_enabled: true
+      progressive_jackpot_enabled: true
+      progressive_pool_contribution_pct: 0.02
+
+  keno:
+    enabled: true
+    display_name: "Keno"
+    description: "Fast-paced number selection game with instant results"
+    default_rtp: 0.93
+    default_volatility: 0.4
+    narrative_beat_primary: "ambient"
+    sessions_per_day_target: 150
+    revenue_contribution_pct: 0.15
+    player_skill_factor: 0.0  # Pure chance
+    max_numbers_selectable: 20
+    draw_frequency_seconds: 60
+    payout_table:
+      match_5: 1.0
+      match_10: 5.0
+      match_15: 20.0
+      match_20: 500.0
+
+  custom:
+    enabled: true
+    display_name: "Partner Custom Games"
+    description: "White-label games from partner studios"
+    default_rtp: 0.94
+    default_volatility: 0.5
+    narrative_beat_primary: "ambient"
+    sessions_per_day_target: 50
+    revenue_contribution_pct: 0.10
+    partner_revenue_split_pct: 0.30  # Partner takes 30%, operator 70%
+
+# =============================================================================
+# TENANTS (Multi-tenant configuration)
+# =============================================================================
+
+tenants:
+  - tenant_id: "tenant_casino_vegas"
+    display_name: "Downtown Vegas Casino"
+    theme_id: "theme_vegas_classic"
+    
+    identity:
+      brand_color_primary: "#FFD700"  # Gold
+      brand_color_accent: "#FF0000"  # Red
+      logo_url: "https://cdn.example.com/logos/vegas_casino.svg"
+      tagline: "Where Luck Meets Legend"
+    
+    machine_catalog:
+      fish: true
+      slots: true
+      keno: true
+      custom: false
+      default_machine_type: "slots"
+    
+    overrides:
+      rtp_override_pct: 0.95  # Override canon default
+      house_edge_override_pct: 0.05
+      session_timeout_minutes: 45  # Override 30-min default
+      max_concurrent_sessions: 2  # Allow 2 concurrent sessions
+      narrative_beat_override: "climactic"
+      volatility_default: 0.6
+    
+    revenue_routing:
+      account_id: "acct_vegas_main"
+      operator_pct: 0.70
+      platform_fee_pct: 0.05
+      partner_pct: 0.15
+      reserve_pct: 0.10
+    
+    regulatory_profile: "nevada_lvcc"
+    region: "us-west"
+    cluster_assignment: "us-west-1"
+    timezone: "America/Los_Angeles"
+    
+    theme_overrides:
+      machine_theme_slots: "gold_rush"
+      ui_language: "en-US"
+      audio_enabled: true
+      haptic_feedback_enabled: true
+
+  - tenant_id: "tenant_arcade_london"
+    display_name: "London Arcade Club"
+    theme_id: "theme_london_neon"
+    
+    identity:
+      brand_color_primary: "#00FFFF"  # Cyan
+      brand_color_accent: "#FF00FF"  # Magenta
+      logo_url: "https://cdn.example.com/logos/london_arcade.svg"
+      tagline: "High-Score Paradise"
+    
+    machine_catalog:
+      fish: true
+      slots: true
+      keno: false
+      custom: true
+      default_machine_type: "fish"
+    
+    overrides:
+      rtp_override_pct: 0.94
+      house_edge_override_pct: 0.06
+      session_timeout_minutes: 60
+      max_concurrent_sessions: 1
+      narrative_beat_override: "ambient"
+      volatility_default: 0.5
+    
+    revenue_routing:
+      account_id: "acct_london_main"
+      operator_pct: 0.75
+      platform_fee_pct: 0.05
+      partner_pct: 0.10
+      reserve_pct: 0.10
+    
+    regulatory_profile: "uk_gbga"
+    region: "eu-west"
+    cluster_assignment: "eu-west-1"
+    timezone: "Europe/London"
+    
+    theme_overrides:
+      machine_theme_slots: "space_odyssey"
+      ui_language: "en-GB"
+      audio_enabled: true
+      haptic_feedback_enabled: false
+
+  - tenant_id: "tenant_gaming_sydney"
+    display_name: "Sydney Gaming Hub"
+    theme_id: "theme_sydney_modern"
+    
+    identity:
+      brand_color_primary: "#FF6B35"  # Orange
+      brand_color_accent: "#004E89"  # Navy
+      logo_url: "https://cdn.example.com/logos/sydney_hub.svg"
+      tagline: "Aussie Gaming Excellence"
+    
+    machine_catalog:
+      fish: true
+      slots: true
+      keno: true
+      custom: true
+      default_machine_type: "slots"
+    
+    overrides:
+      rtp_override_pct: 0.96
+      house_edge_override_pct: 0.04
+      session_timeout_minutes: 50
+      max_concurrent_sessions: 1
+      narrative_beat_override: "climactic"
+      volatility_default: 0.5
+    
+    revenue_routing:
+      account_id: "acct_sydney_main"
+      operator_pct: 0.72
+      platform_fee_pct: 0.05
+      partner_pct: 0.13
+      reserve_pct: 0.10
+    
+    regulatory_profile: "australia_ilga"
+    region: "apac"
+    cluster_assignment: "apac-1"
+    timezone: "Australia/Sydney"
+    
+    theme_overrides:
+      machine_theme_slots: "wild_west"
+      ui_language: "en-AU"
+      audio_enabled: true
+      haptic_feedback_enabled: true
+
+  - tenant_id: "empire1"
+    display_name: "Empire One Corporate"
+    theme_id: "theme_empire_minimal"
+    identity:
+      brand_color_primary: "#000000"
+      brand_color_accent: "#FFFFFF"
+      tagline: "Sovereign Business Intelligence"
+    machine_catalog:
+      fish: false
+      slots: false
+      keno: false
+      custom: true
+    overrides:
+      session_timeout_minutes: 1440
+    revenue_routing:
+      account_id: "acct_empire_prime"
+      operator_pct: 0.95
+      platform_fee_pct: 0.05
+    regulatory_profile: "us_ca_high_compliance"
+    region: "us-west"
+    timezone: "America/Los_Angeles"
+
+  - tenant_id: "southern_lyfestyle"
+    display_name: "Southern Lyfestyle"
+    theme_id: "theme_southern_authentic"
+    identity:
+      brand_color_primary: "#D4AF37"
+      brand_color_accent: "#1A0B2E"
+      tagline: "The Southern Lyfestyle"
+    machine_catalog:
+      fish: true
+      slots: true
+      keno: true
+      custom: true
+    revenue_routing:
+      account_id: "acct_southern_main"
+      operator_pct: 0.85
+      platform_fee_pct: 0.05
+    regulatory_profile: "us_ca_high_compliance"
+    region: "us-west"
+    timezone: "America/Los_Angeles"
+
+  - tenant_id: "southern_lyfestyle_arcade"
+    display_name: "Arcade.Southern"
+    theme_id: "theme_sgv_arcade"
+    identity:
+      brand_color_primary: "#2D1B4E"
+      brand_color_accent: "#FFD700"
+      tagline: "Personal Side System"
+    machine_catalog:
+      fish: true
+      slots: true
+      keno: true
+      custom: true
+    overrides:
+      rtp_override_pct: 0.94
+      volatility_default: 0.7
+    revenue_routing:
+      account_id: "acct_southern_arcade"
+      operator_pct: 0.70
+      platform_fee_pct: 0.05
+    regulatory_profile: "nevada_lvcc"
+    region: "us-west"
+    timezone: "America/Los_Angeles"
+
+# =============================================================================
+# THEMES
+# =============================================================================
+
+themes:
+  theme_vegas_classic:
+    display_name: "Vegas Classic"
+    theme_file_path: "/themes/vegas_classic/index.json"
+    asset_base_url: "https://cdn.example.com/themes/vegas/"
+    color_scheme: "gold_red_black"
+    music_loop: "retro_jazz"
+  
+  theme_london_neon:
+    display_name: "London Neon"
+    theme_file_path: "/themes/london_neon/index.json"
+    asset_base_url: "https://cdn.example.com/themes/london/"
+    color_scheme: "cyan_magenta_black"
+    music_loop: "synthwave"
+  
+  theme_sydney_modern:
+    display_name: "Sydney Modern"
+    theme_file_path: "/themes/sydney_modern/index.json"
+    asset_base_url: "https://cdn.example.com/themes/sydney/"
+    color_scheme: "orange_navy_white"
+    music_loop: "electronic"
+
+# =============================================================================
+# ORCHESTRATION ENGINE
+# =============================================================================
+
+orchestration:
+  # Engine execution priority when multiple engines are eligible
+  engine_priority_order:
+    - "sla113_revenue_engine"  # Highest priority: revenue optimization
+    - "sla113_narrative_engine"  # Narrative coherence
+    - "sla113_adaptive_engine"  # Adaptive difficulty
+    - "sla113_identity_engine"  # Player personalization
+    - "sla113_governance_engine"  # Regulatory compliance (always last)
+  
+  # Conflict resolution: how to handle when engines disagree
+  conflict_resolution_matrix:
+    revenue_vs_narrative:
+      priority: "revenue"
+      fallback: "narrative"
+      weight_revenue: 0.7
+      weight_narrative: 0.3
+    
+    revenue_vs_adaptive:
+      priority: "revenue"
+      fallback: "adaptive"
+      weight_revenue: 0.6
+      weight_adaptive: 0.4
+    
+    revenue_vs_identity:
+      priority: "identity"
+      fallback: "revenue"
+      weight_identity: 0.55
+      weight_revenue: 0.45
+    
+    revenue_vs_governance:
+      priority: "governance"
+      fallback: "none"  # Never override governance
+      weight_governance: 1.0
+    
+    narrative_vs_adaptive:
+      priority: "narrative"
+      fallback: "adaptive"
+      weight_narrative: 0.6
+      weight_adaptive: 0.4
+    
+    narrative_vs_identity:
+      priority: "identity"
+      fallback: "narrative"
+      weight_identity: 0.6
+      weight_narrative: 0.4
+    
+    narrative_vs_governance:
+      priority: "governance"
+      fallback: "none"
+      weight_governance: 1.0
+    
+    adaptive_vs_identity:
+      priority: "adaptive"
+      fallback: "identity"
+      weight_adaptive: 0.55
+      weight_identity: 0.45
+    
+    adaptive_vs_governance:
+      priority: "governance"
+      fallback: "none"
+      weight_governance: 1.0
+    
+    identity_vs_governance:
+      priority: "governance"
+      fallback: "none"
+      weight_governance: 1.0
+  
+  # Temporal coherence: time-based state consistency
+  temporal_coherence:
+    session_state_ttl_seconds: 3600  # 1 hour
+    narrative_state_ttl_seconds: 86400  # 24 hours
+    player_profile_cache_ttl_seconds: 604800  # 7 days
+    engine_decision_audit_retention_days: 90
+  
+  # Cinematic weighting overrides per tenant
+  cinematic_weighting:
+    default: 0.6
+    high_volatility_boost: 0.15  # +0.15 for high volatility games
+    bonus_feature_multiplier: 1.5  # 1.5x during bonus rounds
+    late_session_boost: 0.1  # +0.1 in final 20% of session
+  
+  # Identity bias: how much to personalize
+  identity_bias:
+    player_preference_weight: 0.4
+    player_history_weight: 0.3
+    demographic_weight: 0.2
+    randomness_weight: 0.1
+  
+  # Economic bias: how much revenue influences decisions
+  economic_bias:
+    house_edge_priority_weight: 0.5
+    player_satisfaction_weight: 0.3
+    volatility_management_weight: 0.2
+
+# =============================================================================
+# DASHBOARD (Operator UI Configuration)
+# =============================================================================
+
+dashboard:
+  panels:
+    analytics:
+      enabled: true
+      name: "Real-Time Analytics"
+      description: "Live player activity, session metrics, revenue"
+      default_visible: true
+      widgets:
+        - "active_players_gauge"
+        - "revenue_ytd_chart"
+        - "machine_occupancy_map"
+        - "player_retention_metric"
+    
+    tenant_management:
+      enabled: true
+      name: "Tenant Management"
+      description: "Tenant configuration, theme management, overrides"
+      default_visible: true
+      widgets:
+        - "tenant_list"
+        - "theme_editor"
+        - "revenue_routing_config"
+        - "cluster_assignment"
+    
+    machine_catalog:
+      enabled: true
+      name: "Machine Catalog"
+      description: "Game library, machine configuration, deployment"
+      default_visible: true
+      widgets:
+        - "machine_type_selector"
+        - "rtp_configurator"
+        - "volatility_tuner"
+        - "theme_assignment"
+    
+    revenue:
+      enabled: true
+      name: "Revenue & Accounting"
+      description: "Revenue tracking, payouts, account reconciliation"
+      default_visible: true
+      widgets:
+        - "revenue_dashboard"
+        - "payout_audit_log"
+        - "account_reconciliation"
+        - "partner_settlement"
+    
+    regulatory:
+      enabled: true
+      name: "Compliance & Regulatory"
+      description: "Jurisdiction rules, audit trails, self-exclusion enforcement"
+      default_visible: true
+      widgets:
+        - "jurisdiction_rules"
+        - "audit_trail_viewer"
+        - "self_exclusion_list"
+        - "session_limits_monitor"
+    
+    narrative:
+      enabled: true
+      name: "Narrative Orchestration"
+      description: "Story beats, player journey, emotional state"
+      default_visible: false  # Advanced feature, hidden by default
+      widgets:
+        - "narrative_beat_timeline"
+        - "player_emotional_state"
+        - "story_arc_editor"
+        - "beat_effectiveness_metrics"
+  
+  # Permission sets: role-based access control
+  permissions:
+    operator_standard:
+      roles: ["operator", "manager"]
+      allowed_panels:
+        - "analytics"
+        - "machine_catalog"
+        - "revenue"
+      allowed_actions:
+        - "view_analytics"
+        - "view_machines"
+        - "view_revenue"
+        - "export_reports"
+    
+    operator_advanced:
+      roles: ["senior_operator", "director"]
+      allowed_panels:
+        - "analytics"
+        - "tenant_management"
+        - "machine_catalog"
+        - "revenue"
+        - "regulatory"
+      allowed_actions:
+        - "view_all"
+        - "edit_machine_config"
+        - "edit_tenant_config"
+        - "edit_revenue_routing"
+    
+    operator_executive:
+      roles: ["executive", "cfo"]
+      allowed_panels:
+        - "analytics"
+        - "revenue"
+        - "regulatory"
+      allowed_actions:
+        - "view_analytics"
+        - "view_revenue"
+        - "export_reports"
+        - "view_compliance"
+    
+    engineer_platform:
+      roles: ["platform_engineer", "sre"]
+      allowed_panels:
+        - "analytics"
+        - "narrative"
+      allowed_actions:
+        - "view_all"
+        - "debug_orchestration"
+        - "view_engine_logs"
+        - "adjust_weights"
+
+# =============================================================================
+# REGULATORY PROFILES (Jurisdiction-specific rules)
+# =============================================================================
+
+regulatory_profiles:
+  nevada_lvcc:
+    jurisdiction: "Nevada, USA (Las Vegas Convention & Visitors Authority)"
+    min_rtp: 0.90
+    max_rtp: 0.98
+    age_gate_minimum: 21
+    self_exclusion_required: true
+    payout_audit_frequency_hours: 1
+    session_time_limit_minutes: 480  # 8 hours max
+    betting_limits:
+      min_bet: 0.01
+      max_bet: 500.00
+    responsible_gaming:
+      loss_limit_per_session_pct: 0.50
+      loss_limit_weekly_pct: 0.30
+      session_break_frequency_minutes: 120  # Mandatory break every 2 hours
+    tax_rate_pct: 0.06  # 6% gaming tax
+  
+  uk_gbga:
+    jurisdiction: "United Kingdom (Gambling Commission)"
+    min_rtp: 0.85
+    max_rtp: 0.99
+    age_gate_minimum: 18
+    self_exclusion_required: true
+    payout_audit_frequency_hours: 4
+    session_time_limit_minutes: 300  # 5 hours max
+    betting_limits:
+      min_bet: 0.05
+      max_bet: 10.00
+    responsible_gaming:
+      loss_limit_per_session_pct: 0.40
+      loss_limit_daily_pct: 0.20
+      session_break_frequency_minutes: 60  # Mandatory break every 1 hour
+    tax_rate_pct: 0.12  # 12% remote gaming duty
+  
+  australia_ilga:
+    jurisdiction: "Australia (Illyarrie Gambling Authority)"
+    min_rtp: 0.87
+    max_rtp: 0.98
+    age_gate_minimum: 18
+    self_exclusion_required: true
+    payout_audit_frequency_hours: 2
+    session_time_limit_minutes: 360  # 6 hours max
+    betting_limits:
+      min_bet: 0.10
+      max_bet: 50.00
+    responsible_gaming:
+      loss_limit_per_session_pct: 0.45
+      loss_limit_weekly_pct: 0.25
+      session_break_frequency_minutes: 90  # Mandatory break every 1.5 hours
+    tax_rate_pct: 0.10  # 10% state gaming duty
+
+  us_ca_high_compliance:
+    jurisdiction: "California, USA (Bureau of Gambling Control — High Compliance)"
+    min_rtp: 0.92
+    max_rtp: 0.97
+    age_gate_minimum: 21
+    self_exclusion_required: true
+    payout_audit_frequency_hours: 1
+    session_time_limit_minutes: 360  # 6 hours max
+    betting_limits:
+      min_bet: 0.01
+      max_bet: 200.00
+    responsible_gaming:
+      loss_limit_per_session_pct: 0.30  # 30% of buy-in per session (strict)
+      loss_limit_daily_pct: 0.15        # 15% of balance per day
+      loss_limit_weekly_pct: 0.20
+      session_break_frequency_minutes: 60  # Mandatory break every 1 hour
+    tax_rate_pct: 0.08  # 8% state gaming tax
+
+# =============================================================================
+# CLUSTERS (Geographic Deployment)
+# =============================================================================
+
+clusters:
+  us_west_1:
+    region: "us-west"
+    description: "US West Coast (Las Vegas region)"
+    primary_datacenter: "us-west-2a"
+    replica_datacenters:
+      - "us-west-2b"
+      - "us-west-2c"
+    latency_slo_milliseconds: 50
+    availability_target_pct: 99.95
+    tenants:
+      - "tenant_casino_vegas"
+  
+  eu_west_1:
+    region: "eu-west"
+    description: "EU West (London region)"
+    primary_datacenter: "eu-west-1a"
+    replica_datacenters:
+      - "eu-west-1b"
+      - "eu-west-1c"
+    latency_slo_milliseconds: 50
+    availability_target_pct: 99.95
+    tenants:
+      - "tenant_arcade_london"
+  
+  apac_1:
+    region: "apac"
+    description: "Asia-Pacific (Sydney region)"
+    primary_datacenter: "ap-southeast-2a"
+    replica_datacenters:
+      - "ap-southeast-2b"
+      - "ap-southeast-2c"
+    latency_slo_milliseconds: 100  # Higher latency acceptable for APAC
+    availability_target_pct: 99.90
+    tenants:
+      - "tenant_gaming_sydney"
+
+# =============================================================================
+# ANTI-ADDICTION PROFILE
+# =============================================================================
+
+anti_addiction_profile:
+  session_limits:
+    absolute_max_session_duration_hours: 8
+    recommended_session_duration_minutes: 60
+    mandatory_break_frequency_minutes: 60
+    mandatory_break_duration_minutes: 15
+  
+  loss_limits:
+    daily_loss_limit_pct: 0.20  # Limit daily losses to 20% of balance
+    weekly_loss_limit_pct: 0.25
+    monthly_loss_limit_pct: 0.30
+    loss_limit_enforcement: "hard"  # hard | warning | disabled
+  
+  deposit_limits:
+    daily_deposit_limit: 500.00
+    weekly_deposit_limit: 2000.00
+    monthly_deposit_limit: 5000.00
+    deposit_limit_enforcement: "soft"  # soft=warning, hard=block
+  
+  self_exclusion:
+    enabled: true
+    minimum_exclusion_period_days: 7
+    maximum_exclusion_period_days: 5475  # ~15 years
+    cool_off_minimum_hours: 24  # 24-hour cool-off period
+  
+  player_activity_monitoring:
+    monitor_consecutive_play_sessions: true
+    alert_after_consecutive_sessions: 5
+    alert_after_total_daily_minutes: 480  # 8 hours
+    alert_after_daily_losses_pct: 0.15
+    alert_notification_method: "email"
+
+# =============================================================================
+# DEPLOYMENT METADATA
+# =============================================================================
+
+deployment:
+  environment: "production"
+  rollout_strategy: "canary"  # canary | blue-green | rolling
+  canary_percentage: 10  # 10% of traffic to new build
+  health_check_enabled: true
+  health_check_interval_seconds: 30
+  graceful_shutdown_timeout_seconds: 30
+  log_level: "info"  # debug | info | warn | error
+  metrics_enabled: true
+  tracing_enabled: true
+  profiling_enabled: false
+
+# =============================================================================
+# NOTES & REFERENCES
+# =============================================================================
+
+notes: |
+  This is the MAXIMUM-CONTROL SLA113 Build Spec for Phase 6 deployment.
+  
+  Key Features:
+  - 3 multi-tenant deployments (Vegas, London, Sydney)
+  - 4 machine profiles (Fish, Slots, Keno, Custom)
+  - Full orchestration engine with conflict resolution matrix
+  - Role-based dashboard permissions
+  - Jurisdiction-specific regulatory profiles (Nevada, UK, Australia)
+  - Geographic clusters with SLO targets
+  - Complete revenue routing model
+  
+  Deployment Path:
+  1. Validate this spec against SLA113 schema
+  2. Generate operator onboarding guide
+  3. Deploy to staging
+  4. Execute Phase 5 smoke tests (adapted for SLA113)
+  5. Deploy to production via canary rollout (10% → 100%)
+  
+  This spec fully implements:
+  - Sovereign OS-level control
+  - Multi-tenant isolation
+  - Adaptive narrative orchestration
+  - Economic fairness with configurable house edge
+  - Regulatory compliance across jurisdictions
+  - Operator UI with permission-based access
+  - Real-time analytics dashboard
+  - Comprehensive audit trails

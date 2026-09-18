@@ -6,6 +6,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
+COPY LYRICA3/ ./LYRICA3/
 
 # Create emergentintegrations symlink
 RUN ln -s /app/emergentintegrations_local_backup /app/emergentintegrations

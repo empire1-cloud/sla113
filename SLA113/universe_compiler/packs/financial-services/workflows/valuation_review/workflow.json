@@ -1,0 +1,14 @@
+{
+  "name": "valuation_review",
+  "description": "Quarterly valuation review: GP packages → analysis → LP reporting",
+  "agents": ["valuation_reviewer"],
+  "skills": ["portfolio_monitoring", "returns_analysis", "ic_memo"],
+  "providers": ["chronograph", "capiq"],
+  "steps": [
+    {"step": 1, "action": "Ingest GP valuation packages"},
+    {"step": 2, "skill": "returns_analysis", "action": "Run valuation methodology and waterfall"},
+    {"step": 3, "skill": "portfolio_monitoring", "action": "Update portfolio company profiles"},
+    {"step": 4, "skill": "ic_memo", "action": "Draft LP reporting pack"}
+  ],
+  "trigger": "Quarter-end valuation cycle"
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/workflow.json",
+  "title": "Workflow",
+  "description": "A workflow is a reusable DAG of capability nodes. Registered workflows can be invoked by any approved consumer.",
+  "type": "object",
+  "required": ["id", "name", "description", "version", "nodes", "edges"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique workflow identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "description": {"type": "string"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "lifecycle": {"type": "string", "enum": ["scaffold", "development", "active", "deprecated"]},
+    "owner": {"type": "string", "description": "Universe or team that owns this workflow"},
+    "nodes": {
+      "type": "array",
+      "description": "Execution nodes in this workflow",
+      "items": {
+        "type": "object",
+        "required": ["id", "capability", "inputs", "outputs"],
+        "properties": {
+          "id": {"type": "string"},
+          "capability": {"type": "string", "description": "Capability ID this node requires"},
+          "inputs": {"type": "object", "description": "Input parameter schema"},
+          "outputs": {"type": "object", "description": "Output parameter schema"},
+          "config": {"type": "object", "description": "Node-specific configuration"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "description": "Directed connections between nodes",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "map"],
+        "properties": {
+          "from": {"type": "string", "description": "Source node id"},
+          "to": {"type": "string", "description": "Target node id"},
+          "map": {"type": "object", "description": "Output-to-input field mapping"}
+        }
+      }
+    },
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}

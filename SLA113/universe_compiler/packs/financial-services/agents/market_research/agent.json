@@ -1,0 +1,25 @@
+{
+  "name": "market-researcher",
+  "version": "0.1.1",
+  "domain": "equity-research",
+  "description": "Sector or theme to industry overview, competitive landscape, peer comps, and ideas shortlist.",
+  "model": "claude-opus-4-7",
+  "security_tier": {
+    "orchestrator": "read+grep+glob+mcp",
+    "subagents": {
+      "sector_reader": "read+grep only, mcp, no write",
+      "comps_spreader": "bash sandboxed + mcp",
+      "note_writer": "write only, no mcp"
+    }
+  },
+  "tools": ["read", "grep", "glob", "mcp__capiq__*"],
+  "workflow": [
+    {"step": 1, "name": "scope_sector", "action": "Confirm sector/theme and scope."},
+    {"step": 2, "name": "industry_overview", "skill": "sector_overview", "action": "Industry structure, value chain, market sizing."},
+    {"step": 3, "name": "competitive_landscape", "skill": "competitive_analysis", "action": "Positioning map, market share, differentiation."},
+    {"step": 4, "name": "spread_comps", "skill": "comps", "action": "Peer comps with trading multiples and operating metrics."},
+    {"step": 5, "name": "ideas_shortlist", "skill": "idea_generation", "action": "Ranked investment ideas with thesis summary."}
+  ],
+  "guardrails": ["Cite every data point to provider or filing", "Flag estimates vs sourced data"],
+  "source": "Anthropic financial-services reference architecture"
+}

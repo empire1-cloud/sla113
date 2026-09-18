@@ -1,0 +1,10 @@
+{
+  "name": "lseg",
+  "type": "mcp",
+  "domain": "fixed-income-analytics",
+  "description": "LSEG — bond pricing, FX, derivatives, yield curves, quantitative analytics",
+  "connection": {"url": "https://api.analytics.lseg.com/lfa/mcp", "auth": "api-key"},
+  "capabilities": ["bond_pricing", "fx_pricing", "curves", "swaps", "options", "volatility", "quant_analytics", "time_series"],
+  "status": "active",
+  "partner": "LSEG"
+}

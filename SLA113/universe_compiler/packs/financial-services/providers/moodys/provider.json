@@ -1,0 +1,9 @@
+{
+  "name": "moodys",
+  "type": "mcp",
+  "domain": "credit-ratings",
+  "description": "Credit ratings, credit research, credit analytics",
+  "connection": {"url": "https://api.moodys.com/genai-ready-data/m1/mcp", "auth": "api-key"},
+  "capabilities": ["credit_ratings", "credit_research", "default_analytics"],
+  "status": "active"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "kyc_onboarding",
+  "description": "New client onboarding: document collection → KYC screening → approval/routing",
+  "agents": ["kyc_screener"],
+  "skills": ["kyc_doc_parse", "kyc_rules"],
+  "steps": [
+    {"step": 1, "action": "Collect onboarding documents"},
+    {"step": 2, "skill": "kyc_doc_parse", "action": "Extract and structure document fields"},
+    {"step": 3, "skill": "kyc_rules", "action": "Run KYC/AML rules engine and sanctions screening"},
+    {"step": 4, "action": "Escalate gaps or approve and route for account opening"}
+  ],
+  "trigger": "New client onboarding request"
+}

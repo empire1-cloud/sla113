@@ -1,0 +1,13 @@
+{
+  "name": "statement_audit",
+  "description": "LP statement audit pre-distribution: ingest → NAV tie-out → pass/hold",
+  "agents": ["statement_auditor"],
+  "skills": ["nav_tieout", "audit_xls"],
+  "steps": [
+    {"step": 1, "action": "Ingest LP statements and fund-level data"},
+    {"step": 2, "skill": "nav_tieout", "action": "Tie LP NAV to fund NAV"},
+    {"step": 3, "action": "Flag exceptions and consistency issues"},
+    {"step": 4, "action": "Generate pass/hold recommendation"}
+  ],
+  "trigger": "LP statement generation before distribution"
+}

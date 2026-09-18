@@ -1,0 +1,15 @@
+{
+  "name": "earnings_cycle",
+  "description": "Earnings season workflow: preview → transcript → model update → note publish",
+  "agents": ["earnings_reviewer", "market_research"],
+  "skills": ["earnings_preview", "earnings_analysis", "model_update", "morning_note"],
+  "providers": ["aiera", "capiq", "factset"],
+  "steps": [
+    {"step": 1, "skill": "earnings_preview", "action": "Pre-earnings preview with consensus expectations"},
+    {"step": 2, "provider": "aiera", "action": "Ingest earnings call transcript"},
+    {"step": 3, "skill": "earnings_analysis", "action": "Analyze results vs consensus"},
+    {"step": 4, "skill": "model_update", "action": "Update financial model"},
+    {"step": 5, "skill": "morning_note", "action": "Draft and publish earnings note"}
+  ],
+  "trigger": "Company earnings date"
+}

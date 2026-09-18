@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "name": "SLA113 Southern Aztec-Chicano Engine",
+    "description": "High-fidelity generation of cultural narratives, Paño Arte, and Varrio Realism."
+  },
+  "inputs": {
+    "prompt": {
+      "type": "string",
+      "required": true,
+      "placeholder": "Describe the memory or concept (e.g., 'Lowrider on Whittier Blvd at sunset')."
+    },
+    "style": {
+      "type": "string",
+      "required": false,
+      "default": "Canon Sunset",
+      "enum": [
+        "Canon Sunset",
+        "Lowrider Glow",
+        "Aztec Sacred",
+        "Paño Arte", 
+        "Varrio Real",
+        "Chicano Love"
+      ],
+      "description": "Visual grading and aesthetic overlay."
+    },
+    "emotion": {
+      "type": "string",
+      "required": false,
+      "default": "pride",
+      "enum": ["pride", "loyalty", "memory", "resilience", "faith"]
+    },
+    "voice": {
+      "type": "string",
+      "required": false,
+      "default": "Smooth Narrator",
+      "enum": ["Smooth Narrator", "Old School Echo", "The Poet", "Realist"]
+    }
+  },
+  "steps": [
+    {
+      "id": "cultural_interpreter",
+      "system_prompt": "You are the 'Cultural Interpreter' for the SLA113 Southern California Aztec-Chicano universe. Your goal is to ground every output in the specific visual and emotional canon of the SGV and IE sectors. If style is 'Paño Arte', emphasize ballpoint pen textures on white cotton fabric, ink bleeding, and classic handkerchief motifs (hourglasses, roses, Virgen de Guadalupe, lowriders) with hand-drawn Chicano realism."
+    }
+  ]
+}

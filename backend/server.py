@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -16,6 +16,18 @@ load_dotenv(ROOT_DIR / '.env')
 
 # Import database connection
 from database import connect_to_database, close_database_connection, get_database
+from economic_truth import EconomicTruthService, MongoEconomicTruthStore, signer_from_environment
+from economic_truth.router import create_economic_truth_router
+
+_economic_truth_service = None
+
+def get_economic_truth_service():
+    if _economic_truth_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Economic Truth runtime is disabled or key custody is not configured",
+        )
+    return _economic_truth_service
 from routers.sla113 import seed_default_pipelines, seed_default_lobbies, start_worker, stop_worker
 from routers.empire1 import router as empire1_router, seed_ecosystem
 
@@ -23,8 +35,18 @@ from routers.empire1 import router as empire1_router, seed_ecosystem
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Connect to database
+    global _economic_truth_service
     await connect_to_database()
     logging.info("Database connected on startup")
+    if os.environ.get("ECONOMIC_TRUTH_ENABLED", "false").lower() == "true":
+        _economic_truth_service = EconomicTruthService(
+            MongoEconomicTruthStore(get_database()),
+            signer_from_environment(),
+        )
+        await _economic_truth_service.initialize()
+        logging.info("Economic Truth Boundary and Receipt Graph initialized")
+    else:
+        logging.warning("Economic Truth Boundary disabled; all write endpoints fail closed")
     await seed_default_pipelines()
     await seed_default_lobbies()
     await seed_ecosystem()
@@ -92,6 +114,7 @@ api_router.include_router(billing_router)  # Billing endpoints
 api_router.include_router(api_keys_router)  # API key management
 api_router.include_router(admin_router)  # Admin endpoints (system admin only)
 api_router.include_router(system_router)  # System status endpoints
+api_router.include_router(create_economic_truth_router(get_economic_truth_service))
 
 # Include protected routers (require auth)
 api_router.include_router(history_protected_router)  # /api/history (protected)

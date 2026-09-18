@@ -1,0 +1,29 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/universe.json",
+  "title": "Universe",
+  "description": "A universe is an independent business operating on the SLA113 platform.",
+  "type": "object",
+  "required": ["id", "name", "domain", "mission", "products", "capabilities", "lifecycle"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique universe identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "domain": {"type": "string", "description": "Primary domain"},
+    "mission": {"type": "string", "description": "One-line mission statement"},
+    "products": {
+      "type": "array",
+      "description": "Products in this universe",
+      "items": {"type": "string"}
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Capability packs this universe consumes",
+      "items": {"type": "string"}
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["scaffold", "development", "active", "deprecated"]
+    },
+    "repo": {"type": "string", "description": "Primary repository path"},
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}

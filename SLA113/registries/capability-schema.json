@@ -1,0 +1,19 @@
+{
+  "$schema": "https://sla113.southernlifestyle.org/schemas/capability.json",
+  "title": "Capability",
+  "description": "A capability is something the platform can do (Audio, Payments, AI, Identity, etc.). Workflows request capabilities; the Execution Engine resolves them to services.",
+  "type": "object",
+  "required": ["id", "name", "description", "lifecycle"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique capability identifier"},
+    "name": {"type": "string", "description": "Display name"},
+    "description": {"type": "string"},
+    "lifecycle": {"type": "string", "enum": ["scaffold", "development", "active", "deprecated"]},
+    "services": {
+      "type": "array",
+      "description": "Service IDs that implement this capability",
+      "items": {"type": "string"}
+    },
+    "registered_at": {"type": "string", "format": "date-time"}
+  }
+}
