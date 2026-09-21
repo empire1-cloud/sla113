@@ -37,4 +37,9 @@ jobs:
           assert '/api/health' in paths, sorted(paths)
           print('server:app import OK')
           print('/api/health route OK')
+          assert '/api/sla113/genesis/generate' in paths, 'Genesis router not mounted'
+          print('/api/sla113/genesis route OK')
           PY
+
+      - name: Genesis Engine tests (no DB, no network, no LLM)
+        run: python -m pytest tests/test_sla113_genesis.py -q
