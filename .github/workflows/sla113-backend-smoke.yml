@@ -42,4 +42,7 @@ jobs:
           PY
 
       - name: Genesis Engine tests (no DB, no network, no LLM)
+        # Runs even if the server import above fails: that step has failed on every
+        # run so far (missing emergentintegrations), and Genesis does not depend on it.
+        if: ${{ !cancelled() }}
         run: python -m pytest tests/test_sla113_genesis.py -q
