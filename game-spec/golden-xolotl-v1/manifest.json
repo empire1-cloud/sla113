@@ -1,0 +1,157 @@
+{
+  "schema": "genesis.game.v1",
+  "game": {
+    "id": "sla113_golden_xolotl_v1",
+    "title": "Golden Xolotl: Southern Hunt",
+    "version": "1.0.0",
+    "genre": "fish_shooter",
+    "runtime": "react_canvas",
+    "platform": "browser",
+    "orientation": "landscape"
+  },
+  "identity": {
+    "world": "Aztlán Delta",
+    "theme": [
+      "Southern lifestyle",
+      "original Mesoamerican-inspired fantasy"
+    ],
+    "boss": "Golden Xolotl"
+  },
+  "loop": [
+    "aim",
+    "fire",
+    "hit",
+    "reward",
+    "combo",
+    "special",
+    "wave",
+    "boss",
+    "repeat"
+  ],
+  "economy": {
+    "currency": "arcade_credit",
+    "cash_value": false,
+    "starting_credits": 2500,
+    "shot_costs": [
+      1,
+      2,
+      3,
+      5,
+      10
+    ]
+  },
+  "creatures": [
+    [
+      "delta_minnow",
+      1,
+      1
+    ],
+    [
+      "sunscale",
+      2,
+      2
+    ],
+    [
+      "blue_gar",
+      3,
+      3
+    ],
+    [
+      "cypress_ray",
+      4,
+      4
+    ],
+    [
+      "obsidian_catfish",
+      6,
+      7
+    ],
+    [
+      "golden_carp",
+      8,
+      9
+    ],
+    [
+      "jaguar_gar",
+      10,
+      12
+    ],
+    [
+      "feather_eel",
+      12,
+      15
+    ],
+    [
+      "sun_serpent",
+      25,
+      30
+    ],
+    [
+      "storm_turtle",
+      35,
+      45
+    ],
+    [
+      "celestial_ray",
+      45,
+      60
+    ]
+  ],
+  "boss": {
+    "id": "golden_xolotl",
+    "max_hp": 5000,
+    "reward_base": 1250,
+    "phases": 4
+  },
+  "combo": {
+    "window_ms": 3000,
+    "multipliers": [
+      [
+        "0",
+        1
+      ],
+      [
+        "3",
+        1.1
+      ],
+      [
+        "6",
+        1.2
+      ],
+      [
+        "10",
+        1.35
+      ],
+      [
+        "15",
+        1.5
+      ],
+      [
+        "25",
+        1.75
+      ]
+    ]
+  },
+  "reward_formula": "floor(base_value * wave_multiplier * combo_multiplier)",
+  "wave": {
+    "boss_wave": 10,
+    "threshold_formula": "8 + wave * 2 defeats"
+  },
+  "specials": {
+    "xolotl_fury": {
+      "meter_max": 100,
+      "creature_damage": 12,
+      "boss_damage": 150
+    }
+  },
+  "provenance": {
+    "assets": "original_canvas_rendering",
+    "proprietary_cloning": false
+  },
+  "deployment": {
+    "route": "/arcade",
+    "entry": "Golden Xolotl: Southern Hunt",
+    "renderer": "Canvas2D",
+    "target_fps": 60
+  }
+}
