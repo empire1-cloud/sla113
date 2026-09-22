@@ -222,7 +222,7 @@ export default function GoldenXolotlGame({ onExit }) {
     });
 
     const update = (dt) => {
-      if (!s.running || paused) return;
+      if (!s.running || pausedRef.current) return;
       s.elapsed += dt;
       s.hudClock += dt;
       s.shotClock = Math.max(0, s.shotClock - dt * 1000);
