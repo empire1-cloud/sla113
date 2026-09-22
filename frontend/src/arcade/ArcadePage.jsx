@@ -224,7 +224,7 @@ function LoadingScreen() {
 }
 
 function GameView({ game, onExit, fullscreen, onToggleFS, balance }) {
-  if (game.local && game.slug === 'golden_xolotl') return <div className="fixed inset-0 bg-black z-50" data-testid="golden-xolotl-game"><GoldenXolotlGame /></div>;
+  if (game.local && game.slug === 'golden_xolotl') return <div className="fixed inset-0 bg-black z-50" data-testid="golden-xolotl-game"><GoldenXolotlGame onExit={onExit} /></div>;
   return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col" data-testid="arcade-game-view">
       <header className="shrink-0 flex items-center justify-between px-3 md:px-5 py-2 bg-black/90 border-b border-[#d4af3744]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
