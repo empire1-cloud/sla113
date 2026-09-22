@@ -80,7 +80,7 @@ function makeBoss() {
   };
 }
 
-export default function GoldenXolotlGame() {
+export default function GoldenXolotlGame({ onExit }) {
   const canvasRef = useRef(null);
   const frameRef = useRef(0);
   const stateRef = useRef(null);
@@ -468,6 +468,9 @@ export default function GoldenXolotlGame() {
 
   return (
     <div className="relative w-full h-full bg-black overflow-hidden select-none">
+      <button onClick={onExit} className="absolute top-3 left-3 z-30 px-3 py-2 bg-black/80 border border-zinc-700 text-zinc-300 hover:border-[#d4af37] hover:text-[#d4af37] text-[9px] uppercase tracking-widest">
+        ← Lobby
+      </button>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-contain cursor-crosshair touch-none"
@@ -507,6 +510,10 @@ export default function GoldenXolotlGame() {
         <button onClick={() => setPaused((p) => !p)} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-black/80 border border-zinc-700 text-zinc-300 hover:border-[#d4af37]"> {paused ? "Resume" : "Pause"} </button>
         <button onClick={upgrade} disabled={hud.cannon >= 5} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-black/80 border border-[#d4af37]/50 text-[#d4af37] disabled:opacity-40">Upgrade</button>
         <button onClick={fury} disabled={hud.fury < 100} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-[#d4af37]/10 border border-[#d4af37] text-[#ffe9a0] disabled:opacity-35">Xolotl Fury</button>
+      </div>
+      <div className="absolute top-3 right-3 text-right pointer-events-none">
+        <div className="text-[8px] uppercase tracking-[2px] text-zinc-600">DEMO ECONOMY</div>
+        <div className="text-[7px] uppercase tracking-[2px] text-zinc-700">Virtual credits only</div>
       </div>
       <div className="absolute top-3 left-1/2 -translate-x-1/2 text-center pointer-events-none">
         <div className="text-[9px] uppercase tracking-[5px] text-[#d4af37]">SLA113 · SOUTHERN HUNT</div>
