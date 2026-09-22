@@ -88,6 +88,7 @@ export default function GoldenXolotlGame({ onExit }) {
     score: 0, wave: 1, combo: 0, credits: 2500, fury: 0, cannon: 1, boss: false, bossHp: 5000,
   });
   const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -112,6 +113,7 @@ export default function GoldenXolotlGame({ onExit }) {
       floats: [],
       boss: null,
       waveKills: 0,
+      hudClock: 0,
       totalKills: 0,
       spawnClock: 0,
       shotClock: 0,
@@ -150,7 +152,7 @@ export default function GoldenXolotlGame({ onExit }) {
       fire();
     };
     const fire = () => {
-      if (!s.running || paused) return;
+      if (!s.running || pausedRef.current) return;
       const weapon = WEAPONS[s.cannon - 1];
       if (s.credits < weapon.cost) return;
       s.credits -= weapon.cost;
@@ -222,6 +224,7 @@ export default function GoldenXolotlGame({ onExit }) {
     const update = (dt) => {
       if (!s.running || paused) return;
       s.elapsed += dt;
+      s.hudClock += dt;
       s.shotClock = Math.max(0, s.shotClock - dt * 1000);
       s.shake *= Math.pow(0.04, dt);
       if (s.combo && s.elapsed > s.comboUntil) s.combo = 0;
@@ -301,7 +304,7 @@ export default function GoldenXolotlGame({ onExit }) {
       s.particles = s.particles.filter((p) => p.life > 0);
       for (const f of s.floats) { f.life -= dt; f.y -= 35 * dt; }
       s.floats = s.floats.filter((f) => f.life > 0);
-      updateHud();
+      if (s.hudClock >= 0.1) { s.hudClock = 0; updateHud(); }
     };
 
     const drawBackground = () => {
@@ -443,7 +446,7 @@ export default function GoldenXolotlGame({ onExit }) {
       canvas.removeEventListener("mousedown", shoot);
       canvas.removeEventListener("touchmove", touch);
     };
-  }, [paused]);
+  }, []);
 
   const upgrade = () => {
     const s = stateRef.current;
@@ -454,6 +457,11 @@ export default function GoldenXolotlGame({ onExit }) {
       s.cannon += 1;
       setHud((h) => ({ ...h, credits: s.credits, cannon: s.cannon }));
     }
+  };
+
+  const togglePause = () => {
+    pausedRef.current = !pausedRef.current;
+    setPaused(pausedRef.current);
   };
 
   const fury = () => {
@@ -507,7 +515,7 @@ export default function GoldenXolotlGame({ onExit }) {
         </div>
       </div>
       <div className="absolute bottom-3 right-3 flex gap-2">
-        <button onClick={() => setPaused((p) => !p)} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-black/80 border border-zinc-700 text-zinc-300 hover:border-[#d4af37]"> {paused ? "Resume" : "Pause"} </button>
+        <button onClick={togglePause} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-black/80 border border-zinc-700 text-zinc-300 hover:border-[#d4af37]"> {paused ? "Resume" : "Pause"} </button>
         <button onClick={upgrade} disabled={hud.cannon >= 5} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-black/80 border border-[#d4af37]/50 text-[#d4af37] disabled:opacity-40">Upgrade</button>
         <button onClick={fury} disabled={hud.fury < 100} className="px-3 py-2 text-[9px] uppercase tracking-widest bg-[#d4af37]/10 border border-[#d4af37] text-[#ffe9a0] disabled:opacity-35">Xolotl Fury</button>
       </div>
