@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Play, Maximize, Minimize, Wallet, Crown, Gamepad2, Home, Volume2, VolumeX } from 'lucide-react';
+import GoldenXolotlGame from './GoldenXolotlGame';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/sla113`;
 const PROXY = (u) => u?.includes('customer-assets') || u?.includes('emergentagent')
@@ -43,7 +44,8 @@ export default function ArcadePage() {
   const load = useCallback(async () => {
     try {
       const [lRes, sRes] = await Promise.all([axios.get(`${API}/lobbies`), axios.get(`${API}/sprites`)]);
-      setLobbies(lRes.data.lobbies || []);
+      const canonical = { id: 'GOLDEN-XOLOTL', slug: 'golden_xolotl', name: 'Golden Xolotl: Southern Hunt', game_type: 'fish_shooting', main_boss_sprite: 'golden_xolotl', theme_color: '#d4af37', description: 'Original Southern/Aztec fish-shooting arcade. Hunt the Delta, build Fury, awaken the Golden Xolotl.', jackpot_tier: 'GRAND', base_bet: 0, local: true };
+      setLobbies([canonical, ...(lRes.data.lobbies || []).filter(l => l.slug !== 'golden_xolotl')]);
       setSprites(sRes.data.sprites || []);
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -55,6 +57,11 @@ export default function ArcadePage() {
     setDeploying(lobby.id);
     logEvent('game_open', { lobby: lobby.name });
     try {
+      if (lobby.local) {
+        setActive({ ...lobby, url: null });
+        setDeploying(null);
+        return;
+      }
       const res = await axios.post(`${API}/lobbies/${lobby.id}/deploy`);
       const url = `${process.env.REACT_APP_BACKEND_URL}${res.data.preview_url}`;
       setActive({ ...lobby, url });
@@ -217,6 +224,7 @@ function LoadingScreen() {
 }
 
 function GameView({ game, onExit, fullscreen, onToggleFS, balance }) {
+  if (game.local && game.slug === 'golden_xolotl') return <div className="fixed inset-0 bg-black z-50" data-testid="golden-xolotl-game"><GoldenXolotlGame /></div>;
   return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col" data-testid="arcade-game-view">
       <header className="shrink-0 flex items-center justify-between px-3 md:px-5 py-2 bg-black/90 border-b border-[#d4af3744]" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
