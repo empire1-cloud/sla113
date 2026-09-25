@@ -37,4 +37,12 @@ jobs:
           assert '/api/health' in paths, sorted(paths)
           print('server:app import OK')
           print('/api/health route OK')
+          assert '/api/sla113/genesis/generate' in paths, 'Genesis router not mounted'
+          print('/api/sla113/genesis route OK')
           PY
+
+      - name: Genesis Engine tests (no DB, no network, no LLM)
+        # Runs even if the server import above fails: that step has failed on every
+        # run so far (missing emergentintegrations), and Genesis does not depend on it.
+        if: ${{ !cancelled() }}
+        run: python -m pytest tests/test_sla113_genesis.py -q
