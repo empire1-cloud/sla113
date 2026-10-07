@@ -125,7 +125,7 @@ export default function PiedraDelSolSlots() {
   } else if (result) message = 'Otra vez — spin again';
 
   return (
-    <ArcadeChrome title="PIEDRA DEL SOL" subtitle="Aztlán Arcade · Reels">
+    <ArcadeChrome title="PIEDRA DEL SOL" subtitle="Southern Lifestyle Arcade · Reels">
       <style>{CSS}</style>
       <div className="pds-cab" style={{ '--cell': `${cell}px` }}>
         <div className="pds-marquee">

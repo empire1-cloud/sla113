@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getCacao, subscribeCacao, refillCacao, REFILL_FLOOR } from './arcadeWallet';
 import { isMuted, setMuted } from './arcadeSfx';
 
-/** Shared Aztlán Arcade palette: obsidian, jade, gold, chile red, rosa mexicano. */
+/** Shared Southern Lifestyle Arcade palette: obsidian, jade, gold, chile red, rosa mexicano. */
 export const ARCADE_CSS = `
 .aztlan{--obsidian:#0b0806;--night:#140d1f;--jade:#1fb5a3;--gold:#f2b632;--gold-hi:#ffd86b;--chile:#d7263d;--rosa:#e4007c;--marigold:#ff9f1c;--bone:#f6ead0;--dim:#8a7d66;
   min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#3a1430 0%,#140d1f 45%,#0b0806 100%);color:var(--bone);
@@ -57,7 +57,7 @@ export default function ArcadeChrome({ title, subtitle, children }) {
         <div className="az-top">
           <Link to="/sla113/arcade" className="az-brand">
             <span style={{ fontSize: 30 }}>☀️</span>
-            <span><b>{title || 'AZTLÁN ARCADE'}</b><small>{subtitle || 'Fish · Spin · Ride'}</small></span>
+            <span><b>{title || 'SOUTHERN LIFESTYLE ARCADE'}</b><small>{subtitle || 'Fish · Spin · Ride'}</small></span>
           </Link>
           <div className="az-wallet">
             <div className="az-cacao" title="Cacao — virtual play credits, no cash value">

@@ -591,7 +591,7 @@ export default function LowriderRally() {
   const canStart = hud.phase === 'grid' || hud.phase === 'done';
 
   return (
-    <ArcadeChrome title="LOWRIDER RALLY" subtitle="Aztlán Arcade · Calzada del Sol">
+    <ArcadeChrome title="LOWRIDER RALLY" subtitle="Southern Lifestyle Arcade · Calzada del Sol">
       <style>{`
         .lr-hud{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
         .lr-hud div{flex:1;min-width:90px;background:#0b0806cc;border:1px solid #f2b63244;border-radius:10px;padding:8px 12px}

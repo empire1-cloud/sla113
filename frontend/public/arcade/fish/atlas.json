@@ -1,0 +1,70 @@
+{
+  "background": {
+    "src": "/arcade/fish/bg_mictlan.webp",
+    "width": 828,
+    "height": 1233
+  },
+  "bosses": {
+    "rooster": {
+      "src": "/arcade/fish/boss_rooster.webp",
+      "frameW": 256,
+      "frameH": 256,
+      "frames": 8,
+      "clips": {
+        "idle": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "hit": [
+          6,
+          7
+        ]
+      }
+    },
+    "xolotl": {
+      "src": "/arcade/fish/boss_xolotl.webp",
+      "frameW": 256,
+      "frameH": 256,
+      "frames": 15,
+      "clips": {
+        "idle": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "hit": [
+          13,
+          14
+        ]
+      }
+    }
+  },
+  "fx": {
+    "goldBurst": {
+      "src": "/arcade/fish/fx_gold_burst.webp",
+      "frameW": 256,
+      "frameH": 256,
+      "frames": 2
+    }
+  },
+  "coin": {
+    "src": "/arcade/fish/coin_empire.webp",
+    "frameW": 160,
+    "frameH": 160,
+    "frames": 7
+  }
+}

@@ -1,6 +1,11 @@
 {
   "schema": "southern.canon.v1",
-  "universe": { "id": "U3", "name": "Southern Lifestyle", "registry": "SHARED/universe_registry.yaml", "domain": "arcade.southernlifestyle.org" },
+  "universe": {
+    "id": "U3",
+    "name": "Southern Lifestyle",
+    "registry": "SHARED/universe_registry.yaml",
+    "domain": "arcade.southernlifestyle.org"
+  },
   "authority": "Owner-supplied names and art are canon. Code must read titles from here; do not invent replacements.",
   "status": "PARTIAL: captured from owner concept art; owner's full title list still to be added",
   "arcade": {
@@ -8,13 +13,82 @@
     "look": "Lounge: wood paneling, wall sconces, purple velvet chesterfields, roses on tables, jukebox, script-lettered mural of purple/green/black lowriders with roses, palms and two black dogs"
   },
   "games": [
-    { "title": "Whittier Boulevard Cruise", "tagline": "The Definitive Lowrider Experience", "genre": "lowrider", "art": "sepia engraving, '64 Impala, neon signs (Ramon's Tacos, Lowrider Hydraulics), palms, rose corners" },
-    { "title": "Legg Lake Ducks", "genre": "fishing", "art": "sepia engraving, willow trees, lake at sunset, ducks" },
-    { "title": "Riverbed Monster", "genre": "fishing", "art": "LA River channel at night, giant monster fish, angler, calavera/lowrider murals, full moon" },
-    { "title": "KLiNGS", "genre": "kart_racing", "art": "neon graffiti wall, lowrider convertible karts with sparks, string lights, palms, checkered flag" },
-    { "title": "Zapata's Revolution", "genre": "slots", "art": "sepia engraving, Zapata, eagle and serpent, revolutionaries on horseback, sunburst" },
-    { "title": "Peck Road Pit", "genre": "TBD", "art": "graffiti wall mural with roses, skulls, lowriders, barbed wire; tagger at work" },
-    { "title": "TBD (slot concept)", "genre": "slots", "symbols": ["comb", "hoop earrings", "vinyl record", "sneaker", "'64 lowrider", "jaguar sun stone", "concha"], "plates": ["BIG WIN"], "art": "chrome frame, cream reels, palms at sunset, black-and-gold Southern Lifestyle Arcade medallion" }
+    {
+      "title": "PROVISIONAL: Quetzalcoatl's Quest (from config/games/aztec_registry.ts)",
+      "genre": "fishing",
+      "route": "/sla113/fish/rooster",
+      "boss": "feathered-serpent rooster with sun-stone coin",
+      "background": "Mictlantecuhtli praying skeleton king",
+      "art_source": "ASSETS/arcade/fish/source/boss1_*, background_mictlan.jpg"
+    },
+    {
+      "title": "PROVISIONAL: Xolotl's Descent (from config/games/aztec_registry.ts)",
+      "genre": "fishing",
+      "route": "/sla113/fish/xolotl",
+      "boss": "Xolotl wolf-warrior in underwater ruins",
+      "background": "Mictlantecuhtli praying skeleton king",
+      "art_source": "ASSETS/arcade/fish/source/boss2_*, background_mictlan.jpg"
+    },
+    {
+      "title": "Whittier Boulevard Cruise",
+      "tagline": "The Definitive Lowrider Experience",
+      "genre": "lowrider",
+      "art": "sepia engraving, '64 Impala, neon signs (Ramon's Tacos, Lowrider Hydraulics), palms, rose corners"
+    },
+    {
+      "title": "Legg Lake Ducks",
+      "genre": "fishing",
+      "art": "sepia engraving, willow trees, lake at sunset, ducks"
+    },
+    {
+      "title": "Riverbed Monster",
+      "genre": "fishing",
+      "art": "LA River channel at night, giant monster fish, angler, calavera/lowrider murals, full moon"
+    },
+    {
+      "title": "KLiNGS",
+      "genre": "kart_racing",
+      "art": "neon graffiti wall, lowrider convertible karts with sparks, string lights, palms, checkered flag"
+    },
+    {
+      "title": "Zapata's Revolution",
+      "genre": "slots",
+      "art": "sepia engraving, Zapata, eagle and serpent, revolutionaries on horseback, sunburst"
+    },
+    {
+      "title": "Peck Road Pit",
+      "genre": "TBD",
+      "art": "graffiti wall mural with roses, skulls, lowriders, barbed wire; tagger at work"
+    },
+    {
+      "title": "TBD (slot concept)",
+      "genre": "slots",
+      "symbols": [
+        "comb",
+        "hoop earrings",
+        "vinyl record",
+        "sneaker",
+        "'64 lowrider",
+        "jaguar sun stone",
+        "concha"
+      ],
+      "plates": [
+        "BIG WIN"
+      ],
+      "art": "chrome frame, cream reels, palms at sunset, black-and-gold Southern Lifestyle Arcade medallion"
+    }
   ],
-  "open_questions": ["full title list", "credit/currency name", "jackpot tier names", "Peck Road Pit genre", "name of the comb/hoops/vinyl slot"]
+  "open_questions": [
+    "official titles for the two fish boss tables (provisional names taken from aztec_registry.ts)",
+    "full title list",
+    "credit/currency name",
+    "jackpot tier names",
+    "Peck Road Pit genre",
+    "name of the comb/hoops/vinyl slot"
+  ],
+  "brand": {
+    "empire_logo": "stepped fret + square spiral (Empire coin, ASSETS/arcade/fish/source/empire_coin_spin.webp)",
+    "firme_f": "config/games/sovereign_assets.js FIRME_F_BASE64",
+    "lounge": "config/games/sovereign_assets.js LOUNGE_BASE64 (SLA113 vault lounge)"
+  }
 }

@@ -1,5 +1,5 @@
 /**
- * Aztlán Arcade wallet — one shared cacao balance across every cabinet.
+ * Southern Lifestyle Arcade wallet — one shared cacao balance across every cabinet.
  * Virtual play credits only: no cash value, no purchase, no redemption.
  * Lives in localStorage until an authoritative backend owns the economy.
  */

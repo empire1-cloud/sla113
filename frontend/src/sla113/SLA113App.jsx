@@ -3,9 +3,9 @@
  * Completely isolated from Empire 1. Own routing, own state, zero shared context.
  */
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import SLA113Page from './SLA113Page';
-import XolotlArcade from './XolotlArcade';
+import XolotlArcade, { FISH_VARIANTS } from './XolotlArcade';
 import ArcadeLobby from './arcade/ArcadeLobby';
 import PiedraDelSolSlots from './arcade/PiedraDelSolSlots';
 import LowriderRally from './arcade/LowriderRally';
@@ -167,6 +167,12 @@ function SLA113LoginGate({ children }) {
   );
 }
 
+function FishTable() {
+  const { boss } = useParams();
+  const variant = FISH_VARIANTS[boss];
+  return variant ? <XolotlArcade key={boss} variant={variant} /> : <Navigate to="/sla113/arcade" replace />;
+}
+
 export default function SLA113App() {
   const [showTitle, setShowTitle] = useState(true);
 
@@ -176,6 +182,7 @@ export default function SLA113App() {
       <Routes>
         <Route path="/sla113" element={<SLA113LoginGate><SLA113Page /></SLA113LoginGate>} />
         <Route path="/sla113/xolotl" element={<XolotlArcade />} />
+        <Route path="/sla113/fish/:boss" element={<FishTable />} />
         <Route path="/sla113/arcade" element={<ArcadeLobby />} />
         <Route path="/sla113/arcade/slots" element={<PiedraDelSolSlots />} />
         <Route path="/sla113/arcade/kart" element={<LowriderRally />} />

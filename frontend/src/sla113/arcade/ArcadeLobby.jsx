@@ -2,7 +2,27 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ArcadeChrome from './ArcadeChrome';
 
+const bossCard = (index) => ({ backgroundImage: 'url(/arcade/fish/boss_' + index + '.webp)', backgroundSize: 'auto 100%', backgroundRepeat: 'no-repeat', backgroundPosition: '0 0' });
+
 const CABINETS = [
+  {
+    to: '/sla113/fish/rooster',
+    art: bossCard('rooster'),
+    name: "QUETZALCOATL'S QUEST",
+    kind: 'Fish shooter · Boss table',
+    pitch: 'Feathered-serpent rooster boss over the Mictlan background.',
+    tags: ['Owner art', 'Boss after 12 kills'],
+    accent: '#f2b632',
+  },
+  {
+    to: '/sla113/fish/xolotl',
+    art: bossCard('xolotl'),
+    name: "XOLOTL'S DESCENT",
+    kind: 'Fish shooter · Boss table',
+    pitch: 'Xolotl wolf-warrior boss over the Mictlan background.',
+    tags: ['Owner art', 'Boss after 12 kills'],
+    accent: '#1fb5a3',
+  },
   {
     to: '/sla113/xolotl',
     glyph: '🐟',
@@ -66,14 +86,16 @@ export default function ArcadeLobby() {
     <ArcadeChrome>
       <style>{CSS}</style>
       <div className="al-hero">
-        <h1>AZTLÁN ARCADE</h1>
+        <h1>SOUTHERN LIFESTYLE ARCADE</h1>
         <div className="al-glyphs">◆ FISH · SPIN · RIDE ◆</div>
         <p>Three cabinets and one cacao wallet. The Aztecs traded in cacao beans, and here you play with them. Aztec gods meet Chicano lowriders, all running in your browser.</p>
       </div>
       <div className="al-grid">
         {CABINETS.map((c) => (
           <Link key={c.to} to={c.to} className="al-cab" style={{ '--accent': c.accent }}>
-            <div className="al-screen"><span style={{ position: 'relative', zIndex: 1 }}>{c.glyph}</span></div>
+            <div className="al-screen">{c.art
+                ? <div aria-hidden="true" style={{ width: 170, height: 170, position: 'relative', zIndex: 1, ...c.art }} />
+                : <span style={{ position: 'relative', zIndex: 1 }}>{c.glyph}</span>}</div>
             <div className="al-body">
               <small>{c.kind}</small>
               <h2>{c.name}</h2>
