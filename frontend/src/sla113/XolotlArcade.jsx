@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getCacao, setCacao } from './arcade/arcadeWallet';
 
 const TARGET_TYPES = [
   { id: 'spirit', label: 'SPIRIT', hp: 1, reward: 3, radius: 18, speed: 52, glyph: '✦', weight: 46 },
@@ -35,7 +37,7 @@ export default function XolotlArcade() {
     bursts: [],
     texts: [],
     pointer: { x: 450, y: 430 },
-    credits: 1250,
+    credits: getCacao(),
     score: 0,
     combo: 0,
     multiplier: 1,
@@ -48,7 +50,7 @@ export default function XolotlArcade() {
   });
 
   const [hud, setHud] = useState({
-    credits: 1250,
+    credits: getCacao(),
     score: 0,
     combo: 0,
     multiplier: 1,
@@ -61,6 +63,7 @@ export default function XolotlArcade() {
 
   const syncHud = () => {
     const s = stateRef.current;
+    setCacao(s.credits);
     setHud({
       credits: Math.max(0, Math.floor(s.credits)),
       score: Math.floor(s.score),
@@ -122,7 +125,6 @@ export default function XolotlArcade() {
 
   const reset = () => {
     const s = stateRef.current;
-    s.credits = 1250;
     s.score = 0;
     s.combo = 0;
     s.multiplier = 1;
@@ -514,10 +516,10 @@ export default function XolotlArcade() {
         <div className="xolotl-top">
           <div>
             <div className="xolotl-brand">SLA113 // XOLOTL</div>
-            <div className="xolotl-sub">THE GOLDEN GUARDIAN // UNDERWORLD ARCADE</div>
+            <div className="xolotl-sub">THE GOLDEN GUARDIAN // <Link to="/sla113/arcade" style={{color:'#d4af37'}}>← AZTLÁN ARCADE</Link></div>
           </div>
           <div className="xolotl-stats">
-            <div className="xstat"><b>{hud.credits.toLocaleString()}</b><span>CREDIT</span></div>
+            <div className="xstat"><b>{hud.credits.toLocaleString()}</b><span>CACAO</span></div>
             <div className="xstat"><b>{hud.score.toLocaleString()}</b><span>SCORE</span></div>
             <div className="xstat"><b>x{hud.multiplier}</b><span>MULTIPLIER</span></div>
             <div className="xstat"><b>{hud.combo}</b><span>COMBO</span></div>
