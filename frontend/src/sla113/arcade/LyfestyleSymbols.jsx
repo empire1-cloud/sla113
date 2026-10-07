@@ -2,11 +2,30 @@ import React from 'react';
 
 /**
  * Southern Lyfestyle reel art — hand-built inline SVG, ink on cream.
- * Original drawings only: the sneaker carries a plain double stripe, no brand marks.
+ * Original drawings only. The sneaker carries the Empire mark (stepped fret from the
+ * Empire coin) instead of any third-party logo.
  */
 
 const INK = '#1a1410';
 const S = { stroke: INK, strokeWidth: 3, strokeLinecap: 'round', strokeLinejoin: 'round' };
+
+/** Empire logo: stepped fret + square spiral (vector trace of the Empire coin glyph). */
+function EmpireMarkPath({ color = INK }) {
+  return (
+    <path
+      d="M8 64 H20 V52 H32 V40 H44 V26 H80 V80 H36 V44 H64 V64 H52"
+      fill="none" stroke={color} strokeWidth="9" strokeLinejoin="miter" strokeLinecap="square"
+    />
+  );
+}
+
+export function EmpireMark({ size = 24, color = '#d9a441' }) {
+  return (
+    <svg viewBox="0 0 90 90" width={size} height={size} role="img" aria-label="Empire">
+      <EmpireMarkPath color={color} />
+    </svg>
+  );
+}
 
 const ART = {
   // WILD — jaguar face carved in a sun stone.
@@ -79,9 +98,8 @@ const ART = {
     <g {...S}>
       <path d="M8 66 Q8 58 16 56 L40 50 Q48 40 58 40 L66 42 Q72 50 84 54 Q94 57 94 64 L94 70 L8 70 Z" fill="#fbfaf6" />
       <path d="M8 70 L94 70 L94 74 Q50 78 8 74 Z" fill="#e8e1d2" />
-      <path d="M24 64 Q48 48 76 56" stroke="#2f6fde" strokeWidth="5" fill="none" />
-      <path d="M26 68 Q50 54 80 61" stroke="#d7263d" strokeWidth="3" fill="none" />
-      <path d="M48 46 L54 50 M52 43 L58 47 M57 41 L62 45" strokeWidth="2" />
+      <g transform="translate(40 44) scale(0.27)"><EmpireMarkPath color={INK} /></g>
+      <path d="M50 44 L55 47 M54 42 L59 45" strokeWidth="2" />
     </g>
   ),
   peine: (
