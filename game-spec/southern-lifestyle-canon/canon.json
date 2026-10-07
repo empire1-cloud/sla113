@@ -1,0 +1,20 @@
+{
+  "schema": "southern.canon.v1",
+  "universe": { "id": "U3", "name": "Southern Lifestyle", "registry": "SHARED/universe_registry.yaml", "domain": "arcade.southernlifestyle.org" },
+  "authority": "Owner-supplied names and art are canon. Code must read titles from here; do not invent replacements.",
+  "status": "PARTIAL: captured from owner concept art; owner's full title list still to be added",
+  "arcade": {
+    "name": "Southern Lifestyle Arcade",
+    "look": "Lounge: wood paneling, wall sconces, purple velvet chesterfields, roses on tables, jukebox, script-lettered mural of purple/green/black lowriders with roses, palms and two black dogs"
+  },
+  "games": [
+    { "title": "Whittier Boulevard Cruise", "tagline": "The Definitive Lowrider Experience", "genre": "lowrider", "art": "sepia engraving, '64 Impala, neon signs (Ramon's Tacos, Lowrider Hydraulics), palms, rose corners" },
+    { "title": "Legg Lake Ducks", "genre": "fishing", "art": "sepia engraving, willow trees, lake at sunset, ducks" },
+    { "title": "Riverbed Monster", "genre": "fishing", "art": "LA River channel at night, giant monster fish, angler, calavera/lowrider murals, full moon" },
+    { "title": "KLiNGS", "genre": "kart_racing", "art": "neon graffiti wall, lowrider convertible karts with sparks, string lights, palms, checkered flag" },
+    { "title": "Zapata's Revolution", "genre": "slots", "art": "sepia engraving, Zapata, eagle and serpent, revolutionaries on horseback, sunburst" },
+    { "title": "Peck Road Pit", "genre": "TBD", "art": "graffiti wall mural with roses, skulls, lowriders, barbed wire; tagger at work" },
+    { "title": "TBD (slot concept)", "genre": "slots", "symbols": ["comb", "hoop earrings", "vinyl record", "sneaker", "'64 lowrider", "jaguar sun stone", "concha"], "plates": ["BIG WIN"], "art": "chrome frame, cream reels, palms at sunset, black-and-gold Southern Lifestyle Arcade medallion" }
+  ],
+  "open_questions": ["full title list", "credit/currency name", "jackpot tier names", "Peck Road Pit genre", "name of the comb/hoops/vinyl slot"]
+}

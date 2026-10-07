@@ -6,7 +6,7 @@ import {
 // Seeded LCG so the simulation check is reproducible.
 const lcg = (seed) => () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
 
-describe('Piedra del Sol math contract', () => {
+describe('Sovereign Pulse math contract', () => {
   test('strips are complete and each carries exactly one scatter', () => {
     expect(STRIPS).toHaveLength(5);
     STRIPS.forEach((strip) => {
@@ -16,28 +16,28 @@ describe('Piedra del Sol math contract', () => {
   });
 
   test('line evaluation: plain, wild-substituted, pure wild, and broken runs', () => {
-    expect(evaluateLine(['jaguar', 'jaguar', 'jaguar', 'nopal', 'nopal']).pay).toBe(PAYTABLE.jaguar[0]);
-    expect(evaluateLine([WILD, 'rosa', WILD, 'rosa', 'rosa']).pay).toBe(PAYTABLE.rosa[2]);
-    expect(evaluateLine([WILD, WILD, WILD, WILD, 'nopal']).pay).toBe(PAYTABLE.sol[1]);
-    expect(evaluateLine(['chile', 'maiz', 'chile', 'chile', 'chile']).pay).toBe(0);
-    expect(evaluateLine([SCATTER, SCATTER, SCATTER, 'maiz', 'maiz']).pay).toBe(0);
+    expect(evaluateLine(['lowrider', 'lowrider', 'lowrider', 'nopal', 'nopal']).pay).toBe(PAYTABLE.lowrider[0]);
+    expect(evaluateLine([WILD, 'tenis', WILD, 'tenis', 'tenis']).pay).toBe(PAYTABLE.tenis[2]);
+    expect(evaluateLine([WILD, WILD, WILD, WILD, 'nopal']).pay).toBe(PAYTABLE.piedra[1]);
+    expect(evaluateLine(['peine', 'concha', 'peine', 'peine', 'peine']).pay).toBe(0);
+    expect(evaluateLine([SCATTER, SCATTER, SCATTER, 'concha', 'concha']).pay).toBe(0);
   });
 
   test('a wild run takes the better of the wild pay and the substituted pay', () => {
-    // 3 wilds + 2 jaguars: 5x jaguar (750) beats 3x wild (50).
-    expect(evaluateLine([WILD, WILD, WILD, 'jaguar', 'jaguar'])).toMatchObject({ symbol: 'jaguar', count: 5 });
+    // 3 wilds + 2 lowriders: 5x lowrider (750) beats 3x wild (50).
+    expect(evaluateLine([WILD, WILD, WILD, 'lowrider', 'lowrider'])).toMatchObject({ symbol: 'lowrider', count: 5 });
     // 4 wilds + nopal: 4x wild (200) beats 5x nopal (25).
     expect(evaluateLine([WILD, WILD, WILD, WILD, 'nopal'])).toMatchObject({ symbol: WILD, count: 4 });
   });
 
   test('grid evaluation pays lines at totalBet/10 and scatters at totalBet', () => {
-    const grid = Array.from({ length: 5 }, () => ['nopal', 'jaguar', 'chile']);
+    const grid = Array.from({ length: 5 }, () => ['nopal', 'lowrider', 'peine']);
     grid[0][0] = SCATTER; grid[2][2] = SCATTER; grid[4][0] = SCATTER;
     const result = evaluateGrid(grid, 10);
     expect(result.scatters).toBe(3);
     expect(result.scatterPay).toBe(SCATTER_PAYS[3] * 10);
     const midLine = result.wins.find((w) => w.line === 0);
-    expect(midLine).toMatchObject({ symbol: 'jaguar', count: 5, amount: PAYTABLE.jaguar[2] });
+    expect(midLine).toMatchObject({ symbol: 'lowrider', count: 5, amount: PAYTABLE.lowrider[2] });
   });
 
   test('every payline reads a valid row on every reel', () => {

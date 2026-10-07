@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ArcadeChrome, { useCacao } from './ArcadeChrome';
 import { addCacao, spendCacao } from './arcadeWallet';
 import { sfx } from './arcadeSfx';
+import LyfestyleSymbol from './LyfestyleSymbols';
 import {
   SYMBOLS, STRIPS, PAYLINES, PAYTABLE, SCATTER_PAYS, WILD, SCATTER,
   spinReels, evaluateGrid, gridFromStops,
@@ -17,7 +18,7 @@ const CSS = `
 .pds-marquee h1{margin:0;font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:4px;background:linear-gradient(180deg,#fff2b8,#f2b632 50%,#a8620f);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px #f2b63233}
 .pds-marquee p{margin:4px 0 0;font-size:11px;letter-spacing:4px;color:#1fb5a3;text-transform:uppercase}
 .pds-window{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px;border-radius:14px;background:#0b0806;border:3px solid;border-image:repeating-linear-gradient(90deg,#1fb5a3 0 14px,#f2b632 14px 28px,#d7263d 28px 42px) 3}
-.pds-reel{position:relative;height:calc(3 * var(--cell));overflow:hidden;border-radius:10px;background:linear-gradient(180deg,#2a1730,#160c1c 50%,#2a1730)}
+.pds-reel{position:relative;height:calc(3 * var(--cell));overflow:hidden;border-radius:10px;background:linear-gradient(180deg,#d9ccb0,#f6eedc 50%,#d9ccb0)}
 .pds-cell{height:var(--cell);display:flex;align-items:center;justify-content:center;font-size:calc(var(--cell) * .55);position:relative}
 .pds-cell.win{animation:pdsPulse .7s ease-in-out infinite alternate}
 .pds-cell.win:after{content:"";position:absolute;inset:4px;border-radius:10px;border:2px solid #ffd86b;box-shadow:0 0 18px #ffd86b,inset 0 0 14px #ffd86b55}
@@ -113,14 +114,14 @@ export default function PiedraDelSolSlots() {
     if (result.scatterPay > 0) grid.forEach((col, r) => col.forEach((s, row) => s === SCATTER && winCells.add(`${r}:${row}`)));
   }
 
-  let message = busy ? '¡Gira, gira!' : 'Space or SPIN · 10 lines · wild ☀️ pays everything but 🛕';
+  let message = busy ? '¡Gira, gira!' : 'Space or SPIN · 10 lines · Piedra del Sol is wild · 3 Rocolas pay the bonus';
   if (result && result.message) message = result.message;
   else if (result && result.total >= bet * 10) message = `¡TONALLI! +${result.total.toLocaleString()} CACAO`;
   else if (result && result.total > 0) {
     const top = [...result.wins].sort((a, b) => b.amount - a.amount)[0];
     message = top
-      ? `+${result.total} · Line ${top.line + 1} · ${SYMBOLS[top.symbol].glyph} ×${top.count}${result.scatterPay ? ' · TEMPLO bonus' : ''}`
-      : `+${result.total} · TEMPLO bonus`;
+      ? `+${result.total} · Line ${top.line + 1} · ${SYMBOLS[top.symbol].name} ×${top.count}${result.scatterPay ? ' · ROCOLA bonus' : ''}`
+      : `+${result.total} · ROCOLA bonus`;
   } else if (result) message = 'Otra vez — spin again';
 
   return (
@@ -138,14 +139,14 @@ export default function PiedraDelSolSlots() {
               {spinning[reel] ? (
                 <div className="pds-strip">
                   {[...randomColumn(reel), ...randomColumn(reel)].map((s, i) => (
-                    <div className="pds-cell" key={i}>{SYMBOLS[s].glyph}</div>
+                    <div className="pds-cell" key={i}><LyfestyleSymbol id={s} size="78%" title={SYMBOLS[s].name} /></div>
                   ))}
                 </div>
               ) : (
                 <div className="pds-land">
                   {col.map((s, row) => (
                     <div key={row} className={`pds-cell ${winCells.has(`${reel}:${row}`) ? 'win' : ''} ${s === WILD ? 'wild' : ''}`}>
-                      {SYMBOLS[s].glyph}
+                      <LyfestyleSymbol id={s} size="78%" title={SYMBOLS[s].name} />
                     </div>
                   ))}
                 </div>
@@ -178,12 +179,12 @@ export default function PiedraDelSolSlots() {
           <div className="pds-pay">
             {Object.entries(PAYTABLE).map(([sym, pays]) => (
               <div key={sym}>
-                <span>{SYMBOLS[sym].glyph}</span>
+                <span style={{ width: 40, height: 40 }}><LyfestyleSymbol id={sym} /></span>
                 <p style={{ margin: 0 }}>{SYMBOLS[sym].name}{sym === WILD && ' · WILD'}<em>3× {pays[0]} · 4× {pays[1]} · 5× {pays[2]} (line bet)</em></p>
               </div>
             ))}
             <div>
-              <span>{SYMBOLS[SCATTER].glyph}</span>
+              <span style={{ width: 40, height: 40 }}><LyfestyleSymbol id={SCATTER} /></span>
               <p style={{ margin: 0 }}>{SYMBOLS[SCATTER].name} · SCATTER<em>3× {SCATTER_PAYS[3]} · 4× {SCATTER_PAYS[4]} · 5× {SCATTER_PAYS[5]} (total bet)</em></p>
             </div>
           </div>

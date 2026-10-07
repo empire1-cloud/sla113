@@ -1,5 +1,5 @@
 /**
- * Piedra del Sol — 5x3 slot math contract (virtual cacao only).
+ * Sovereign Pulse — 5x3 slot math contract (virtual cacao only).
  *
  * Pure functions, no DOM: the reel strips, paytable and evaluator here are the
  * single source of truth for the cabinet UI and for the RTP test. Line pays are
@@ -7,37 +7,37 @@
  */
 
 export const SYMBOLS = {
-  sol:      { glyph: '☀️', name: 'Piedra del Sol', role: 'wild' },
-  templo:   { glyph: '🛕', name: 'Templo Mayor', role: 'scatter' },
-  jaguar:   { glyph: '🐆', name: 'Guerrero Jaguar' },
-  quetzal:  { glyph: '🦜', name: 'Quetzal' },
-  lowrider: { glyph: '🚗', name: 'Lowrider' },
-  calavera: { glyph: '💀', name: 'Calavera' },
-  rosa:     { glyph: '🌹', name: 'Rosa' },
-  chile:    { glyph: '🌶️', name: 'Chile' },
-  maiz:     { glyph: '🌽', name: 'Maíz' },
-  nopal:    { glyph: '🌵', name: 'Nopal' },
+  piedra:   { name: 'Piedra del Sol', role: 'wild' },
+  rocola:   { name: 'La Rocola', role: 'scatter' },
+  lowrider: { name: 'Sixty-Four' },
+  vinyl:    { name: 'Oldies Vinyl' },
+  rosa:     { name: 'La Rosa' },
+  hoops:    { name: 'Arracadas' },
+  tenis:    { name: 'Los Tenis' },
+  peine:    { name: 'El Peine' },
+  concha:   { name: 'Concha' },
+  nopal:    { name: 'Nopal' },
 };
 
-export const WILD = 'sol';
-export const SCATTER = 'templo';
+export const WILD = 'piedra';
+export const SCATTER = 'rocola';
 export const ROWS = 3;
 export const REELS = 5;
 
 // Pays for 3, 4, 5 of a kind on a line, in line-bet multiples.
 export const PAYTABLE = {
-  sol:      [50, 200, 1000],
-  jaguar:   [25, 100, 750],
-  quetzal:  [15, 60, 300],
-  lowrider: [12, 50, 200],
-  calavera: [8, 25, 100],
-  rosa:     [6, 20, 80],
-  chile:    [4, 12, 50],
-  maiz:     [3, 10, 40],
+  piedra:   [50, 200, 1000],
+  lowrider: [25, 100, 750],
+  vinyl:    [15, 60, 300],
+  rosa:     [12, 50, 200],
+  hoops:    [8, 25, 100],
+  tenis:    [6, 20, 80],
+  peine:    [4, 12, 50],
+  concha:   [3, 10, 40],
   nopal:    [2, 6, 25],
 };
 
-// Scatter pays for 3, 4, 5 Templos anywhere, in total-bet multiples.
+// Scatter pays for 3, 4, 5 Rocolas anywhere, in total-bet multiples.
 export const SCATTER_PAYS = { 3: 4, 4: 20, 5: 100 };
 
 // Rows indexed top=0, mid=1, bottom=2 for each of the 5 reels.
@@ -56,11 +56,11 @@ export const PAYLINES = [
 
 // Symbol counts per reel. The middle reels carry extra wilds.
 const COUNTS = [
-  { sol: 2, templo: 1, jaguar: 2, quetzal: 2, lowrider: 3, calavera: 3, rosa: 3, chile: 4, maiz: 4, nopal: 4 },
-  { sol: 3, templo: 1, jaguar: 2, quetzal: 2, lowrider: 3, calavera: 3, rosa: 3, chile: 4, maiz: 4, nopal: 4 },
-  { sol: 3, templo: 1, jaguar: 2, quetzal: 2, lowrider: 3, calavera: 3, rosa: 3, chile: 4, maiz: 4, nopal: 4 },
-  { sol: 3, templo: 1, jaguar: 2, quetzal: 2, lowrider: 3, calavera: 3, rosa: 3, chile: 4, maiz: 4, nopal: 4 },
-  { sol: 2, templo: 1, jaguar: 2, quetzal: 2, lowrider: 3, calavera: 3, rosa: 3, chile: 4, maiz: 4, nopal: 4 },
+  { piedra: 2, rocola: 1, lowrider: 2, vinyl: 2, rosa: 3, hoops: 3, tenis: 3, peine: 4, concha: 4, nopal: 4 },
+  { piedra: 3, rocola: 1, lowrider: 2, vinyl: 2, rosa: 3, hoops: 3, tenis: 3, peine: 4, concha: 4, nopal: 4 },
+  { piedra: 3, rocola: 1, lowrider: 2, vinyl: 2, rosa: 3, hoops: 3, tenis: 3, peine: 4, concha: 4, nopal: 4 },
+  { piedra: 3, rocola: 1, lowrider: 2, vinyl: 2, rosa: 3, hoops: 3, tenis: 3, peine: 4, concha: 4, nopal: 4 },
+  { piedra: 2, rocola: 1, lowrider: 2, vinyl: 2, rosa: 3, hoops: 3, tenis: 3, peine: 4, concha: 4, nopal: 4 },
 ];
 
 /** Deterministically interleave counts into a strip so symbols spread out. */
