@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getCacao, setCacao } from './arcade/arcadeWallet';
 
 const TARGET_TYPES = [
   { id: 'spirit', label: 'SPIRIT', hp: 1, reward: 3, radius: 18, speed: 52, glyph: '✦', weight: 46 },
@@ -20,7 +22,28 @@ function pickTarget() {
   return TARGET_TYPES[0];
 }
 
-export default function XolotlArcade() {
+// Owner art (ASSETS/arcade/fish/source) built by ASSETS/arcade/tools/build_fish_atlas.py.
+const ATLAS_URL = '/arcade/fish/atlas.json';
+
+/** Two fish tables, one per boss. Titles are provisional picks from config/games/aztec_registry.ts. */
+export const FISH_VARIANTS = {
+  rooster: { boss: 'rooster', title: "Quetzalcoatl's Quest", bossLabel: 'QUETZALCOATL', size: 2.9 },
+  xolotl: { boss: 'xolotl', title: "Xolotl's Descent", bossLabel: 'XOLOTL', size: 3.1 },
+};
+const BOSS_RADIUS = 84;
+const KILLS_TO_BOSS = 12;
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+export default function XolotlArcade({ variant = null }) {
+  const artRef = useRef(null);
   const canvasRef = useRef(null);
   const wrapRef = useRef(null);
   const rafRef = useRef(null);
@@ -34,8 +57,10 @@ export default function XolotlArcade() {
     targets: [],
     bursts: [],
     texts: [],
+    fx: [],
+    kills: 0,
     pointer: { x: 450, y: 430 },
-    credits: 1250,
+    credits: getCacao(),
     score: 0,
     combo: 0,
     multiplier: 1,
@@ -48,7 +73,7 @@ export default function XolotlArcade() {
   });
 
   const [hud, setHud] = useState({
-    credits: 1250,
+    credits: getCacao(),
     score: 0,
     combo: 0,
     multiplier: 1,
@@ -61,6 +86,7 @@ export default function XolotlArcade() {
 
   const syncHud = () => {
     const s = stateRef.current;
+    setCacao(s.credits);
     setHud({
       credits: Math.max(0, Math.floor(s.credits)),
       score: Math.floor(s.score),
@@ -95,6 +121,19 @@ export default function XolotlArcade() {
   };
 
   useEffect(() => {
+    if (!variant) return undefined;
+    let alive = true;
+    fetch(ATLAS_URL).then((r) => r.json()).then(async (atlas) => {
+      const boss = atlas.bosses[variant.boss];
+      const [bg, bossImg, burst, coin] = await Promise.all([
+        loadImage(atlas.background.src), loadImage(boss.src), loadImage(atlas.fx.goldBurst.src), loadImage(atlas.coin.src),
+      ]);
+      if (alive) artRef.current = { atlas, boss, bg, bossImg, burst, coin };
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [variant]);
+
+  useEffect(() => {
     resize();
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
@@ -122,7 +161,6 @@ export default function XolotlArcade() {
 
   const reset = () => {
     const s = stateRef.current;
-    s.credits = 1250;
     s.score = 0;
     s.combo = 0;
     s.multiplier = 1;
@@ -130,6 +168,8 @@ export default function XolotlArcade() {
     s.targets = [];
     s.bursts = [];
     s.texts = [];
+    s.fx = [];
+    s.kills = 0;
     s.spawn = 0;
     s.bossSpawned = false;
     s.running = true;
@@ -184,9 +224,10 @@ export default function XolotlArcade() {
     const ctx = canvas.getContext('2d');
     const s = stateRef.current;
 
-    const spawnTarget = () => {
-      const type = pickTarget();
+    const spawnTarget = (forced) => {
+      let type = forced || pickTarget();
       if (type.id === 'xolotl' && s.bossSpawned) return;
+      if (type.id === 'xolotl' && variant) type = { ...type, radius: BOSS_RADIUS, label: variant.bossLabel };
       const fromLeft = Math.random() > 0.5;
       s.targets.push({
         type,
@@ -202,12 +243,26 @@ export default function XolotlArcade() {
       if (type.id === 'xolotl') {
         s.bossSpawned = true;
         s.boss = true;
-        pulseMessage('XOLOTL AWAKENS');
+        pulseMessage(variant ? `${variant.bossLabel} AWAKENS` : 'XOLOTL AWAKENS');
       }
     };
 
     const drawTemple = () => {
       const w = s.width, h = s.height;
+      const art = artRef.current;
+      if (art && art.bg) {
+        // Cover-fit the portrait background, anchored on the skull and sun stone.
+        const scale = Math.max(w / art.bg.width, h / art.bg.height);
+        const dw = art.bg.width * scale, dh = art.bg.height * scale;
+        ctx.drawImage(art.bg, (w - dw) / 2, (h - dh) * 0.3, dw, dh);
+        const shade = ctx.createLinearGradient(0, 0, 0, h);
+        shade.addColorStop(0, 'rgba(3,4,6,0.7)');
+        shade.addColorStop(0.6, 'rgba(3,4,6,0.55)');
+        shade.addColorStop(1, 'rgba(3,4,6,0.85)');
+        ctx.fillStyle = shade;
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
       const g = ctx.createLinearGradient(0, 0, 0, h);
       g.addColorStop(0, '#07101a');
       g.addColorStop(0.55, '#101018');
@@ -264,7 +319,35 @@ export default function XolotlArcade() {
       }
     };
 
+    const drawBossArt = (t, art) => {
+      const { boss, bossImg } = art;
+      const clip = t.flash > 0 ? boss.clips.hit : boss.clips.idle;
+      const frame = clip[Math.floor(t.age * (t.flash > 0 ? 10 : 4)) % clip.length];
+      const size = t.type.radius * variant.size;
+      const bob = Math.sin(t.age * 1.6 + t.phase) * 8;
+      const flip = t.vx < 0 ? -1 : 1;
+      ctx.save();
+      ctx.translate(t.x, t.y + bob);
+      ctx.scale(flip, 1);
+      ctx.shadowBlur = 40;
+      ctx.shadowColor = variant.boss === 'xolotl' ? '#2de0d0' : '#f2b632';
+      ctx.drawImage(bossImg, frame * boss.frameW, 0, boss.frameW, boss.frameH, -size / 2, -size / 2, size, size);
+      if (t.flash > 0) {
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = t.flash * 1.6;
+        ctx.drawImage(bossImg, frame * boss.frameW, 0, boss.frameW, boss.frameH, -size / 2, -size / 2, size, size);
+      }
+      ctx.restore();
+      const barW = size * 0.7;
+      ctx.fillStyle = '#220909';
+      ctx.fillRect(t.x - barW / 2, t.y + bob - size / 2 - 6, barW, 5);
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(t.x - barW / 2, t.y + bob - size / 2 - 6, barW * (t.hp / t.maxHp), 5);
+    };
+
     const drawTarget = (t) => {
+      const art = artRef.current;
+      if (t.type.id === 'xolotl' && art && art.bossImg) { drawBossArt(t, art); return; }
       const bob = Math.sin(t.age * 4 + t.phase) * 4;
       const y = t.y + bob;
       const r = t.type.radius;
@@ -346,7 +429,7 @@ export default function XolotlArcade() {
     const tick = (now) => {
       const dt = Math.min((now - s.last) / 1000 || 0, 0.033);
       s.last = now;
-      if (!s.running) return;
+      if (!s.running) { rafRef.current = requestAnimationFrame(tick); return; }
 
       s.spawn -= dt;
       if (s.spawn <= 0) {
@@ -383,11 +466,21 @@ export default function XolotlArcade() {
           const d = Math.hypot(shot.x - t.x, shot.y - t.y);
           if (d <= t.type.radius + 8) {
             shot.hit = true;
+            t.flash = 0.18;
             t.hp -= Math.max(1, shot.cost);
             s.bursts.push({ x: t.x, y: t.y, life: 0, text: 'HIT' });
             s.texts.push({ x: t.x, y: t.y - t.type.radius, life: 0, value: '−' + shot.cost, kind: 'damage' });
             if (t.hp <= 0) {
               t.dead = true;
+              s.kills = (s.kills || 0) + 1;
+              if (artRef.current) {
+                const big = t.type.id === 'xolotl';
+                s.fx.push({ kind: 'burst', x: t.x, y: t.y, life: 0, max: big ? 1.1 : 0.5, size: big ? 420 : t.type.radius * 4 });
+                const coins = big ? 18 : Math.min(8, 1 + Math.floor(t.type.reward / 8));
+                for (let c = 0; c < coins; c++) {
+                  s.fx.push({ kind: 'coin', x: t.x + rand(-20, 20), y: t.y + rand(-20, 20), vx: rand(-90, 90), vy: rand(-160, -40), life: 0, max: 1.1, spin: rand(0, 7) });
+                }
+              }
               const payout = t.type.reward * s.multiplier;
               s.credits += payout;
               s.score += payout * 10;
@@ -433,7 +526,35 @@ export default function XolotlArcade() {
       }
       ctx.shadowBlur = 0;
 
+      for (const t of s.targets) t.flash = Math.max(0, (t.flash || 0) - dt);
+      if (variant && !s.bossSpawned && (s.kills || 0) >= KILLS_TO_BOSS) spawnTarget(TARGET_TYPES.find((x) => x.id === 'xolotl'));
       s.targets.forEach(drawTarget);
+
+      const art = artRef.current;
+      s.fx = s.fx.filter((f) => (f.life += dt) < f.max);
+      if (art) {
+        for (const f of s.fx) {
+          const p = f.life / f.max;
+          ctx.save();
+          if (f.kind === 'burst' && art.burst) {
+            const fr = art.atlas.fx.goldBurst;
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 1 - p;
+            const sz = f.size * (0.6 + p * 0.6);
+            ctx.drawImage(art.burst, (p < 0.5 ? 0 : 1) * fr.frameW, 0, fr.frameW, fr.frameH, f.x - sz / 2, f.y - sz / 2, sz, sz);
+          } else if (f.kind === 'coin' && art.coin) {
+            const cf = art.atlas.coin;
+            const tx = 60, ty = s.height - 30; // fly to the credit corner
+            const fly = Math.max(0, (p - 0.35) / 0.65);
+            const x = f.x + f.vx * Math.min(p, 0.35) + (tx - f.x) * fly * fly;
+            const y = f.y + f.vy * Math.min(p, 0.35) + (ty - f.y) * fly * fly;
+            const frame = Math.floor(f.spin + f.life * 14) % cf.frames;
+            ctx.globalAlpha = 1 - fly * 0.5;
+            ctx.drawImage(art.coin, frame * cf.frameW, 0, cf.frameW, cf.frameH, x - 14, y - 14, 28, 28);
+          }
+          ctx.restore();
+        }
+      }
 
       for (const b of s.bursts) {
         const p = b.life / 0.45;
@@ -473,7 +594,7 @@ export default function XolotlArcade() {
           ctx.fillStyle = '#fff4bf';
           ctx.font = '900 10px ui-monospace, monospace';
           ctx.textAlign = 'center';
-          ctx.fillText('XOLOTL // UNDERWORLD GUARDIAN', s.width / 2, 29);
+          ctx.fillText(variant ? `${variant.title.toUpperCase()} // BOSS` : 'XOLOTL // UNDERWORLD GUARDIAN', s.width / 2, 29);
         }
       }
 
@@ -493,7 +614,7 @@ export default function XolotlArcade() {
     resize();
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+  }, [variant]);
 
   return (
     <div className="xolotl-arcade">
@@ -513,11 +634,11 @@ export default function XolotlArcade() {
       <div className="xolotl-shell">
         <div className="xolotl-top">
           <div>
-            <div className="xolotl-brand">SLA113 // XOLOTL</div>
-            <div className="xolotl-sub">THE GOLDEN GUARDIAN // UNDERWORLD ARCADE</div>
+            <div className="xolotl-brand">{variant ? variant.title.toUpperCase() : 'SLA113 // XOLOTL'}</div>
+            <div className="xolotl-sub">THE GOLDEN GUARDIAN // <Link to="/sla113/arcade" style={{color:'#d4af37'}}>← SOUTHERN LIFESTYLE ARCADE</Link></div>
           </div>
           <div className="xolotl-stats">
-            <div className="xstat"><b>{hud.credits.toLocaleString()}</b><span>CREDIT</span></div>
+            <div className="xstat"><b>{hud.credits.toLocaleString()}</b><span>CACAO</span></div>
             <div className="xstat"><b>{hud.score.toLocaleString()}</b><span>SCORE</span></div>
             <div className="xstat"><b>x{hud.multiplier}</b><span>MULTIPLIER</span></div>
             <div className="xstat"><b>{hud.combo}</b><span>COMBO</span></div>

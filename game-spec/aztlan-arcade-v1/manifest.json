@@ -1,0 +1,71 @@
+{
+  "schema": "genesis.arcade.v1",
+  "arcade": {
+    "id": "sla113_aztlan_arcade_v1",
+    "title": "Aztlán Arcade",
+    "tagline": "Fish · Spin · Ride",
+    "route": "/sla113/arcade",
+    "runtime": "react_canvas",
+    "platform": "browser"
+  },
+  "identity": {
+    "theme": ["original Mesoamerican-inspired fantasy", "Chicano lowrider culture"],
+    "palette": {
+      "obsidian": "#0b0806",
+      "jade": "#1fb5a3",
+      "gold": "#f2b632",
+      "chile": "#d7263d",
+      "rosa_mexicano": "#e4007c",
+      "marigold": "#ff9f1c"
+    },
+    "motifs": ["papel picado", "Piedra del Sol", "xolo", "nopal", "templo", "candy paint", "gold spokes"]
+  },
+  "economy": {
+    "currency": "cacao",
+    "cash_value": false,
+    "purchasable": false,
+    "redeemable": false,
+    "shared_wallet": true,
+    "starting_balance": 2500,
+    "free_refill_below": 100,
+    "storage": "localStorage (aztlan_arcade_cacao_v1) until an authoritative backend owns the economy"
+  },
+  "cabinets": [
+    {
+      "id": "xolotl_hunt",
+      "genre": "fish_shooter",
+      "route": "/sla113/xolotl",
+      "spec": "game-spec/golden-xolotl-v1"
+    },
+    {
+      "id": "piedra_del_sol",
+      "genre": "slots",
+      "route": "/sla113/arcade/slots",
+      "layout": "5x3",
+      "paylines": 10,
+      "bets": [10, 20, 50, 100],
+      "wild": "sol",
+      "scatter": "templo",
+      "math_source": "frontend/src/sla113/arcade/slotMath.js",
+      "theoretical_rtp": 0.9697,
+      "hit_frequency_approx": 0.40,
+      "verified_by": "frontend/src/sla113/arcade/slotMath.test.js (exact enumeration + seeded simulation)"
+    },
+    {
+      "id": "lowrider_rally",
+      "genre": "kart_racing",
+      "route": "/sla113/arcade/kart",
+      "renderer": "pseudo-3D Canvas2D",
+      "laps": 3,
+      "field": 6,
+      "entry": 50,
+      "prizes": { "1": 250, "2": 125, "3": 75 },
+      "signature_mechanic": "hydraulic hop: clears rival cars (+2 cacao) and reaches floating cacao (+15)",
+      "pickups": { "ground": 3, "floating": 15 }
+    }
+  ],
+  "provenance": {
+    "assets": "procedural canvas + system emoji placeholders",
+    "proprietary_cloning": false
+  }
+}
