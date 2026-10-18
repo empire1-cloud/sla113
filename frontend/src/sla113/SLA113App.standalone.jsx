@@ -117,20 +117,28 @@ function SLA113LoginGate({ children }) {
     setLoading(true);
     setError('');
     try {
+      // The backend (routers/auth) takes { email, password } and returns
+      // { access_token, refresh_token, ... }.
       const r = await fetch(`${BACKEND}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handle, password }),
+        body: JSON.stringify({ email: handle.trim(), password }),
       });
-      const data = await r.json();
-      if (data.token) {
-        localStorage.setItem('sla113_op_token', data.token);
-        setToken(data.token);
+      const data = await r.json().catch(() => ({}));
+      const accessToken = data.access_token || data.token;
+      if (r.ok && accessToken) {
+        localStorage.setItem('sla113_op_token', accessToken);
+        // Same keys AuthContext uses, so the rest of the app shares the session.
+        localStorage.setItem('access_token', accessToken);
+        if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token);
+        setToken(accessToken);
+      } else if (Array.isArray(data.detail)) {
+        setError('Enter a valid email and password');
       } else {
-        setError(data.detail || 'Invalid credentials');
+        setError(typeof data.detail === 'string' ? data.detail : 'Invalid credentials');
       }
     } catch {
-      setError('Connection error — try again');
+      setError('Server is waking up or unreachable — wait 30 seconds and try again');
     }
     setLoading(false);
   };
@@ -147,7 +155,7 @@ function SLA113LoginGate({ children }) {
         </div>
         <form onSubmit={login}>
           <div style={{ marginBottom: 12 }}>
-            <input type="text" placeholder="Handle" value={handle} onChange={e => setHandle(e.target.value)} required
+            <input type="email" autoComplete="email" placeholder="Email" value={handle} onChange={e => setHandle(e.target.value)} required
               style={{ width: '100%', background: '#000', border: '1px solid #1a1a1a', color: '#fff', padding: '12px 14px', borderRadius: 8, fontSize: 13, boxSizing: 'border-box', outline: 'none' }} />
           </div>
           <div style={{ marginBottom: 20 }}>
@@ -157,7 +165,7 @@ function SLA113LoginGate({ children }) {
           {error && <div style={{ color: '#ef4444', fontSize: 12, marginBottom: 14, textAlign: 'center' }}>{error}</div>}
           <button type="submit" disabled={loading}
             style={{ width: '100%', background: '#D4AF37', color: '#000', border: 'none', borderRadius: 8, padding: '13px 0', fontWeight: 900, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
-            {loading ? 'Authenticating...' : 'Enter OS'}
+            {loading ? 'Authenticating… (first login can take ~30s)' : 'Enter OS'}
           </button>
         </form>
       </div>

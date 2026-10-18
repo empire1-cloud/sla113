@@ -198,10 +198,20 @@ async def get_status_checks():
 app.include_router(api_router)
 app.include_router(empire1_router)  # /api/empire1/* — ecosystem registry + showcase analytics
 
+# CORS_ORIGINS is a comma-separated list; strip spaces so "a, b" still matches.
+# Our own front ends are always allowed (southernlifestyle.org subdomains, the
+# sla113 Vercel deployments and previews, localhost) so a stale env value can't
+# lock operators out of the login screen.
+CORS_ORIGIN_REGEX = (
+    r"https://([a-z0-9-]+\.)*southernlifestyle\.org"
+    r"|https://sla113[a-z0-9-]*\.vercel\.app"
+    r"|http://(localhost|127\.0\.0\.1)(:\d+)?"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=[o.strip() for o in os.environ.get('CORS_ORIGINS', '*').split(',') if o.strip()],
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_methods=["*"],
     allow_headers=["*"],
 )
