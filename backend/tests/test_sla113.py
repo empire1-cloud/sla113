@@ -10,9 +10,10 @@ import time
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 API_URL = f"{BASE_URL}/api/sla113"
 
-# Test credentials
-TEST_EMAIL = "newuser@example.com"
-TEST_PASSWORD = "NewPass123!"
+# Test credentials are supplied through environment variables, never committed.
+import os
+TEST_EMAIL = os.getenv("SLA113_TEST_EMAIL", "")
+TEST_PASSWORD = os.getenv("SLA113_TEST_PASSWORD", "")
 
 
 @pytest.fixture(scope="module")
