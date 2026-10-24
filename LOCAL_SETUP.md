@@ -182,7 +182,7 @@ lsof -ti:8001 | xargs kill -9  # Backend
 **Can't create account / login errors**
 - Check backend logs for errors
 - Verify MongoDB connection in terminal
-- Try with test credentials: newuser@example.com / NewPass123!
+- Create a local development account through the signup flow; do not rely on shared test credentials.
 
 ## Development Workflow
 
