@@ -8,11 +8,13 @@
 - ✅ Login once → your session works everywhere
 - ✅ Designed for solo builders with accessibility needs (one-hand operation friendly)
 
-## Test Account (Development)
+## Development Account Safety
 
-- **Email**: `newuser@example.com`
-- **Password**: `NewPass123!`
-- **Access**: All universes (Empire1, SLA113, Lyrica3, Arcade)
+Do not store or publish reusable development usernames, passwords, API keys, session tokens, or other secrets in this repository.
+
+Create a development account through the application's supported signup or seed workflow. Keep any local-only credentials in an untracked `.env.local` or equivalent secret store, and ensure that file is excluded by `.gitignore`. Use unique, non-production credentials for local testing.
+
+If any credential previously published here was ever valid or reused, rotate it immediately and review authentication logs for unexpected access. Removing a credential from the current file does not erase it from Git history or invalidate it.
 
 ## Quick Access
 
