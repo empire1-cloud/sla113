@@ -25,7 +25,7 @@
 - Clear explanation that ONE login works across ALL universes
 - Empire1, SLA113, Lyrica3, and Arcade all use the same auth
 - No separate Lyrica login needed - it shares Empire1 authentication
-- Test credentials provided: `newuser@example.com` / `NewPass123!`
+- Development account should be created locally; no shared credentials are documented.
 - Password management tips for solo builders
 - Browser auto-fill and password manager guidance
 
@@ -127,7 +127,7 @@
    ```
 
 5. **Access**: http://localhost:3000
-   - Create account or use test: `newuser@example.com` / `NewPass123!`
+   - Create a local development account through the signup flow.
    - Same login works for `/`, `/sla113`, future Lyrica, Arcade
 
 **Full guide**: See [LOCAL_SETUP.md](../LOCAL_SETUP.md)
