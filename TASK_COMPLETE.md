@@ -19,7 +19,7 @@
 - **One account works everywhere** - Empire1, SLA113, Lyrica3, Arcade all share the same login
 - **Same email/password** - No need to remember multiple credentials
 - **Login once** - Your session works across all dashboards
-- **Test credentials**: `newuser@example.com` / `NewPass123!`
+- **Development credentials**: create a local account; do not publish reusable credentials.
 
 **Documentation**: See `memory/test_credentials.md` for full explanation
 
@@ -135,9 +135,8 @@ source ~/empire1-secrets.sh && bash deployment/deploy.sh
 ## Login Info
 
 ### For Development
-- Email: `newuser@example.com`
-- Password: `NewPass123!`
-- Works at: `/` (Empire1), `/sla113` (Operator), future Lyrica/Arcade
+Create a local development account through the supported signup or seed workflow. Do not use or publish shared reusable credentials.
+- Works at: `/` (Empire1), `/sla113` (Operator), future Lyrica/Arcade)
 
 ### For Production
 Create your admin account after first deploy:
