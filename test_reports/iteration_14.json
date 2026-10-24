@@ -31,8 +31,8 @@
     "frontend": "100%"
   },
   "test_credentials": {
-    "email": "newuser@example.com",
-    "password": "NewPass123!"
+    "email": "[REDACTED—USE LOCAL TEST CONFIG]",
+    "password": "[REDACTED—DO NOT COMMIT CREDENTIALS]"
   },
   "seed_data_creation": "Created and cleaned up TEST_ prefixed jobs during testing",
   "retest_needed": false,
