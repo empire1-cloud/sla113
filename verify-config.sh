@@ -71,7 +71,7 @@ echo ""
 echo -e "${YELLOW}Checking unified login documentation...${NC}"
 check_content "memory/test_credentials.md" "unified authentication" "Unified auth documented"
 check_content "memory/test_credentials.md" "Lyrica" "Lyrica login info"
-check_content "memory/test_credentials.md" "newuser@example.com" "Test credentials"
+check_content "memory/test_credentials.md" "Development Account Safety" "Safe development-authentication guidance"
 echo ""
 
 echo -e "${YELLOW}Checking deployment configuration...${NC}"
