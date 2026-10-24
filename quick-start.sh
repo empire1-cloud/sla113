@@ -132,9 +132,9 @@ EOF
         echo ""
         echo "Same email/password works everywhere!"
         echo ""
-        echo -e "${BLUE}Test credentials (development):${NC}"
-        echo "Email: newuser@example.com"
-        echo "Password: NewPass123!"
+        echo -e "${BLUE}Development account:${NC}"
+        echo "Create an account through the local signup flow."
+        echo "Do not use shared credentials from documentation."
         echo ""
         echo -e "${BLUE}Full details: memory/test_credentials.md${NC}"
         ;;
