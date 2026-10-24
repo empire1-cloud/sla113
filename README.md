@@ -100,11 +100,9 @@ bash deployment/deploy.sh
 - ✅ Login once → session works everywhere
 - ✅ Designed for solo builders with accessibility needs
 
-**Test Account** (development):
-- Email: `newuser@example.com`
-- Password: `NewPass123!`
+**Development authentication:** Do not publish test usernames, passwords, tokens, or other credentials in this README. Configure a local development account using the application's supported signup or seed workflow, and keep any credentials in local environment files excluded from version control.
 
-See [memory/test_credentials.md](./memory/test_credentials.md) for details.
+See [memory/test_credentials.md](./memory/test_credentials.md) for safe development-authentication guidance.
 
 ## ✨ Features
 
